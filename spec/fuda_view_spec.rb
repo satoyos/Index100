@@ -30,7 +30,6 @@ describe 'FudaView' do
 
   describe 'set_size_by_height' do
 
-
     before do
       # 一度札Viewの高さをINITIAL_HEIGHTに設定しておき、その時の諸々のサイズを取得しておく。
       @fuda_view.set_all_sizes_by(INITIAL_HEIGHT)

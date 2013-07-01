@@ -7,7 +7,7 @@ class FudaView < UIImageView
   OFFSET_DIVIDED_BY_POWER = 2     # これに@fuda_powerをかけたものが@green_offsetの値となる。
 
   # サイズ以外の定数の設定
-  INSIDE_COLOR = '#FFF7E5'.to_color
+  INSIDE_COLOR = ColorFactory.str_to_color('#FFF7E5')
   FONT_NAME_HASH = {
       hiraminN:   'HiraMinProN-W3',
       timesroman: 'TimesNewRomanPS-ItalicMT',
