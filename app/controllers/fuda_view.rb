@@ -18,6 +18,11 @@ class FudaView < UIImageView
   ACC_LABEL_OF_INSIDE_VIEW = 'inside_view'
   STR_FOR_FUDA_LABEL_ACC = 'FudaChar%02d'
 
+  PROPERTIES = [:labels15]
+  PROPERTIES.each do |prop|
+    attr_reader prop
+  end
+
   # 札Viewのサイズ(frame.size)を決め、上に載るオブジェクトを積み上げる。
   # 札Viewの位置(frame.origin)にはCGPointZeroを設定する
   def initWithString(string)
@@ -37,6 +42,13 @@ class FudaView < UIImageView
   def set_all_sizes_by(fuda_height)
     set_fuda_size_by(fuda_height)
     set_size_of_subviews()
+  end
+
+  def rewrite_string(string)
+    chars = string.split(//u)
+    @labels15.each_with_index do |label, idx|
+      label.text= chars[idx] || ''
+    end
   end
 
   # 以下、プライベートな定義
@@ -148,4 +160,5 @@ class FudaView < UIImageView
     #                              この補正は…^^^^^^^^^^^^^^^^^^^^^
     # 和風フォントで上下方向のセンタリングがうまく機能しないため、仕方なく行っている。
   end
+
 end

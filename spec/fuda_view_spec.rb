@@ -54,4 +54,25 @@ describe 'FudaView' do
     end
   end
 
+  #%ToDo: 次は札の歌を入れ替えるメソッドを作っていこう！
+  describe 'rewrite_string' do
+    ORG_SHIMO_STR = FudaView::STRING_NOT_SET_MESSAGE
+    NEW_SHIMO_STR = 'わかみよにふるなかめせしまに'
+    before do
+      @fuda_view = FudaView.alloc.initWithString(ORG_SHIMO_STR)
+    end
+
+    it 'should change content string' do
+      l_idx = 1
+      @fuda_view.rewrite_string(NEW_SHIMO_STR)
+      @fuda_view.labels15[l_idx].tap do |label|
+        label.should.not.be.nil
+        label.is_a?(UILabel).should.be.true
+        label.text.should == NEW_SHIMO_STR.split(//u)[l_idx]
+      end
+
+    end
+
+  end
+
 end
