@@ -13,5 +13,14 @@ describe 'InputView' do
     @input_view.frame.should == TEST_INPUT_VIEW_FRAME
   end
 
+  it '四つのメイン文字ボタン用のFrameを持つ' do
+    @input_view.main_4frames.should.not.be.nil
+    @input_view.main_4frames.size.should == 4
+    @input_view.main_4frames.each do |elem|
+      elem.is_a?(CGRect).should.be.true
+    end
+  end
+
+  #%ToDo: 四つのFrameにそれぞれボタンを割り当て、描画するところから！
 
 end
