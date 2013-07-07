@@ -40,7 +40,8 @@ class ExamController < UIViewController
   def create_input_view
     @input_view = InputView.alloc.initWithFrame(
         CGRectMake(0, tatami_origin.y + tatami_size.height,
-                   tatami_size.width, self_size.height - tatami_size.height))
+                   tatami_size.width, self_size.height - tatami_size.height),
+        strings: ['テ', 'ス', 'ト', 'です'])
     self.view.addSubview(@input_view)
   end
 

@@ -6,7 +6,7 @@ class ButtonSlot < Array
   end
 
   def initialize(limit_size)
-    super
+    super(0)
     @limit_size = limit_size
 
     self
