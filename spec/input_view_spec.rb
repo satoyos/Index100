@@ -54,4 +54,22 @@ describe 'InputView' do
 
   end
 
+  it '6つのサブボタン用のFrameを持つ' do
+    @input_view.sub_6frames.should.not.be.nil
+    @input_view.sub_6frames.size.should == 6
+    @input_view.sub_6frames.each do |elem|
+      elem.is_a?(CGRect).should.be.true
+    end
+  end
+
+  it 'origin of 3rd sub_button is properly set' do
+    first_frame = @input_view.sub_6frames[0]
+    third_frame = @input_view.sub_6frames[2]
+    x_gap = first_frame.origin.x
+    expected_third_x = x_gap + (x_gap + third_frame.size.width) * 2
+    expected_third_y = x_gap
+    third_frame.origin.x.should.be.close(expected_third_x, 0.1)
+    third_frame.origin.y.should.be.close(expected_third_y, 0.1)
+  end
+
 end

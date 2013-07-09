@@ -1,6 +1,7 @@
 class InputView < UIView
   BG_COLOR = UIColor.darkGrayColor # InputViewの背景色(backgroundColor)
   MAIN_BUTTON_SIZE  = CGSizeMake(60, 60)
+  SUB_BUTTON_SIZE   = CGSizeMake(40, 40)
   CLEAR_BUTTON_HEIGHT = 40
   CLEAR_BUTTON_TITLE = 'やり直し'
   CLEAR_BUTTON_COLOR = ColorFactory.str_to_color('#007bbb') #紺碧
@@ -9,19 +10,24 @@ class InputView < UIView
   CHALLENGE_BUTTON_COLOR = ColorFactory.str_to_color('#e95295') #ツツジ色
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
   MAIN_BUTTON_NUM = 4
+  CHAR_SELECTED_DURATION = 0.1
 
-  PROPERTIES = [:main_4frames, :main_buttons, :clear_button, :challenge_button]
+  PROPERTIES = [:main_4frames, :main_buttons, :clear_button, :challenge_button,
+                :sub_6frames, :selected_num]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
 
   def initWithFrame(frame, strings: strings)
+    @strings = strings
     super.initWithFrame(frame)
     self.backgroundColor = BG_COLOR
+    @selected_num = 0
     set_clear_button()
     set_challenge_button()
     create_main_4frames()
-    set_main_buttons(strings)
+    set_main_buttons(@strings)
+    create_sub_6frames()
 
     self
   end
@@ -32,9 +38,9 @@ class InputView < UIView
   def set_challenge_button
     @challenge_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
     @challenge_button.setFrame(challenge_button_frame)
-    @challenge_button.setTitle(CHALLENGE_BUTTON_TITLE, forState: UIControlStateNormal)
-    @challenge_button.setTitleColor(UIColor.whiteColor, forState: UIControlStateNormal)
-    @challenge_button.setBackgroundColor(CHALLENGE_BUTTON_COLOR, forState: UIControlStateNormal)
+    set_stable_button(@challenge_button,
+                      title: CHALLENGE_BUTTON_TITLE,
+                      bg_color: CHALLENGE_BUTTON_COLOR)
     self.addSubview(@challenge_button)
   end
 
@@ -46,11 +52,26 @@ class InputView < UIView
 
   def set_clear_button
     @clear_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+    @clear_button.addTarget(self,
+                            action: 'clear_button_pushed',
+                            forControlEvents: UIControlEventTouchUpInside)
     @clear_button.setFrame(clear_button_frame)
-    @clear_button.setTitle(CLEAR_BUTTON_TITLE, forState: UIControlStateNormal)
-    @clear_button.setTitleColor(UIColor.whiteColor, forState: UIControlStateNormal)
-    @clear_button.setBackgroundColor(CLEAR_BUTTON_COLOR, forState: UIControlStateNormal)
+    set_stable_button(@clear_button,
+                      title: CLEAR_BUTTON_TITLE,
+                      bg_color: CLEAR_BUTTON_COLOR)
     self.addSubview(@clear_button)
+  end
+
+  def clear_button_pushed
+    @main_buttons.each{|button| button.removeFromSuperview}
+    set_main_buttons(@strings)
+    @selected_num = 0
+  end
+
+  def set_stable_button(button, title: text, bg_color: bg_color)
+    button.setTitle(text, forState: UIControlStateNormal)
+    button.setTitleColor(UIColor.whiteColor, forState: UIControlStateNormal)
+    button.setBackgroundColor(bg_color, forState: UIControlStateNormal)
   end
 
   def clear_button_frame
@@ -64,10 +85,36 @@ class InputView < UIView
       button = UIButton.buttonWithType(MAIN_BUTTON_TYPE).setFrame(main_4frames[idx])
       button.setTitle(strings[idx], forState: UIControlStateNormal)
       button.titleLabel.font = UIFont.systemFontOfSize(MAIN_BUTTON_SIZE.height/2)
+      button.addTarget(self,
+                       action: "main_button_pushed:",
+                       forControlEvents: UIControlEventTouchUpInside)
       @main_buttons << button
       self.addSubview(button)
     end
   end
+
+  def main_button_pushed(sender)
+    puts "#{sender.to_s} is pushed!"
+    return unless sender.is_a?(UIButton)
+    UIView.animateWithDuration(CHAR_SELECTED_DURATION,
+                               animations: lambda{move_selected_button(sender)})
+  end
+
+  def move_selected_button(button)
+    button.frame = @sub_6frames[@selected_num]
+    button.titleLabel.font = UIFont.systemFontOfSize(SUB_BUTTON_SIZE.height/2)
+    button.enabled = false
+    @selected_num += 1
+  end
+
+
+  def create_sub_6frames
+    @sub_6frames = []
+    (0..5).each do |idx|
+      @sub_6frames << nth_sub_frame(idx)
+    end
+  end
+
 
   def create_main_4frames
     @main_4frames = []
@@ -86,6 +133,14 @@ class InputView < UIView
   def bottom_margin
     x_gap
   end
+
+  def nth_sub_frame(idx)
+    CGRectMake(x_gap + (x_gap + SUB_BUTTON_SIZE.width) * idx,
+               x_gap,
+               SUB_BUTTON_SIZE.width,
+               SUB_BUTTON_SIZE.height)
+  end
+
 
   def nth_main_frame(idx)
     CGRectMake(x_gap * (idx+1) + MAIN_BUTTON_SIZE.width * idx,
