@@ -32,6 +32,10 @@ class InputView < UIView
     self
   end
 
+  def ratio_of_sub_to_main
+    SUB_BUTTON_SIZE.width / MAIN_BUTTON_SIZE.width
+  end
+
 
   :private
 
@@ -135,7 +139,8 @@ class InputView < UIView
   end
 
   def nth_sub_frame(idx)
-    CGRectMake(x_gap + (x_gap + SUB_BUTTON_SIZE.width) * idx,
+    CGRectMake(x_gap +
+                   (x_gap * ratio_of_sub_to_main + SUB_BUTTON_SIZE.width) * idx,
                x_gap,
                SUB_BUTTON_SIZE.width,
                SUB_BUTTON_SIZE.height)
@@ -143,7 +148,8 @@ class InputView < UIView
 
 
   def nth_main_frame(idx)
-    CGRectMake(x_gap * (idx+1) + MAIN_BUTTON_SIZE.width * idx,
+
+    CGRectMake(x_gap + (MAIN_BUTTON_SIZE.width + x_gap) * idx,
                self_height - CLEAR_BUTTON_HEIGHT - bottom_margin - MAIN_BUTTON_SIZE.height,
                MAIN_BUTTON_SIZE.width,
                MAIN_BUTTON_SIZE.height)
