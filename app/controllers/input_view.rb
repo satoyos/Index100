@@ -10,10 +10,11 @@ class InputView < UIView
   CHALLENGE_BUTTON_COLOR = ColorFactory.str_to_color('#e95295') #ツツジ色
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
   MAIN_BUTTON_NUM = 4
+  SUB_BUTTON_NUM  = 6
   CHAR_SELECTED_DURATION = 0.1
 
   PROPERTIES = [:main_4frames, :main_buttons, :clear_button, :challenge_button,
-                :sub_6frames, :selected_num]
+                :sub_buttons, :sub_6frames, :selected_num]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
@@ -28,6 +29,7 @@ class InputView < UIView
     create_main_4frames()
     set_main_buttons(@strings)
     create_sub_6frames()
+    setup_sub_button_slot()
 
     self
   end
@@ -36,8 +38,19 @@ class InputView < UIView
     SUB_BUTTON_SIZE.width / MAIN_BUTTON_SIZE.width
   end
 
+  def main_button_pushed(sender)
+    puts "#{sender.to_s} is pushed!"
+    return unless sender.is_a?(UIButton)
+    UIView.animateWithDuration(CHAR_SELECTED_DURATION,
+                               animations: lambda{move_selected_button(sender)})
+  end
+
 
   :private
+
+  def setup_sub_button_slot
+    @sub_buttons = ButtonSlot.new(SUB_BUTTON_NUM)
+  end
 
   def set_challenge_button
     @challenge_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
@@ -95,13 +108,6 @@ class InputView < UIView
       @main_buttons << button
       self.addSubview(button)
     end
-  end
-
-  def main_button_pushed(sender)
-    puts "#{sender.to_s} is pushed!"
-    return unless sender.is_a?(UIButton)
-    UIView.animateWithDuration(CHAR_SELECTED_DURATION,
-                               animations: lambda{move_selected_button(sender)})
   end
 
   def move_selected_button(button)

@@ -12,4 +12,24 @@ class ButtonSlot < Array
     self
   end
 
+  def transfer(obj, to: target_slot)
+    return nil unless self.steal(obj)
+    target_slot << obj
+  end
+
+  def <<(obj)
+    case self.size
+      when @limit_size ; raise OverLimitError
+      else super
+    end
+  end
+
+  def steal(obj)
+    return nil unless (index = self.find_index(obj))
+    self[index] = nil
+    true
+  end
+
 end
+
+OverLimitError = Class.new(StandardError)

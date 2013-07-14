@@ -13,8 +13,73 @@ describe 'ButtonSlot' do
     end
   end
 
-  describe 'add' do
-    #ToDo: limit_sizeで要素の追加を打ち切ることができる追加メソッド"add"を作ろう！
+  describe '<<' do
+    before do
+      @slot = ButtonSlot.new(2)
+    end
+
+    it 'should raise OverLimitError when fully stuffed' do
+      2.times do
+        @slot << 1
+      end
+      should.raise(OverLimitError){@slot << 1}
+    end
   end
 
+  describe 'steal' do
+    before do
+      @slot = ButtonSlot.new(2)
+      @liner1 = Liner_2_parts.new({kami: 'あきのたのかりほのいほのとまをあらみ',
+                               shimo: 'わかころもてはつゆにぬれつつ'})
+      @liner2 = Liner_2_parts.new(kami: 'はるすきてなつきにけらししろたへの',
+                              shimo: 'ころもほすてふあまのかくやま')
+    end
+
+    it 'should remove element without changing size' do
+      @slot << @liner1
+      @slot << @liner2
+      @slot.steal(@liner1)
+      @slot[0].should.be.nil
+      @slot[1].should == @liner2
+      @slot.size.should == 2
+    end
+
+    it 'should return nil when paramater object not found' do
+      @slot << @liner1
+      @slot << @liner2
+      @slot.steal(1).should.be.nil
+    end
+  end
+
+  describe 'transfer' do
+    before do
+      @slot1 = ButtonSlot.new(2)
+      @slot2 = ButtonSlot.new(2)
+      @liner1 = Liner_2_parts.new({kami: 'あきのたのかりほのいほのとまをあらみ',
+                                   shimo: 'わかころもてはつゆにぬれつつ'})
+      @liner2 = Liner_2_parts.new(kami: 'はるすきてなつきにけらししろたへの',
+                                  shimo: 'ころもほすてふあまのかくやま')
+      @slot1 << @liner1
+      @slot1 << @liner2
+      @slot1.transfer(@liner1, to: @slot2)
+    end
+
+    it '移籍元のいた場所は空になる' do
+      @slot1[0].should.be.nil
+      @slot1.size.should == 2
+    end
+
+    it 'オブジェクトが移籍先に追加される' do
+      @slot2.last.should == @liner1
+    end
+
+    it 'もう存在しないオブジェクトを移籍させようとしたら、nilが返る' do
+      @slot1.transfer(@liner1, to: @slot2).should.be.nil
+    end
+
+    it '満杯になっている移籍先にオブジェクトを移そうとすると、OverLimitErrorが返る' do
+      @slot2 << 1
+      should.raise(OverLimitError){@slot1.transfer(@liner2, to: @slot2)}
+    end
+  end
 end

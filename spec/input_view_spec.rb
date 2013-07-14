@@ -62,6 +62,11 @@ describe 'InputView' do
     end
   end
 
+  it '容量6のサブボタン用スロットを持つ' do
+    @input_view.sub_buttons.should.not.be.nil
+    @input_view.sub_buttons.limit_size.should == 6
+  end
+
   it 'origin of 3rd sub_button is properly set' do
     first_frame = @input_view.sub_6frames[0]
     third_frame = @input_view.sub_6frames[2]
