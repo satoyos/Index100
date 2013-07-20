@@ -30,6 +30,9 @@ class ButtonSlot < Array
     true
   end
 
+  def is_full?
+    self.size == @limit_size
+  end
 end
 
 OverLimitError = Class.new(StandardError)

@@ -1,8 +1,9 @@
 describe 'InputView' do
   TEST_INPUT_VIEW_FRAME = CGRectMake(0, 300, 320, 240)
   before do
-    @input_view = InputView.alloc.initWithFrame(TEST_INPUT_VIEW_FRAME,
-                                                strings: ['あ', 'い', 'う', 'え'])
+    @input_view =
+        InputView.alloc.initWithFrame(TEST_INPUT_VIEW_FRAME,
+                                      supplier: CharSupplier.new({deck: Deck.new}))
   end
 
   it 'should not be nil' do
@@ -30,6 +31,13 @@ describe 'InputView' do
     @input_view.main_4frames.size.should == 4
     @input_view.main_4frames.each do |elem|
       elem.is_a?(CGRect).should.be.true
+    end
+  end
+
+  it '四つのメインボタンの文字が、適切に初期設定されている' do
+    initial_strings = @input_view.supplier.clear.get_4strings
+    @input_view.main_buttons.each_with_index do |button, idx|
+      button.currentTitle.should == initial_strings[idx]
     end
   end
 
@@ -91,29 +99,30 @@ describe 'InputView' do
     end
 
     it '押されたボタンは、サブボタン用スロットへと移る' do
-      @input_view.main_buttons.include?(@button).should.not.be.true
+      @input_view.main_buttons.include?(@button).should.be.false
       @input_view.sub_buttons.size == 1
       @input_view.sub_buttons.last == @button
-    end
-
-    it '押されなかったボタンは、縮む' do
-      unselected_buttons = @input_view.main_buttons.select{|button| button}
-      unselected_buttons.size.should == 3
-=begin
-      sleep(InputView::MOVE_SELECTED_DURATION +
-                InputView::SHRINK_UNSELECTED_DURATION +
-                1.0)
-      unselected_buttons.each do |button|
-        button.frame.size.width.should  == 0
-        button.frame.size.height.should == 0
-      end
-=end
     end
 
     it 'クリアボタンが押されたら、各スロットは元に戻る' do
       @input_view.clear_button_pushed
       @input_view.main_buttons.map{|button| button}.size.should == 4
       @input_view.sub_buttons.size.should == 0
+      @input_view.supplier.counter.should == 1 # 0に戻るがすぐに初期文字列を供給するため、1になる
     end
+
+    it '押されたボタンを把握できている' do
+      @input_view.pushed_button.should.not.be.nil
+    end
+
+    it '押されたボタンが、サブボタン・スロットに移籍した' do
+      @input_view.button_moved.should.be.true
+    end
+    #↓はうまくテストできないが、puts文出力で、ここまで来たことは確認した。
+=begin
+    it '新しいボタンが作られる直前まで来た' do
+      @input_view.new_buttons_are_being_created.should.be.true
+    end
+=end
   end
 end

@@ -4,6 +4,8 @@ class CharSupplier
     attr_reader prop
   end
 
+  COUNTER_MAX = 6
+
   def initialize(init_hash)
     @deck = init_hash[:deck]
     @counter = 0
@@ -19,6 +21,7 @@ class CharSupplier
   ]
 
   def get_4strings
+    return nil if @counter == COUNTER_MAX
     strings = TEST_ARRAY[@counter]
     @counter += 1
     strings
@@ -26,5 +29,6 @@ class CharSupplier
   
   def clear
     @counter = 0
+    self
   end
 end

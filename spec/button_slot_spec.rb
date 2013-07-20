@@ -82,4 +82,20 @@ describe 'ButtonSlot' do
       should.raise(OverLimitError){@slot1.transfer(@liner2, to: @slot2)}
     end
   end
+
+  describe 'is_full?' do
+    before do
+      @slot1 = ButtonSlot.new(2)
+      @slot1 << 1
+    end
+
+    it 'should not be full yet' do
+      @slot1.is_full?.should.be.false
+    end
+
+    it 'should be full by next item' do
+      @slot1 << 2
+      @slot1.is_full?.should.be.true
+    end
+  end
 end

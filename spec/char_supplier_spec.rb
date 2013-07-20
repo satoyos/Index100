@@ -39,6 +39,7 @@ describe 'CharSupplier' do
       sixth = @supplier.get_4strings
       sixth[2] == 'み'
       @supplier.get_4strings.should.be.nil
+      @supplier.counter.should == 6
 
 
     end

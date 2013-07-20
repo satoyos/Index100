@@ -11,27 +11,42 @@ class InputView < UIView
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
   MAIN_BUTTON_NUM = 4
   SUB_BUTTON_NUM  = 6
-  MOVE_SELECTED_DURATION = 0.2
-  SHRINK_UNSELECTED_DURATION = 0.2
-
-  PROPERTIES = [:main_4frames, :main_buttons, :clear_button, :challenge_button,
-                :sub_buttons, :sub_6frames, :selected_num]
-  PROPERTIES.each do |prop|
+  if RUBYMOTION_ENV == 'test'
+    MOVE_SELECTED_DURATION = 0.0
+    POP_NEW_BUTTON_DURATION = 0.0
+    EXCHANGE_MAIN_BUTTONS_DURATION = 0.0
+  else
+    MOVE_SELECTED_DURATION = 0.2
+    POP_NEW_BUTTON_DURATION = 0.2
+    EXCHANGE_MAIN_BUTTONS_DURATION = 0.2
+  end
+  PROPERTIES_READER = [:main_4frames, :main_buttons, :clear_button, :challenge_button,
+                :sub_buttons, :sub_6frames, :selected_num, :supplier,
+                :pushed_button]
+  PROPERTIES_READER.each do |prop|
     attr_reader prop
   end
 
-  def initWithFrame(frame, strings: strings)
-    @strings = strings
+  PROPERTIES_ACCESSOR = [:button_moved, :new_buttons_set, :new_buttons_are_being_created]
+  PROPERTIES_ACCESSOR.each do |prop|
+    attr_accessor prop
+  end
+
+  # @param [CharSupplier] supplier
+  def initWithFrame(frame, supplier: supplier)
     super.initWithFrame(frame)
+
+    @supplier = supplier
     self.backgroundColor = BG_COLOR
     @selected_num = 0
-    @pushed_button = nil
     set_clear_button()
     set_challenge_button()
     create_main_4frames()
-    set_main_buttons(@strings)
+    set_main_buttons(supplier.get_4strings)
+    make_main_buttons_appear
     create_sub_6frames()
     setup_sub_button_slot()
+    clear_prove_variable
 
     self
   end
@@ -41,16 +56,27 @@ class InputView < UIView
   end
 
   def main_button_pushed(sender)
+    clear_prove_variable
     puts "#{sender.to_s} is pushed!"
     return unless sender.is_a?(UIButton)
     @pushed_button = sender
-    i_view_animation_def('move_selected_button')
+    i_view_animation_def('move_selected_button',
+                         duration: MOVE_SELECTED_DURATION,
+                         transition: nil)
   end
-  
+
+  def clear_prove_variable
+    @pushed_button = nil
+    self.button_moved = false
+    self.new_buttons_set = false
+    self.new_buttons_are_being_created = false
+  end
+
   def clear_button_pushed
     remove_buttons_from_super_view(@main_buttons)
     remove_buttons_from_super_view(@sub_buttons)
-    set_main_buttons(@strings)
+    set_main_buttons(@supplier.clear.get_4strings)
+    make_main_buttons_appear
     setup_sub_button_slot()
     @selected_num = 0
     @pushed_button = nil
@@ -59,9 +85,22 @@ class InputView < UIView
 
   :private
 
+  def can_create_new_button?
+    if @selected_num < @sub_buttons.limit_size
+      puts "--- 新しいボタンは作れます。(selected_num = [#{@selected_num}, sub_limit = [#{@sub_buttons.limit_size}]"
+    else
+      puts "+++ 新しいボタンは作成不能！(selected_num = [#{@selected_num}], sub_limit = [#{@sub_buttons.limit_size}]"
+    end
+    @selected_num < @sub_buttons.limit_size
+  end
 
   def remove_buttons_from_super_view(slot)
-    slot.each{|button| button.removeFromSuperview if button}
+    puts "--- 不要なボタンの消去を開始 (スロットのサイズ=[#{slot.size}])"
+    slot.each do |button|
+      next unless button.is_a?(UIButton)
+      button.removeFromSuperview
+      puts "--- ボタン[#{button.currentTitle}]を削除 => 現在のSubViewの数 = [#{self.subviews.size}]"
+    end
   end
 
   def setup_sub_button_slot
@@ -85,14 +124,16 @@ class InputView < UIView
 
   def set_clear_button
     @clear_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
-    @clear_button.addTarget(self,
-                            action: 'clear_button_pushed',
-                            forControlEvents: UIControlEventTouchUpInside)
-    @clear_button.setFrame(clear_button_frame)
-    set_stable_button(@clear_button,
-                      title: CLEAR_BUTTON_TITLE,
-                      bg_color: CLEAR_BUTTON_COLOR)
-    self.addSubview(@clear_button)
+    @clear_button.tap do |c_button|
+      c_button.addTarget(self,
+                         action: 'clear_button_pushed',
+                         forControlEvents: UIControlEventTouchUpInside)
+      c_button.setFrame(clear_button_frame)
+      set_stable_button(c_button,
+                        title: CLEAR_BUTTON_TITLE,
+                        bg_color: CLEAR_BUTTON_COLOR)
+      self.addSubview(c_button)
+    end
   end
 
   def set_stable_button(button, title: text, bg_color: bg_color)
@@ -109,12 +150,26 @@ class InputView < UIView
   def set_main_buttons(strings)
     @main_buttons = ButtonSlot.new(MAIN_BUTTON_NUM)
     (0..MAIN_BUTTON_NUM-1).each do |idx|
-      create_a_main_button_at(idx, title: strings[idx])
+      button = create_a_main_button_at(idx, title: strings[idx])
+    end
+#    set_string_on_main_buttons(strings)
+    self.new_buttons_set = true
+  end
+
+  def make_main_buttons_appear
+    @main_buttons.each_with_index do |button, idx|
+      button.frame = @main_4frames[idx]
     end
   end
 
   def create_a_main_button_at(idx, title: title)
-    button = UIButton.buttonWithType(MAIN_BUTTON_TYPE).setFrame(main_4frames[idx])
+    button = UIButton.buttonWithType(MAIN_BUTTON_TYPE)
+    initial_frame = @main_4frames[idx]
+    initial_frame = CGRectMake(initial_frame.origin.x,
+                               self.frame.size.height,
+                               initial_frame.size.width,
+                               initial_frame.size.height)
+    button.setFrame(initial_frame)
     button.tap do |b|
       b.setTitle(title, forState: UIControlStateNormal) if title
       b.titleLabel.font = UIFont.systemFontOfSize(MAIN_BUTTON_SIZE.height/2)
@@ -124,23 +179,50 @@ class InputView < UIView
       @main_buttons[idx] = b
       self.addSubview(b)
     end
+    button
   end
 
-  def i_view_animation_def(method_name)
+
+  # @param [CGRect] frame
+  def center_of_frame(frame)
+    CGPointMake(frame.origin.x + frame.size.width / 2,
+                frame.origin.y + frame.size.height / 2)
+  end
+
+  def exchange_main_buttons
+    @prev_main_button = @main_buttons.dup
+    self.new_buttons_are_being_created = true
+    puts '==== ボタンを作る直前まで来ました！'
+    set_main_buttons(@supplier.get_4strings)
+    i_view_animation_def('make_main_buttons_appear',
+                         duration: EXCHANGE_MAIN_BUTTONS_DURATION,
+                         transition: nil)
+  end
+
+  def i_view_animation_def(method_name, duration: duration, transition: transition)
     UIView.beginAnimations(method_name, context: nil)
     UIView.setAnimationDelegate(self)
-    UIView.setAnimationDuration(MOVE_SELECTED_DURATION)
+    UIView.setAnimationDuration(duration)
+    set_main_buttons_transition(transition) if transition
     self.send("#{method_name}")
     UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
     UIView.commitAnimations
   end
 
+
   def i_view_animation_has_finished(animation_id)
     case animation_id
       when 'move_selected_button'
-        i_view_animation_def('shrink_unselected_buttons')
+        if can_create_new_button?
+          exchange_main_buttons
+        else
+          disable_main_buttons
+        end
+      when 'make_main_buttons_appear'
+        remove_buttons_from_super_view(@prev_main_button)
+        @prev_main_button = nil
       else
-        puts "/////// Matching 失敗 ///////"
+        puts "/////// このアニメーションの後処理はありません。 ///////"
     end
   end
 
@@ -151,22 +233,22 @@ class InputView < UIView
       button.titleLabel.font = UIFont.systemFontOfSize(SUB_BUTTON_SIZE.height/2)
       button.enabled = false
       @main_buttons.transfer(button, to: @sub_buttons)
+      self.button_moved = true
     end
+
+    puts 'main_buttons [move_selected_button]=> '
+    @main_buttons.each_with_index do |b, idx|
+      puts " [#{idx}] #{b.to_s}"
+    end
+
     @selected_num += 1
-    @pushed_button = nil
+
   end
 
-  def shrink_unselected_buttons
+  def disable_main_buttons
     @main_buttons.each do |button|
-      next unless button
-      center = button.center
-      button.frame = CGRectMake(center.x, center.y, 0, 0)
+      button.enabled = false if button
     end
-  end
-
-  def pop_a_new_main_button
-    idx = @main_buttons.index(nil)
-    create_a_main_button_at(idx, title: nil)
   end
 
   def create_sub_6frames
@@ -205,7 +287,6 @@ class InputView < UIView
 
 
   def nth_main_frame(idx)
-
     CGRectMake(x_gap + (MAIN_BUTTON_SIZE.width + x_gap) * idx,
                self_height - CLEAR_BUTTON_HEIGHT - bottom_margin - MAIN_BUTTON_SIZE.height,
                MAIN_BUTTON_SIZE.width,
