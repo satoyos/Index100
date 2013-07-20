@@ -57,12 +57,17 @@ class InputView < UIView
 
   def main_button_pushed(sender)
     clear_prove_variable
-    puts "#{sender.to_s} is pushed!"
+    puts "#{@selected_num}番目の文字として[#{sender.currentTitle}]が押されました!"
     return unless sender.is_a?(UIButton)
     @pushed_button = sender
-    i_view_animation_def('move_selected_button',
-                         duration: MOVE_SELECTED_DURATION,
-                         transition: nil)
+      puts '!!! テストモードでボタンを押しました !!!'
+      if RUBYMOTION_ENV == 'test'
+      move_selected_button
+    else
+      i_view_animation_def('move_selected_button',
+                           duration: MOVE_SELECTED_DURATION,
+                           transition: nil)
+    end
   end
 
   def clear_prove_variable
@@ -82,6 +87,13 @@ class InputView < UIView
     @pushed_button = nil
   end
 
+  def test_pushed_sequence(button)
+    main_button_pushed(button)
+    exchange_main_buttons
+    remove_buttons_from_super_view(@prev_main_button)
+    @prev_main_button = nil
+    @pushed_button = nil
+  end
 
   :private
 
@@ -194,9 +206,15 @@ class InputView < UIView
     self.new_buttons_are_being_created = true
     puts '==== ボタンを作る直前まで来ました！'
     set_main_buttons(@supplier.get_4strings)
-    i_view_animation_def('make_main_buttons_appear',
-                         duration: EXCHANGE_MAIN_BUTTONS_DURATION,
-                         transition: nil)
+    if RUBYMOTION_ENV == 'test'
+      puts '!!! テストモードで次のボタン群を生成しました !!!'
+      make_main_buttons_appear
+    else
+      i_view_animation_def('make_main_buttons_appear',
+                           duration: EXCHANGE_MAIN_BUTTONS_DURATION,
+                           transition: nil)
+    end
+
   end
 
   def i_view_animation_def(method_name, duration: duration, transition: transition)
@@ -221,6 +239,7 @@ class InputView < UIView
       when 'make_main_buttons_appear'
         remove_buttons_from_super_view(@prev_main_button)
         @prev_main_button = nil
+        @pushed_button = nil
       else
         puts "/////// このアニメーションの後処理はありません。 ///////"
     end

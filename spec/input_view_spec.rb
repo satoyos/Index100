@@ -125,4 +125,42 @@ describe 'InputView' do
     end
 =end
   end
+
+  describe 'チャレンジボタンが押されるときの動作' do
+    before do
+      # まず、正解の状態を作る！
+      first_button = @input_view.main_buttons[2]
+      @first_str = first_button.currentTitle
+
+      # 1文字目の入力
+      @input_view.test_pushed_sequence(first_button)
+
+      second_button = @input_view.main_buttons[0]
+      @second_str = second_button.currentTitle
+
+      # 2文字目の入力
+      @input_view.test_pushed_sequence(second_button)
+
+      third_button = @input_view.main_buttons[3]
+      @third_str = third_button.currentTitle
+
+      # 3文字目の入力
+      @input_view.test_pushed_sequence(third_button)
+    end
+
+    it '@input_view should not be nil' do
+      @input_view.should.not.be.nil
+    end
+
+    it '最初のボタンは「あ」' do
+      @first_str.should == 'あ'
+      @second_str.should == 'ら'
+      @third_str.should == 'し'
+    end
+
+    it 'サブボタンスロットには「あ」「ら」「し」が入っている' do
+      sub_slot_str = @input_view.sub_buttons.inject(''){|str, b| str += b.currentTitle if b}
+      sub_slot_str.should == 'あらし'
+    end
+  end
 end
