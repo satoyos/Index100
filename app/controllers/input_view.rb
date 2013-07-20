@@ -11,15 +11,9 @@ class InputView < UIView
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
   MAIN_BUTTON_NUM = 4
   SUB_BUTTON_NUM  = 6
-  if RUBYMOTION_ENV == 'test'
-    MOVE_SELECTED_DURATION = 0.0
-    POP_NEW_BUTTON_DURATION = 0.0
-    EXCHANGE_MAIN_BUTTONS_DURATION = 0.0
-  else
-    MOVE_SELECTED_DURATION = 0.2
-    POP_NEW_BUTTON_DURATION = 0.2
-    EXCHANGE_MAIN_BUTTONS_DURATION = 0.2
-  end
+  MOVE_SELECTED_DURATION = 0.2
+  EXCHANGE_MAIN_BUTTONS_DURATION = 0.2
+
   PROPERTIES_READER = [:main_4frames, :main_buttons, :clear_button, :challenge_button,
                 :sub_buttons, :sub_6frames, :selected_num, :supplier,
                 :pushed_button]
@@ -51,10 +45,6 @@ class InputView < UIView
     self
   end
 
-  def ratio_of_sub_to_main
-    SUB_BUTTON_SIZE.width / MAIN_BUTTON_SIZE.width
-  end
-
   def main_button_pushed(sender)
     clear_prove_variable
     puts "#{@selected_num}番目の文字として[#{sender.currentTitle}]が押されました!"
@@ -84,26 +74,31 @@ class InputView < UIView
     make_main_buttons_appear
     setup_sub_button_slot()
     @selected_num = 0
-    @pushed_button = nil
+    clean_before_next_push()
   end
 
   def test_pushed_sequence(button)
     main_button_pushed(button)
-    exchange_main_buttons
-    remove_buttons_from_super_view(@prev_main_button)
-    @prev_main_button = nil
-    @pushed_button = nil
+    if can_create_new_button?
+      exchange_main_buttons()
+      clean_before_next_push()
+    end
+  end
+
+  def ratio_of_sub_to_main
+    SUB_BUTTON_SIZE.width / MAIN_BUTTON_SIZE.width
   end
 
   :private
 
   def can_create_new_button?
-    if @selected_num < @sub_buttons.limit_size
-      puts "--- 新しいボタンは作れます。(selected_num = [#{@selected_num}, sub_limit = [#{@sub_buttons.limit_size}]"
-    else
-      puts "+++ 新しいボタンは作成不能！(selected_num = [#{@selected_num}], sub_limit = [#{@sub_buttons.limit_size}]"
-    end
     @selected_num < @sub_buttons.limit_size
+  end
+
+  def clean_before_next_push
+    remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
+    @prev_main_button = nil
+    @pushed_button = nil
   end
 
   def remove_buttons_from_super_view(slot)
@@ -126,6 +121,20 @@ class InputView < UIView
                       title: CHALLENGE_BUTTON_TITLE,
                       bg_color: CHALLENGE_BUTTON_COLOR)
     self.addSubview(@challenge_button)
+  end
+
+  def set_main_buttons(strings)
+    @main_buttons = ButtonSlot.new(MAIN_BUTTON_NUM)
+    (0..MAIN_BUTTON_NUM-1).each do |idx|
+      button = create_a_main_button_at(idx, title: strings[idx])
+    end
+    self.new_buttons_set = true
+  end
+
+  def make_main_buttons_appear
+    @main_buttons.each_with_index do |button, idx|
+      button.frame = @main_4frames[idx]
+    end
   end
 
   def challenge_button_frame()
@@ -157,21 +166,6 @@ class InputView < UIView
   def clear_button_frame
     CGRectMake(0, self_height - CLEAR_BUTTON_HEIGHT,
                self_width/2, CLEAR_BUTTON_HEIGHT)
-  end
-
-  def set_main_buttons(strings)
-    @main_buttons = ButtonSlot.new(MAIN_BUTTON_NUM)
-    (0..MAIN_BUTTON_NUM-1).each do |idx|
-      button = create_a_main_button_at(idx, title: strings[idx])
-    end
-#    set_string_on_main_buttons(strings)
-    self.new_buttons_set = true
-  end
-
-  def make_main_buttons_appear
-    @main_buttons.each_with_index do |button, idx|
-      button.frame = @main_4frames[idx]
-    end
   end
 
   def create_a_main_button_at(idx, title: title)
@@ -237,9 +231,7 @@ class InputView < UIView
           disable_main_buttons
         end
       when 'make_main_buttons_appear'
-        remove_buttons_from_super_view(@prev_main_button)
-        @prev_main_button = nil
-        @pushed_button = nil
+        clean_before_next_push
       else
         puts "/////// このアニメーションの後処理はありません。 ///////"
     end
