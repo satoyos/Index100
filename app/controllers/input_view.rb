@@ -55,8 +55,7 @@ class InputView < UIView
       move_selected_button
     else
       i_view_animation_def('move_selected_button',
-                           duration: MOVE_SELECTED_DURATION,
-                           transition: nil)
+                           duration: MOVE_SELECTED_DURATION)
     end
   end
 
@@ -170,12 +169,7 @@ class InputView < UIView
 
   def create_a_main_button_at(idx, title: title)
     button = UIButton.buttonWithType(MAIN_BUTTON_TYPE)
-    initial_frame = @main_4frames[idx]
-    initial_frame = CGRectMake(initial_frame.origin.x,
-                               self.frame.size.height,
-                               initial_frame.size.width,
-                               initial_frame.size.height)
-    button.setFrame(initial_frame)
+    button.setFrame(hidden_main_frame_at(idx))
     button.tap do |b|
       b.setTitle(title, forState: UIControlStateNormal) if title
       b.titleLabel.font = UIFont.systemFontOfSize(MAIN_BUTTON_SIZE.height/2)
@@ -188,6 +182,12 @@ class InputView < UIView
     button
   end
 
+  def hidden_main_frame_at(idx)
+    CGRectMake(nth_main_frame(idx).origin.x,
+               self.frame.size.height,
+               nth_main_frame(idx).size.width,
+               nth_main_frame(idx).size.height)
+  end
 
   # @param [CGRect] frame
   def center_of_frame(frame)
@@ -205,17 +205,15 @@ class InputView < UIView
       make_main_buttons_appear
     else
       i_view_animation_def('make_main_buttons_appear',
-                           duration: EXCHANGE_MAIN_BUTTONS_DURATION,
-                           transition: nil)
+                           duration: EXCHANGE_MAIN_BUTTONS_DURATION)
     end
 
   end
 
-  def i_view_animation_def(method_name, duration: duration, transition: transition)
+  def i_view_animation_def(method_name, duration: duration)
     UIView.beginAnimations(method_name, context: nil)
     UIView.setAnimationDelegate(self)
     UIView.setAnimationDuration(duration)
-    set_main_buttons_transition(transition) if transition
     self.send("#{method_name}")
     UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
     UIView.commitAnimations
@@ -277,8 +275,6 @@ class InputView < UIView
     end
 
   end
-
-
 
   def x_gap
     (self.frame.size.width - MAIN_BUTTON_SIZE.width*4) / 5
