@@ -16,12 +16,13 @@ class InputView < UIView
 
   PROPERTIES_READER = [:main_4frames, :main_buttons, :clear_button, :challenge_button,
                 :sub_buttons, :sub_6frames, :selected_num, :supplier,
-                :pushed_button]
+                :pushed_button, :result_view]
   PROPERTIES_READER.each do |prop|
     attr_reader prop
   end
 
-  PROPERTIES_ACCESSOR = [:button_moved, :new_buttons_set, :new_buttons_are_being_created]
+  PROPERTIES_ACCESSOR = [:button_moved, :new_buttons_set,
+                         :new_buttons_are_being_created, :challenge_button_pushed_flag]
   PROPERTIES_ACCESSOR.each do |prop|
     attr_accessor prop
   end
@@ -73,6 +74,8 @@ class InputView < UIView
     make_main_buttons_appear
     setup_sub_button_slot()
     @selected_num = 0
+    clean_up_result_view()
+    clean_up_result_view()
     clean_before_next_push()
   end
 
@@ -84,9 +87,31 @@ class InputView < UIView
     end
   end
 
+  def get_result_type
+    case @supplier.test_challenge_string(challenge_strings)
+      when true; :correct
+      else     ; :wrong
+    end
+  end
+
+  def display_result_view(result_type)
+    @result_view = ChallengeResultView.alloc.initWithResult(result_type)
+    @result_view.center = self.center
+    @result_view.frame =
+        [CGPointMake(@result_view.frame.origin.x,
+                     0 - ChallengeResultView::RESULT_VIEW_SIZE.height/2),
+         @result_view.frame.size]
+    self.addSubview(@result_view)
+  end
+
+  def challenge_strings
+    sub_buttons.inject(''){|str, b| str += b.currentTitle if b}
+  end
+
   def ratio_of_sub_to_main
     SUB_BUTTON_SIZE.width / MAIN_BUTTON_SIZE.width
   end
+
 
   :private
 
@@ -99,6 +124,14 @@ class InputView < UIView
     @prev_main_button = nil
     @pushed_button = nil
   end
+
+  def clean_up_result_view
+    return unless @result_view
+    @result_view.clean_up_subviews
+    @result_view.removeFromSuperview
+    @result_view = nil
+  end
+
 
   def remove_buttons_from_super_view(slot)
     puts "--- 不要なボタンの消去を開始 (スロットのサイズ=[#{slot.size}])"
@@ -119,7 +152,17 @@ class InputView < UIView
     set_stable_button(@challenge_button,
                       title: CHALLENGE_BUTTON_TITLE,
                       bg_color: CHALLENGE_BUTTON_COLOR)
+    @challenge_button.addTarget(self,
+                       action: 'challenge_button_pushed',
+                       forControlEvents: UIControlEventTouchUpInside)
+
     self.addSubview(@challenge_button)
+    self.challenge_button_pushed_flag = false
+  end
+
+  def challenge_button_pushed
+    self.challenge_button_pushed_flag = true
+    display_result_view(get_result_type)
   end
 
   def set_main_buttons(strings)

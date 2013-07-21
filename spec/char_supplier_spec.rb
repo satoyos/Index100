@@ -19,6 +19,13 @@ describe 'CharSupplier' do
       @supplier.deck.should.not.be.nil
       @supplier.deck.is_a?(Deck).should.be.true
     end
+
+    it 'has an answer' do
+      @supplier.answer.should.not.be.nil
+      @supplier.answer.is_a?(String).should.be.true
+    end
+
+
   end
 
   describe 'get_4strings' do
@@ -42,6 +49,20 @@ describe 'CharSupplier' do
       @supplier.counter.should == 6
 
 
+    end
+  end
+
+  describe 'test_challenge_string' do
+    before do
+      @supplier = CharSupplier.new({deck: Deck.new})
+    end
+
+    it '正しい文字列でのチャレンジ時はtrueを返す' do
+      @supplier.test_challenge_string('あらし').should.be.true
+    end
+
+    it '間違った文字列でのチャレンジ時は、falseを返す' do
+      @supplier.test_challenge_string('あっちょんぶりけ').should.be.false
     end
   end
 end

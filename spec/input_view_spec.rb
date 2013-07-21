@@ -126,7 +126,7 @@ describe 'InputView' do
 =end
   end
 
-  describe 'チャレンジボタンが押されるときの動作' do
+  describe 'チャレンジボタンが押されるときの動作[正解編]' do
     before do
       # まず、正解の状態を作る！
       first_button = @input_view.main_buttons[2]
@@ -146,6 +146,9 @@ describe 'InputView' do
 
       # 3文字目の入力
       @input_view.test_pushed_sequence(third_button)
+
+      # チャレンジボタンを押す
+      @input_view.challenge_button_pushed
     end
 
     it '@input_view should not be nil' do
@@ -159,8 +162,50 @@ describe 'InputView' do
     end
 
     it 'サブボタンスロットには「あ」「ら」「し」が入っている' do
-      sub_slot_str = @input_view.sub_buttons.inject(''){|str, b| str += b.currentTitle if b}
-      sub_slot_str.should == 'あらし'
+      @input_view.challenge_strings.should == 'あらし'
+    end
+
+    it 'チャレンジボタンが押されたことを検出！' do
+      @input_view.challenge_button_pushed_flag.should.be.true
+    end
+
+    it '一番上に載っているsubviewは、ChallengeResultView' do
+      @input_view.subviews.last.is_a?(ChallengeResultView).should.be.true
+    end
+    it 'そのビューは、result_viewメソッドで参照できる' do
+      @input_view.result_view.is_a?(ChallengeResultView).should.be.true
     end
   end
+
+  describe 'チャレンジボタンが押されるときの動作[間違い編]' do
+    before do
+      # まず、正解の状態を作る！
+      first_button = @input_view.main_buttons[2]
+      @first_str = first_button.currentTitle
+
+      # 1文字目の入力
+      @input_view.test_pushed_sequence(first_button)
+
+      second_button = @input_view.main_buttons[0]
+      @second_str = second_button.currentTitle
+
+      # 2文字目の入力
+      @input_view.test_pushed_sequence(second_button)
+
+      # 2文字目しか入れてない状態でチャレンジボタンを押す
+      @input_view.challenge_button_pushed
+    end
+    it 'チャレンジボタンが押されたことを検出！' do
+      @input_view.challenge_button_pushed_flag.should.be.true
+    end
+
+    it '一番上に載っているsubviewは、ChallengeResultView' do
+      @input_view.subviews.last.is_a?(ChallengeResultView).should.be.true
+    end
+
+    it '一番上に載っているsubviewのテキストは、間違い時の表示文字列' do
+      @input_view.result_view.label.text.should == ChallengeResultView::RESULT_TEXT[:wrong]
+    end
+  end
+
 end

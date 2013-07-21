@@ -1,5 +1,5 @@
 class CharSupplier
-  PROPERTIES = [:deck, :counter]
+  PROPERTIES = [:deck, :counter, :answer]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
@@ -9,6 +9,9 @@ class CharSupplier
   def initialize(init_hash)
     @deck = init_hash[:deck]
     @counter = 0
+
+    ## テスト実装
+    @answer = TEST_ANSWER
   end
 
   TEST_ARRAY = [
@@ -20,6 +23,8 @@ class CharSupplier
       ['F1', 'F2', 'み', 'F4']
   ]
 
+  TEST_ANSWER = 'あらし'
+
   def get_4strings
     return nil if @counter == COUNTER_MAX
     strings = TEST_ARRAY[@counter]
@@ -30,5 +35,9 @@ class CharSupplier
   def clear
     @counter = 0
     self
+  end
+
+  def test_challenge_string(str)
+    str == TEST_ANSWER
   end
 end
