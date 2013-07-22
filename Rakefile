@@ -2,8 +2,8 @@
 $:.unshift("/Library/RubyMotion/lib")
 require 'motion/project/template/ios'
 require 'guard/motion'
-require 'bundler'
-Bundler.require
+require 'bundler/setup'
+Bundler.require :default
 
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
@@ -19,6 +19,7 @@ Motion::Project::App.setup do |app|
   app.provisioning_profile = '/Users/yoshi/Library/MobileDevice/Provisioning/My_Provisioning_for_Test_App_on_iPhone5.mobileprovision'
 
   app.frameworks += ['QuartzCore']
+  app.frameworks += ['AVFoundation', 'AudioToolbox']
 
   app.vendor_project(
       'vendor/Reveal.framework',
