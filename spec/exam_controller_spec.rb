@@ -20,6 +20,8 @@ describe 'ExamController' do
       controller.fuda_view.center.is_a?(CGPoint).should.be.true
       controller.fuda_view.center.eql?(controller.tatami_view.center).should.be.true
     end
+
+
   end
 
 
