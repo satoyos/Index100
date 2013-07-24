@@ -78,6 +78,7 @@ class ExamController < RMViewController
 
   def volume_icon_tapped
     puts '(^^)/ volume_icon_is_tapped!'
+    show_or_hide_volume_view
   end
 
   def set_hidden_volume_view_on_me
@@ -134,4 +135,31 @@ class ExamController < RMViewController
   def volume_icon_width
     @volume_icon.frame.size.width
   end
+
+  def show_or_hide_volume_view
+    case @volume_view.frame.origin.y
+      when 0; sweep_volume_view
+      else  ; show_volume_view
+    end
+  end
+
+  def show_volume_view
+    UIView.animateWithDuration(VOLUME_ANIMATE_DURATION,
+                               animations: lambda{set_volume_view_appear})
+  end
+
+  def sweep_volume_view
+    UIView.animateWithDuration(VOLUME_ANIMATE_DURATION,
+                               animations: lambda{set_volume_view_disappear})
+  end
+
+  def set_volume_view_appear
+    @volume_view.frame= [CGPointMake(@volume_view.frame.origin.x, 0),
+                         @volume_view.frame.size]
+  end
+
+  def set_volume_view_disappear
+    @volume_view.frame= volume_view_initial_frame
+  end
+
 end
