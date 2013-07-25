@@ -11,8 +11,10 @@ class InputView < UIView
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
   MAIN_BUTTON_NUM = 4
   SUB_BUTTON_NUM  = 6
-  MOVE_SELECTED_DURATION = 0.2
-  EXCHANGE_MAIN_BUTTONS_DURATION = 0.2
+  MOVE_SELECTED_DURATION = 0.1
+  EXCHANGE_MAIN_BUTTONS_DURATION = 0.15
+
+  SELECTED_BUTTON_TITLE_COLOR = ColorFactory.str_to_color('#c85179') #中紅
 
   PROPERTIES_READER = [:main_4frames, :main_buttons, :clear_button, :challenge_button,
                 :sub_buttons, :sub_6frames, :selected_num, :supplier,
@@ -288,13 +290,21 @@ class InputView < UIView
       self.button_moved = true
     end
 
+=begin
     puts 'main_buttons [move_selected_button]=> '
     @main_buttons.each_with_index do |b, idx|
       puts " [#{idx}] #{b.to_s}"
     end
-
+=end
+    change_color_of_button(@pushed_button)
     @selected_num += 1
 
+  end
+
+  # @param [UIButton] button
+  def change_color_of_button(button)
+    button.setTitleColor(SELECTED_BUTTON_TITLE_COLOR,
+                         forState: UIControlStateDisabled)
   end
 
   def disable_main_buttons

@@ -104,6 +104,11 @@ describe 'InputView' do
       @input_view.sub_buttons.last == @button
     end
 
+    it '押されたボタンの文字色は、指定された色に変わる' do
+      @input_view.sub_buttons[0].currentTitleColor.should ==
+          InputView::SELECTED_BUTTON_TITLE_COLOR
+    end
+
     it 'クリアボタンが押されたら、各スロットは元に戻る' do
       @input_view.clear_button_pushed
       @input_view.main_buttons.map{|button| button}.size.should == 4
