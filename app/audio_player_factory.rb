@@ -1,7 +1,7 @@
 class AudioPlayerFactory
   BASENAME_OF_SORRY = 'audio/not_recorded_yet'
   AUDIO_PATH = {
-      right: 'audio/0001_正解！',
+      right: 'audio/0000_正解です！',
       wrong: 'audio/0002_違います！',
       test:  'audio/0003_序歌朗読'
   }
