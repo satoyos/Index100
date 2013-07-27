@@ -16,7 +16,7 @@ describe 'ChallengeResultView' do
 
   describe '正解画面の初期化' do
     before do
-      @view = ChallengeResultView.alloc.initWithResult(:correct)
+      @view = ChallengeResultView.alloc.initWithResult(:right)
     end
 
     behaves_like 'a ChallengeResultView'
@@ -24,13 +24,13 @@ describe 'ChallengeResultView' do
     behaves_like 'a Label Holder'
 
     it 'has 正解画面のサイズとテキスト' do
-      @view.label.text.should == ChallengeResultView::RESULT_TEXT[:correct]
+      @view.label.text.should == ChallengeResultView::RESULT_TEXT[:right]
       @view.label.font.pointSize.should == ChallengeResultView::RESULT_FONT_SIZE
     end
 
     it '正解画面のテキストの色チェック' do
       @view.label.textColor.should ==
-          ChallengeResultView::RESULT_TEXT_COLOR[:correct]
+          ChallengeResultView::RESULT_TEXT_COLOR[:right]
     end
   end
 
@@ -55,7 +55,7 @@ describe 'ChallengeResultView' do
 
   describe 'clean_up_subviews' do
     before do
-      @view = ChallengeResultView.alloc.initWithResult(:correct)
+      @view = ChallengeResultView.alloc.initWithResult(:right)
     end
     it '元はサブビューがある' do
       @view.subviews.size.should > 0

@@ -2,9 +2,9 @@ class ChallengeResultView < UIView
   RESULT_VIEW_SIZE  = CGSizeMake(300, 300)
   RESULT_FONT_SIZE = 250
   RESULT_VIEW_ALPHA = 0.5
-  RESULT_TEXT = {correct: '○',
+  RESULT_TEXT = {right: '○',
                  wrong:   '×'}
-  RESULT_TEXT_COLOR = {correct: UIColor.redColor,
+  RESULT_TEXT_COLOR = {right: UIColor.redColor,
                        wrong: UIColor.blueColor}
 
   PROPERTIES_READER = [:label]

@@ -91,7 +91,7 @@ class InputView < UIView
 
   def get_result_type
     case @supplier.test_challenge_string(challenge_strings)
-      when true; :correct
+      when true; :right
       else     ; :wrong
     end
   end
@@ -163,8 +163,8 @@ class InputView < UIView
   end
 
   def challenge_button_pushed
-    self.challenge_button_pushed_flag = true
     display_result_view(get_result_type)
+    AudioPlayerFactory.players[get_result_type].play
   end
 
   def set_main_buttons(strings)

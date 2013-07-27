@@ -15,6 +15,7 @@ class AppDelegate
     @nav_controller.setNavigationBarHidden(true, animated: true)
     @window.rootViewController= @nav_controller
     @window.makeKeyAndVisible
+    AudioPlayerFactory.prepare_embedded_players
 
     true
   end

@@ -1,7 +1,25 @@
 class AudioPlayerFactory
   BASENAME_OF_SORRY = 'audio/not_recorded_yet'
+  AUDIO_PATH = {
+      right: 'audio/0001_正解！',
+      wrong: 'audio/0002_違います！',
+      test:  'audio/0003_序歌朗読'
+  }
+
+  AUDIO_PATH.each do |key, path|
+
+  end
 
   class << self
+    attr_reader :players
+
+    def prepare_embedded_players
+      @players = {}
+      AUDIO_PATH.each do |key, path|
+        @players[key] = create_player_by_path(path, ofType: 'm4a')
+      end
+    end
+
     def create_player_by_path(basename, ofType: type)
       url = NSURL.fileURLWithPath(bundle_by_basename(basename, ofType: type))
       er = Pointer.new(:object)

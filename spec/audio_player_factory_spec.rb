@@ -24,4 +24,18 @@ describe 'AudioPlayerFactory' do
       should.raise(RuntimeError){AudioPlayerFactory.create_player_by_path(INVALID_BASENAME, ofType: AUDIO_TYPE)}
     end
   end
+  describe 'クラスで用意されたplayerへのアクセス' do
+    before do
+      AudioPlayerFactory.prepare_embedded_players
+      @players = AudioPlayerFactory.players
+    end
+    it 'AudioPlayerFactory class has a member "players"' do
+      @players.should.not.be.nil
+    end
+    it 'all player can be played' do
+      AudioPlayerFactory::AUDIO_PATH.keys.each do |key|
+        @players[key].play.should.be.true
+      end
+    end
+  end
 end
