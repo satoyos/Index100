@@ -24,7 +24,7 @@ class InputView < UIView
   end
 
   PROPERTIES_ACCESSOR = [:button_moved, :new_buttons_set,
-                         :new_buttons_are_being_created, :challenge_button_pushed_flag]
+                         :new_buttons_are_being_created]
   PROPERTIES_ACCESSOR.each do |prop|
     attr_accessor prop
   end
@@ -159,10 +159,15 @@ class InputView < UIView
                        forControlEvents: UIControlEventTouchUpInside)
 
     self.addSubview(@challenge_button)
-    self.challenge_button_pushed_flag = false
   end
 
   def challenge_button_pushed
+    # 本来は、チャレンジボタンが押されたら、一旦チャレンジボタンをdisabledにしたかった。
+    # しかし、今の実装ではなぜかこのボタンがenabledメソッドを受けてくれない。
+    # 仕方ないので、ここで「既にChallengeResultViewがある場合には何もしない」処理を入れ、
+    # 擬似的に上記動作に近い挙動をするようにしてみる。
+    return if subviews.find { |view| view.is_a?(ChallengeResultView) }
+
     display_result_view(get_result_type)
     AudioPlayerFactory.players[get_result_type].play
   end

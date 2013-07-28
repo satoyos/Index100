@@ -123,12 +123,6 @@ describe 'InputView' do
     it '押されたボタンが、サブボタン・スロットに移籍した' do
       @input_view.button_moved.should.be.true
     end
-    #↓はうまくテストできないが、puts文出力で、ここまで来たことは確認した。
-=begin
-    it '新しいボタンが作られる直前まで来た' do
-      @input_view.new_buttons_are_being_created.should.be.true
-    end
-=end
   end
 
   describe 'チャレンジボタンが押されるときの動作[正解編]' do
@@ -170,10 +164,6 @@ describe 'InputView' do
       @input_view.challenge_strings.should == 'あらし'
     end
 
-    it 'チャレンジボタンが押されたことを検出！' do
-      @input_view.challenge_button_pushed_flag.should.be.true
-    end
-
     it '一番上に載っているsubviewは、ChallengeResultView' do
       @input_view.subviews.last.is_a?(ChallengeResultView).should.be.true
     end
@@ -200,9 +190,6 @@ describe 'InputView' do
       # 2文字目しか入れてない状態でチャレンジボタンを押す
       @input_view.challenge_button_pushed
     end
-    it 'チャレンジボタンが押されたことを検出！' do
-      @input_view.challenge_button_pushed_flag.should.be.true
-    end
 
     it '一番上に載っているsubviewは、ChallengeResultView' do
       @input_view.subviews.last.is_a?(ChallengeResultView).should.be.true
@@ -210,6 +197,11 @@ describe 'InputView' do
 
     it '一番上に載っているsubviewのテキストは、間違い時の表示文字列' do
       @input_view.result_view.label.text.should == ChallengeResultView::RESULT_TEXT[:wrong]
+    end
+
+    it 'チャレンジボタンをもう1回押しても、ChallengeResultViewは1枚のまま増えない' do
+      @input_view.challenge_button_pushed
+      @input_view.subviews.select{|view| view.is_a?(ChallengeResultView)}.size.should == 1
     end
   end
 
