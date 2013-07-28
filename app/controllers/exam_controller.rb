@@ -15,7 +15,7 @@ class ExamController < RMViewController
   SLIDER_X_MARGIN = 10
   SLIDER_HEIGHT = 20
 
-  PROPERTIES = [:fuda_view, :tatami_view, :input_view]
+  PROPERTIES = [:fuda_view, :tatami_view, :input_view, :clear_button]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
@@ -27,6 +27,7 @@ class ExamController < RMViewController
     create_fuda_view()
     @fuda_view.rewrite_string('たつたのかはのにしきなりけり')
     create_input_view()
+    set_clear_button()
     set_hidden_volume_view_on_me()
   end
 
@@ -62,6 +63,18 @@ class ExamController < RMViewController
 
   :private
 
+  def set_clear_button
+    @clear_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+    @clear_button.addTarget(self,
+                            action: 'clear_button_pushed',
+                            forControlEvents: UIControlEventTouchUpInside)
+    @input_view.set_clear_button(@clear_button)
+  end
+
+  def clear_button_pushed
+    sweep_volume_view if volume_view_is_coming_out?
+    @input_view.clear_button_pushed
+  end
 
   def create_volume_icon_on_tatami
     @volume_icon = VolumeIcon.alloc.init
@@ -77,7 +90,7 @@ class ExamController < RMViewController
   end
 
   def volume_icon_tapped
-    puts '(^^)/ volume_icon_is_tapped!'
+    # puts '(^^)/ volume_icon_is_tapped!'
     show_or_hide_volume_view
   end
 
@@ -151,14 +164,22 @@ class ExamController < RMViewController
   def show_volume_view
     AudioPlayerFactory.rewind_to_start_point
     AudioPlayerFactory.players[:test].play
-    UIView.animateWithDuration(VOLUME_ANIMATE_DURATION,
-                               animations: lambda{set_volume_view_appear})
+    if RUBYMOTION_ENV == 'test'
+      set_volume_view_appear
+    else
+      UIView.animateWithDuration(VOLUME_ANIMATE_DURATION,
+                                 animations: lambda{set_volume_view_appear})
+    end
   end
 
   def sweep_volume_view
     AudioPlayerFactory.players[:test].stop
-    UIView.animateWithDuration(VOLUME_ANIMATE_DURATION,
-                               animations: lambda{set_volume_view_disappear})
+    if RUBYMOTION_ENV == 'test'
+      set_volume_view_disappear
+    else
+      UIView.animateWithDuration(VOLUME_ANIMATE_DURATION,
+                                 animations: lambda{set_volume_view_disappear})
+    end
   end
 
   def set_volume_view_appear

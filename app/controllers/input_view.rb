@@ -16,6 +16,8 @@ class InputView < UIView
 
   SELECTED_BUTTON_TITLE_COLOR = ColorFactory.str_to_color('#c85179') #中紅
 
+  A_LABEL_CELAR_BUTTON = 'clear_button'
+
   PROPERTIES_READER = [:main_4frames, :main_buttons, :clear_button, :challenge_button,
                 :sub_buttons, :sub_6frames, :selected_num, :supplier,
                 :pushed_button, :result_view]
@@ -36,7 +38,9 @@ class InputView < UIView
     @supplier = supplier
     self.backgroundColor = BG_COLOR
     @selected_num = 0
+=begin
     set_clear_button()
+=end
     set_challenge_button()
     create_main_4frames()
     set_main_buttons(supplier.get_4strings)
@@ -50,11 +54,11 @@ class InputView < UIView
 
   def main_button_pushed(sender)
     clear_prove_variable
-    puts "#{@selected_num}番目の文字として[#{sender.currentTitle}]が押されました!"
+#    puts "#{@selected_num}番目の文字として[#{sender.currentTitle}]が押されました!"
     return unless sender.is_a?(UIButton)
     @pushed_button = sender
-      puts '!!! テストモードでボタンを押しました !!!'
-      if RUBYMOTION_ENV == 'test'
+#      puts '!!! テストモードでボタンを押しました !!!'
+    if RUBYMOTION_ENV == 'test'
       move_selected_button
     else
       i_view_animation_def('move_selected_button',
@@ -136,11 +140,11 @@ class InputView < UIView
 
 
   def remove_buttons_from_super_view(slot)
-    puts "--- 不要なボタンの消去を開始 (スロットのサイズ=[#{slot.size}])"
+#    puts "--- 不要なボタンの消去を開始 (スロットのサイズ=[#{slot.size}])"
     slot.each do |button|
       next unless button.is_a?(UIButton)
       button.removeFromSuperview
-      puts "--- ボタン[#{button.currentTitle}]を削除 => 現在のSubViewの数 = [#{self.subviews.size}]"
+#      puts "--- ボタン[#{button.currentTitle}]を削除 => 現在のSubViewの数 = [#{self.subviews.size}]"
     end
   end
 
@@ -199,18 +203,19 @@ class InputView < UIView
                self_width/2, CHALLENGE_BUTTON_HEIGHT)
   end
 
-  def set_clear_button
-    @clear_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
-    @clear_button.tap do |c_button|
+  def set_clear_button(c_button)
+=begin
       c_button.addTarget(self,
                          action: 'clear_button_pushed',
                          forControlEvents: UIControlEventTouchUpInside)
-      c_button.setFrame(clear_button_frame)
-      set_stable_button(c_button,
-                        title: CLEAR_BUTTON_TITLE,
-                        bg_color: CLEAR_BUTTON_COLOR)
-      self.addSubview(c_button)
-    end
+=end
+    c_button.setFrame(clear_button_frame)
+    set_stable_button(c_button,
+                      title: CLEAR_BUTTON_TITLE,
+                      bg_color: CLEAR_BUTTON_COLOR)
+    self.addSubview(c_button)
+    c_button.accessibilityLabel = A_LABEL_CELAR_BUTTON
+    @clear_button = c_button
   end
 
   def set_stable_button(button, title: text, bg_color: bg_color)
@@ -255,10 +260,10 @@ class InputView < UIView
   def exchange_main_buttons
     @prev_main_button = @main_buttons.dup
     self.new_buttons_are_being_created = true
-    puts '==== ボタンを作る直前まで来ました！'
+#    puts '==== ボタンを作る直前まで来ました！'
     set_main_buttons(@supplier.get_4strings)
     if RUBYMOTION_ENV == 'test'
-      puts '!!! テストモードで次のボタン群を生成しました !!!'
+#      puts '!!! テストモードで次のボタン群を生成しました !!!'
       make_main_buttons_appear
     else
       i_view_animation_def('make_main_buttons_appear',
@@ -302,12 +307,6 @@ class InputView < UIView
       self.button_moved = true
     end
 
-=begin
-    puts 'main_buttons [move_selected_button]=> '
-    @main_buttons.each_with_index do |b, idx|
-      puts " [#{idx}] #{b.to_s}"
-    end
-=end
     change_color_of_button(@pushed_button)
     @selected_num += 1
 

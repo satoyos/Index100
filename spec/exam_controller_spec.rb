@@ -21,7 +21,39 @@ describe 'ExamController' do
       controller.fuda_view.center.eql?(controller.tatami_view.center).should.be.true
     end
 
+    it 'クリアボタンを管理している' do
+      controller.clear_button.should.not.be.nil
+      controller.clear_button.is_a?(UIButton).should.be.true
+      controller.clear_button.frame.size.height.should == InputView::CLEAR_BUTTON_HEIGHT
+    end
 
+    it 'クリアボタンをタップすると、InputViewの状態が元に戻る' do
+      i_view = controller.input_view
+      i_view.main_button_pushed(i_view.main_buttons[0])
+      i_view.sub_buttons.size.should == 1
+      #noinspection RubyArgCount
+      tap(controller.clear_button)
+      i_view.sub_buttons.empty?.should.be.true
+    end
+
+    it '最初、ボリュームアイコンは隠れている。' do
+      controller.volume_view_is_coming_out?.should.be.false
+    end
+
+    it 'ボリュームアイコンをタップすると、ボリュームビューが出現する。' do
+      #noinspection RubyArgCount
+      tap VolumeIcon::A_LABEL
+      controller.volume_view_is_coming_out?.should.be.true
+    end
+
+    it 'ボリュームビューが出ているときに、クリアボタンをタップすると、ボリュームビューも隠れる' do
+      #noinspection RubyArgCount
+      tap VolumeIcon::A_LABEL
+      controller.volume_view_is_coming_out?.should.be.true
+      #noinspection RubyArgCount
+      tap InputView::A_LABEL_CELAR_BUTTON
+      controller.volume_view_is_coming_out?.should.be.false
+    end
   end
 
 
