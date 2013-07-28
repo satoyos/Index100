@@ -167,9 +167,16 @@ class InputView < UIView
     # 仕方ないので、ここで「既にChallengeResultViewがある場合には何もしない」処理を入れ、
     # 擬似的に上記動作に近い挙動をするようにしてみる。
     return if subviews.find { |view| view.is_a?(ChallengeResultView) }
-
+    make_main_buttons_disabled
     display_result_view(get_result_type)
     AudioPlayerFactory.players[get_result_type].play
+  end
+
+  def make_main_buttons_disabled
+    @main_buttons.each do |m_button|
+      next unless m_button
+      m_button.enabled = false
+    end
   end
 
   def set_main_buttons(strings)

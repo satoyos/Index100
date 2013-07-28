@@ -203,6 +203,15 @@ describe 'InputView' do
       @input_view.challenge_button_pushed
       @input_view.subviews.select{|view| view.is_a?(ChallengeResultView)}.size.should == 1
     end
+
+=begin
+    it '判定結果ビューが出ている間は、メインボタンもdisabledになる' do
+      @input_view.main_buttons.each do |m_button|
+        next unless m_button
+        m_button.enabled.should.be.false
+      end
+    end
+=end
   end
 
 end
