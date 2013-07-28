@@ -15,7 +15,6 @@ class ExamController < RMViewController
   SLIDER_X_MARGIN = 10
   SLIDER_HEIGHT = 20
 
-
   PROPERTIES = [:fuda_view, :tatami_view, :input_view]
   PROPERTIES.each do |prop|
     attr_reader prop
@@ -63,6 +62,7 @@ class ExamController < RMViewController
 
   :private
 
+
   def create_volume_icon_on_tatami
     @volume_icon = VolumeIcon.alloc.init
     @volume_icon.init_icon
@@ -102,12 +102,13 @@ class ExamController < RMViewController
   def volume_slider
     slider = UISlider.alloc.initWithFrame(volume_slider_frame)
     slider.value= settings.volume || INITIAL_VOLUME
+    AudioPlayerFactory.set_volume(slider.value)
     slider.addTarget(self, action: :slider_changed, forControlEvents: UIControlEventValueChanged)
     @slider = slider
   end
 
   def slider_changed
-#    @player.volume= @slider.value
+    AudioPlayerFactory.set_volume(@slider.value)
     settings.volume = @slider.value
   end
 
@@ -137,18 +138,25 @@ class ExamController < RMViewController
   end
 
   def show_or_hide_volume_view
-    case @volume_view.frame.origin.y
-      when 0; sweep_volume_view
-      else  ; show_volume_view
+    case volume_view_is_coming_out?
+      when true; sweep_volume_view
+      else     ; show_volume_view
     end
   end
 
+  def volume_view_is_coming_out?
+    @volume_view.frame.origin.y == 0
+  end
+
   def show_volume_view
+    AudioPlayerFactory.rewind_to_start_point
+    AudioPlayerFactory.players[:test].play
     UIView.animateWithDuration(VOLUME_ANIMATE_DURATION,
                                animations: lambda{set_volume_view_appear})
   end
 
   def sweep_volume_view
+    AudioPlayerFactory.players[:test].stop
     UIView.animateWithDuration(VOLUME_ANIMATE_DURATION,
                                animations: lambda{set_volume_view_disappear})
   end

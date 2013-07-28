@@ -3,6 +3,7 @@ class AppDelegate
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     rm_settable :volume
+    AudioPlayerFactory.prepare_embedded_players
 =begin
     if RUBYMOTION_ENV == 'test'
       return true
@@ -15,7 +16,6 @@ class AppDelegate
     @nav_controller.setNavigationBarHidden(true, animated: true)
     @window.rootViewController= @nav_controller
     @window.makeKeyAndVisible
-    AudioPlayerFactory.prepare_embedded_players
 
     true
   end
