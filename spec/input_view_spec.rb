@@ -15,20 +15,6 @@ describe 'InputView' do
     @input_view.frame.should == TEST_INPUT_VIEW_FRAME
   end
 
-  # クリアボタンの設置は、ViewControllerが行うことになった。
-=begin
-  it 'クリアボタンが設置されている' do
-    @input_view.clear_button.should.not.be.nil
-    @input_view.clear_button.frame.size.height.should == InputView::CLEAR_BUTTON_HEIGHT
-  end
-=end
-
-  it 'チャレンジボタンが設置されている' do
-    @input_view.challenge_button.should.not.be.nil
-    @input_view.challenge_button.frame.size.height.should == InputView::CHALLENGE_BUTTON_HEIGHT
-    @input_view.challenge_button.currentTitle.should == InputView::CHALLENGE_BUTTON_TITLE
-  end
-
   it '四つのメイン文字ボタン用のFrameを持つ' do
     @input_view.main_4frames.should.not.be.nil
     @input_view.main_4frames.size.should == 4

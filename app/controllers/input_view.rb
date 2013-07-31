@@ -16,7 +16,8 @@ class InputView < UIView
 
   SELECTED_BUTTON_TITLE_COLOR = ColorFactory.str_to_color('#c85179') #中紅
 
-  A_LABEL_CELAR_BUTTON = 'clear_button'
+  A_LABEL_CLEAR_BUTTON     = 'clear_button'
+  A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
 
   PROPERTIES_READER = [:main_4frames, :main_buttons, :clear_button, :challenge_button,
                 :sub_buttons, :sub_6frames, :selected_num, :supplier,
@@ -38,10 +39,6 @@ class InputView < UIView
     @supplier = supplier
     self.backgroundColor = BG_COLOR
     @selected_num = 0
-=begin
-    set_clear_button()
-=end
-    set_challenge_button()
     create_main_4frames()
     set_main_buttons(supplier.get_4strings)
     make_main_buttons_appear
@@ -144,7 +141,6 @@ class InputView < UIView
     slot.each do |button|
       next unless button.is_a?(UIButton)
       button.removeFromSuperview
-#      puts "--- ボタン[#{button.currentTitle}]を削除 => 現在のSubViewの数 = [#{self.subviews.size}]"
     end
   end
 
@@ -152,17 +148,14 @@ class InputView < UIView
     @sub_buttons = ButtonSlot.new(SUB_BUTTON_NUM)
   end
 
-  def set_challenge_button
-    @challenge_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
-    @challenge_button.setFrame(challenge_button_frame)
-    set_stable_button(@challenge_button,
+  def set_challenge_button(button)
+    button.setFrame(challenge_button_frame)
+    set_stable_button(button,
                       title: CHALLENGE_BUTTON_TITLE,
                       bg_color: CHALLENGE_BUTTON_COLOR)
-    @challenge_button.addTarget(self,
-                       action: 'challenge_button_pushed',
-                       forControlEvents: UIControlEventTouchUpInside)
-
-    self.addSubview(@challenge_button)
+    self.addSubview(button)
+    button.accessibilityLabel = A_LABEL_CHALLENGE_BUTTON
+    @challenge_button = button
   end
 
   def challenge_button_pushed
@@ -204,17 +197,12 @@ class InputView < UIView
   end
 
   def set_clear_button(c_button)
-=begin
-      c_button.addTarget(self,
-                         action: 'clear_button_pushed',
-                         forControlEvents: UIControlEventTouchUpInside)
-=end
     c_button.setFrame(clear_button_frame)
     set_stable_button(c_button,
                       title: CLEAR_BUTTON_TITLE,
                       bg_color: CLEAR_BUTTON_COLOR)
     self.addSubview(c_button)
-    c_button.accessibilityLabel = A_LABEL_CELAR_BUTTON
+    c_button.accessibilityLabel = A_LABEL_CLEAR_BUTTON
     @clear_button = c_button
   end
 

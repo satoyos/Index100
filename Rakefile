@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 $:.unshift("/Library/RubyMotion/lib")
 require 'motion/project/template/ios'
-#require 'bubble-wrap'
+# require 'bubble-wrap'
 require 'guard/motion'
 require 'bundler/setup'
 Bundler.require :default

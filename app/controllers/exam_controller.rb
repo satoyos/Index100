@@ -15,7 +15,8 @@ class ExamController < RMViewController
   SLIDER_X_MARGIN = 10
   SLIDER_HEIGHT = 20
 
-  PROPERTIES = [:fuda_view, :tatami_view, :input_view, :clear_button]
+  PROPERTIES = [:fuda_view, :tatami_view, :input_view,
+                :challenge_button, :clear_button]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
@@ -28,6 +29,7 @@ class ExamController < RMViewController
     @fuda_view.rewrite_string('たつたのかはのにしきなりけり')
     create_input_view()
     set_clear_button()
+    set_challenge_button()
     set_hidden_volume_view_on_me()
   end
 
@@ -71,9 +73,23 @@ class ExamController < RMViewController
     @input_view.set_clear_button(@clear_button)
   end
 
+  def set_challenge_button
+    @challenge_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+    @challenge_button.addTarget(self,
+                            action: 'challenge_button_pushed',
+                            forControlEvents: UIControlEventTouchUpInside)
+    @input_view.set_challenge_button(@challenge_button)
+
+  end
+
   def clear_button_pushed
     sweep_volume_view if volume_view_is_coming_out?
     @input_view.clear_button_pushed
+  end
+
+  def challenge_button_pushed
+    sweep_volume_view if volume_view_is_coming_out?
+    @input_view.challenge_button_pushed
   end
 
   def create_volume_icon_on_tatami

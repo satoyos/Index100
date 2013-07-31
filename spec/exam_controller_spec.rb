@@ -21,6 +21,13 @@ describe 'ExamController' do
       controller.fuda_view.center.eql?(controller.tatami_view.center).should.be.true
     end
 
+    it 'チャレンジボタンを管理している' do
+      controller.challenge_button.should.not.be.nil
+      controller.challenge_button.is_a?(UIButton).should.be.true
+      controller.challenge_button.frame.size.height.should ==
+          InputView::CHALLENGE_BUTTON_HEIGHT
+    end
+
     it 'クリアボタンを管理している' do
       controller.clear_button.should.not.be.nil
       controller.clear_button.is_a?(UIButton).should.be.true
@@ -51,9 +58,19 @@ describe 'ExamController' do
       tap VolumeIcon::A_LABEL
       controller.volume_view_is_coming_out?.should.be.true
       #noinspection RubyArgCount
-      tap InputView::A_LABEL_CELAR_BUTTON
+      tap InputView::A_LABEL_CLEAR_BUTTON
       controller.volume_view_is_coming_out?.should.be.false
     end
+
+    it 'ボリュームビューが出ているときに、チャレンジボタンをタップすると、ボリュームビューも隠れる' do
+      #noinspection RubyArgCount
+      tap VolumeIcon::A_LABEL
+      controller.volume_view_is_coming_out?.should.be.true
+      #noinspection RubyArgCount
+      tap InputView::A_LABEL_CHALLENGE_BUTTON
+      controller.volume_view_is_coming_out?.should.be.false
+    end
+
   end
 
 
