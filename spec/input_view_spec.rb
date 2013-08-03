@@ -23,13 +23,6 @@ describe 'InputView' do
     end
   end
 
-  it '四つのメインボタンの文字が、適切に初期設定されている' do
-    initial_strings = @input_view.supplier.clear.get_4strings
-    @input_view.main_buttons.each_with_index do |button, idx|
-      button.currentTitle.should == initial_strings[idx]
-    end
-  end
-
   it 'メイン文字ボタン間のギャップが適切に設定されている' do
     first_frame  = @input_view.main_4frames[0]
     second_frame = @input_view.main_4frames[1]
@@ -38,18 +31,6 @@ describe 'InputView' do
     first_frame.origin.x.should.be.close(@gap, 0.1)
   end
 
-  it 'main_4framesを描画領域とするボタンを4つ持つ' do
-    @input_view.main_buttons.tap do |buttons|
-      buttons.should.not.be.nil
-      buttons.is_a?(ButtonSlot).should.be.true
-      buttons.size.should == 4
-      buttons.each do |button|
-        button.should.not.be.nil
-        button.buttonType.should == InputView::MAIN_BUTTON_TYPE
-      end
-    end
-
-  end
 
   it '6つのサブボタン用のFrameを持つ' do
     @input_view.sub_6frames.should.not.be.nil
@@ -75,6 +56,7 @@ describe 'InputView' do
     third_frame.origin.y.should.be.close(expected_third_y, 0.1)
   end
 
+=begin
   describe 'あるMainButtonが押されたときの動作' do
     before do
       @button = @input_view.main_buttons[1]
@@ -195,5 +177,9 @@ describe 'InputView' do
 
 
   end
+=end
+
+  #%ToDo: こうなったら、メインボタンもViewControllerを起点にして作りたい。
+  #%ToDo: そして、メインボタンを押したときにもボリュームビューが引っ込むようにしたい。
 
 end

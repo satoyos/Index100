@@ -4,11 +4,11 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     rm_settable :volume
     AudioPlayerFactory.prepare_embedded_players
-=begin
+
     if RUBYMOTION_ENV == 'test'
       return true
     end
-=end
+
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     @exam_controller = ExamController.alloc.initWithNibName(nil, bundle: nil)
     @nav_controller = UINavigationController.alloc.

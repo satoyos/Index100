@@ -40,4 +40,12 @@ class CharSupplier
   def test_challenge_string(str)
     str == TEST_ANSWER
   end
+
+  def current_right_index
+    if @counter == 0
+      return nil
+    end
+
+    TEST_ARRAY[@counter-1].find_index(TEST_ANSWER[@counter-1])
+  end
 end

@@ -22,12 +22,14 @@ Motion::Project::App.setup do |app|
   app.frameworks += ['QuartzCore']
   app.frameworks += ['AVFoundation', 'AudioToolbox']
 
+=begin
   app.vendor_project(
       'vendor/Reveal.framework',
       :static,
       :products => %w{Reveal},
       :headers_dir => 'Headers'
   )
+=end
 
   app.files_dependencies  'app/app_delegate.rb' => 'app/lib/rm_settings/rmsettable.rb',
                           'app/lib/rm_settings/rmsettable.rb' => 'app/lib/rm_settings/rmsettings.rb'

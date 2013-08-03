@@ -3,8 +3,11 @@ class ExamController < RMViewController
 #  TATAMI_COLOR = ColorFactory.str_to_color('#deb068')
   TATAMI_JPG_FILE = 'tatami_moved.jpg'
   FUDA_HEIGHT_POWER = 0.95 # 札ビューの高さは、畳ビューの何倍にするか
-  VOLUME_ICON_MARGIN = 10
 
+  MAIN_BUTTON_NUM = 4
+  MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
+
+  VOLUME_ICON_MARGIN = 10
   INITIAL_VOLUME = 0.5
   VOLUME_VIEW_HEIGHT = 60
   VOLUME_VIEW_COLOR = ColorFactory.str_to_color('#68be8d')
@@ -15,8 +18,9 @@ class ExamController < RMViewController
   SLIDER_X_MARGIN = 10
   SLIDER_HEIGHT = 20
 
-  PROPERTIES = [:fuda_view, :tatami_view, :input_view,
-                :challenge_button, :clear_button]
+  PROPERTIES = [:fuda_view, :tatami_view, :input_view, :supplier,
+                :challenge_button, :clear_button, :main_buttons,
+                :pushed_button]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
@@ -27,9 +31,13 @@ class ExamController < RMViewController
     create_tatami_view()
     create_fuda_view()
     @fuda_view.rewrite_string('たつたのかはのにしきなりけり')
+
+    set_char_supplier()
     create_input_view()
     set_clear_button()
     set_challenge_button()
+    set_main_buttons(@supplier.get_4strings)
+    make_main_buttons_appear()
     set_hidden_volume_view_on_me()
   end
 
@@ -59,11 +67,48 @@ class ExamController < RMViewController
     @input_view = InputView.alloc.initWithFrame(
         CGRectMake(0, tatami_origin.y + tatami_size.height,
                    tatami_size.width, self_size.height - tatami_size.height),
-        supplier: CharSupplier.new({deck: Deck.new}))
+#        supplier: CharSupplier.new({deck: Deck.new}))
+        supplier: nil)
     self.view.addSubview(@input_view)
   end
 
   :private
+
+  def set_char_supplier
+    @supplier = CharSupplier.new({deck: Deck.new})
+
+  end
+
+  def set_main_buttons(strings)
+    @main_buttons = ButtonSlot.new(MAIN_BUTTON_NUM)
+    (0..MAIN_BUTTON_NUM-1).each do |idx|
+      button = create_a_main_button_at(idx, title: strings[idx])
+    end
+    @input_view.set_main_buttons(@main_buttons)
+  end
+
+  def create_a_main_button_at(idx, title: title)
+    button = UIButton.buttonWithType(MAIN_BUTTON_TYPE)
+#    button.setFrame(hidden_main_frame_at(idx))
+    button.tap do |b|
+      b.setTitle(title, forState: UIControlStateNormal) if title
+      b.addTarget(self,
+                  action: "main_button_pushed:",
+                  forControlEvents: UIControlEventTouchUpInside)
+      @main_buttons[idx] = b
+      @input_view.addSubview(b)
+    end
+    button
+  end
+
+  def make_main_buttons_appear
+    @input_view.make_main_buttons_appear
+  end
+
+  def main_button_pushed(sender)
+    @pushed_button = sender
+    @input_view.main_button_pushed(sender)
+  end
 
   def set_clear_button
     @clear_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
@@ -89,7 +134,9 @@ class ExamController < RMViewController
 
   def challenge_button_pushed
     sweep_volume_view if volume_view_is_coming_out?
-    @input_view.challenge_button_pushed
+    @input_view.challenge_button_pushed(@supplier)
+    set_main_buttons(@supplier.clear.get_4strings)
+    make_main_buttons_appear
   end
 
   def create_volume_icon_on_tatami

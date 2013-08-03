@@ -8,8 +8,6 @@ class InputView < UIView
   CHALLENGE_BUTTON_HEIGHT = CLEAR_BUTTON_HEIGHT
   CHALLENGE_BUTTON_TITLE = 'これで決まり！'
   CHALLENGE_BUTTON_COLOR = ColorFactory.str_to_color('#e95295') #ツツジ色
-  MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
-  MAIN_BUTTON_NUM = 4
   SUB_BUTTON_NUM  = 6
   MOVE_SELECTED_DURATION = 0.1
   EXCHANGE_MAIN_BUTTONS_DURATION = 0.15
@@ -40,8 +38,8 @@ class InputView < UIView
     self.backgroundColor = BG_COLOR
     @selected_num = 0
     create_main_4frames()
-    set_main_buttons(supplier.get_4strings)
-    make_main_buttons_appear
+#    set_main_buttons(supplier.get_4strings)
+#    make_main_buttons_appear
     create_sub_6frames()
     setup_sub_button_slot()
     clear_prove_variable
@@ -50,11 +48,8 @@ class InputView < UIView
   end
 
   def main_button_pushed(sender)
-    clear_prove_variable
-#    puts "#{@selected_num}番目の文字として[#{sender.currentTitle}]が押されました!"
     return unless sender.is_a?(UIButton)
     @pushed_button = sender
-#      puts '!!! テストモードでボタンを押しました !!!'
     if RUBYMOTION_ENV == 'test'
       move_selected_button
     else
@@ -73,25 +68,33 @@ class InputView < UIView
   def clear_button_pushed
     remove_buttons_from_super_view(@main_buttons)
     remove_buttons_from_super_view(@sub_buttons)
-    set_main_buttons(@supplier.clear.get_4strings)
-    make_main_buttons_appear
     setup_sub_button_slot()
-    @selected_num = 0
     clean_up_result_view()
-    clean_up_result_view()
-    clean_before_next_push()
+    remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
+    reset_instance_variables()
   end
 
+  def reset_instance_variables
+    @selected_num = 0
+    @prev_main_button = nil
+    @pushed_button = nil
+  end
+
+
+=begin
   def test_pushed_sequence(button)
     main_button_pushed(button)
     if can_create_new_button?
       exchange_main_buttons()
-      clean_before_next_push()
+      remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
+      @prev_main_button = nil
+      @pushed_button = nil
     end
   end
+=end
 
-  def get_result_type
-    case @supplier.test_challenge_string(challenge_strings)
+  def get_result_type(supplier)
+    case supplier.test_challenge_string(challenge_strings)
       when true; :right
       else     ; :wrong
     end
@@ -122,11 +125,6 @@ class InputView < UIView
     @selected_num < @sub_buttons.limit_size
   end
 
-  def clean_before_next_push
-    remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
-    @prev_main_button = nil
-    @pushed_button = nil
-  end
 
   def clean_up_result_view
     return unless @result_view
@@ -158,15 +156,15 @@ class InputView < UIView
     @challenge_button = button
   end
 
-  def challenge_button_pushed
+  def challenge_button_pushed(supplier)
     # 本来は、チャレンジボタンが押されたら、一旦チャレンジボタンをdisabledにしたかった。
     # しかし、今の実装ではなぜかこのボタンがenabledメソッドを受けてくれない。
     # 仕方ないので、ここで「既にChallengeResultViewがある場合には何もしない」処理を入れ、
     # 擬似的に上記動作に近い挙動をするようにしてみる。
     return if subviews.find { |view| view.is_a?(ChallengeResultView) }
     make_main_buttons_disabled
-    display_result_view(get_result_type)
-    AudioPlayerFactory.players[get_result_type].play
+    display_result_view(get_result_type(supplier))
+    AudioPlayerFactory.players[get_result_type(supplier)].play
   end
 
   def make_main_buttons_disabled
@@ -176,12 +174,18 @@ class InputView < UIView
     end
   end
 
-  def set_main_buttons(strings)
+  def set_main_buttons(main_buttons)
+    main_buttons.each_with_index do |button, idx|
+      button.setFrame(hidden_main_frame_at(idx))
+      button.titleLabel.font = UIFont.systemFontOfSize(MAIN_BUTTON_SIZE.height/2)
+    end
+=begin
     @main_buttons = ButtonSlot.new(MAIN_BUTTON_NUM)
     (0..MAIN_BUTTON_NUM-1).each do |idx|
       button = create_a_main_button_at(idx, title: strings[idx])
     end
-    self.new_buttons_set = true
+=end
+    @main_buttons = main_buttons
   end
 
   def make_main_buttons_appear
@@ -217,6 +221,7 @@ class InputView < UIView
                self_width/2, CLEAR_BUTTON_HEIGHT)
   end
 
+=begin
   def create_a_main_button_at(idx, title: title)
     button = UIButton.buttonWithType(MAIN_BUTTON_TYPE)
     button.setFrame(hidden_main_frame_at(idx))
@@ -231,6 +236,7 @@ class InputView < UIView
     end
     button
   end
+=end
 
   def hidden_main_frame_at(idx)
     CGRectMake(nth_main_frame(idx).origin.x,
@@ -246,6 +252,7 @@ class InputView < UIView
   end
 
   def exchange_main_buttons
+    #%Todo: 誰が次のmain_buttonsを作るのか、考えなければならない！！
     @prev_main_button = @main_buttons.dup
     self.new_buttons_are_being_created = true
 #    puts '==== ボタンを作る直前まで来ました！'
@@ -262,13 +269,15 @@ class InputView < UIView
 
   def i_view_animation_def(method_name, duration: duration)
     UIView.beginAnimations(method_name, context: nil)
-    UIView.setAnimationDelegate(self)
+    UIView.setAnimationDelegate(self) #％ToDO: ここでは何をselfにしているのか？
     UIView.setAnimationDuration(duration)
     self.send("#{method_name}")
     UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
     UIView.commitAnimations
   end
 
+
+  #%ToDo: もしかしたら、このメソッドがViewControllerに移る必要が?
 
   def i_view_animation_has_finished(animation_id)
     case animation_id
@@ -279,7 +288,9 @@ class InputView < UIView
           disable_main_buttons
         end
       when 'make_main_buttons_appear'
-        clean_before_next_push
+        remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
+        @prev_main_button = nil
+        @pushed_button = nil
       else
         puts "/////// このアニメーションの後処理はありません。 ///////"
     end

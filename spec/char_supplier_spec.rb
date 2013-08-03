@@ -65,4 +65,47 @@ describe 'CharSupplier' do
       @supplier.test_challenge_string('あっちょんぶりけ').should.be.false
     end
   end
+
+  describe 'answer' do
+    before do
+      @supplier = CharSupplier.new({deck: Deck.new})
+    end
+
+    it 'この歌の決まり字を返す' do
+      @supplier.answer.should.not.be.nil
+      @supplier.answer.length.should > 0
+    end
+  end
+
+  describe 'current_right_index' do
+    before do
+      @supplier = CharSupplier.new({deck: Deck.new})
+    end
+
+    it 'まだ文字列を供給していない場合には、nilを返す' do
+      @supplier.current_right_index.should.be.nil
+    end
+
+    it '1回供給したら、最初に渡した文字列群の中で正しいもののindexを返す' do
+      strings = @supplier.get_4strings
+      @supplier.current_right_index.tap do |idx|
+        idx.should.not.be.nil
+        idx.is_a?(Fixnum).should.be.true
+        strings[idx].should == @supplier.answer[0]
+      end
+    end
+
+    it '2回供給しても、やっぱり正しいもののindexを返す' do
+      if @supplier.answer.length == 1
+        1.should == 1
+      else
+        strings1 = @supplier.get_4strings #1回目
+        strings2 = @supplier.get_4strings #2回目
+        @supplier.current_right_index.tap do |idx|
+          idx.is_a?(Fixnum).should.be.true
+          strings2[idx].should == @supplier.answer[1]
+        end
+      end
+    end
+  end
 end
