@@ -2,8 +2,7 @@ describe 'InputView' do
   TEST_INPUT_VIEW_FRAME = CGRectMake(0, 300, 320, 240)
   before do
     @input_view =
-        InputView.alloc.initWithFrame(TEST_INPUT_VIEW_FRAME,
-                                      supplier: CharSupplier.new({deck: Deck.new}))
+        InputView.alloc.initWithFrame(TEST_INPUT_VIEW_FRAME, controller: nil)
   end
 
   it 'should not be nil' do

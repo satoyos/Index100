@@ -7,6 +7,8 @@ class ExamController < RMViewController
   MAIN_BUTTON_NUM = 4
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
 
+  CALLBACK_AFTER_BUTTON_MOVED = 'exchange_main_buttons'
+
   VOLUME_ICON_MARGIN = 10
   INITIAL_VOLUME = 0.5
   VOLUME_VIEW_HEIGHT = 60
@@ -24,6 +26,12 @@ class ExamController < RMViewController
   PROPERTIES.each do |prop|
     attr_reader prop
   end
+
+  PROPERTIES_ACCESSOR = [:button_is_moved]
+  PROPERTIES_ACCESSOR.each do |prop|
+    attr_accessor prop
+  end
+
 
   def viewDidLoad
     super
@@ -68,9 +76,10 @@ class ExamController < RMViewController
         CGRectMake(0, tatami_origin.y + tatami_size.height,
                    tatami_size.width, self_size.height - tatami_size.height),
 #        supplier: CharSupplier.new({deck: Deck.new}))
-        supplier: nil)
+        controller: self)
     self.view.addSubview(@input_view)
   end
+
 
   :private
 
@@ -89,9 +98,9 @@ class ExamController < RMViewController
 
   def create_a_main_button_at(idx, title: title)
     button = UIButton.buttonWithType(MAIN_BUTTON_TYPE)
-#    button.setFrame(hidden_main_frame_at(idx))
     button.tap do |b|
       b.setTitle(title, forState: UIControlStateNormal) if title
+      b.accessibilityLabel = title if title
       b.addTarget(self,
                   action: "main_button_pushed:",
                   forControlEvents: UIControlEventTouchUpInside)
@@ -106,8 +115,40 @@ class ExamController < RMViewController
   end
 
   def main_button_pushed(sender)
+#    puts "-- tapped button in ExamController => #{sender.currentTitle}"
     @pushed_button = sender
-    @input_view.main_button_pushed(sender)
+    @main_buttons[pushed_button_index] = nil
+    @input_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
+  end
+
+  def exchange_main_buttons
+    self.button_is_moved = true
+  end
+
+  def pushed_button_index
+    @main_buttons.find_index(@pushed_button)
+  end
+
+  def i_view_animation_has_finished(animation_id)
+    case animation_id
+      when 'move_selected_button'
+        self.send("#{CALLBACK_AFTER_BUTTON_MOVED}")
+=begin
+        if can_create_new_button?
+          exchange_main_buttons
+        else
+          disable_main_buttons
+        end
+=end
+=begin
+      when 'make_main_buttons_appear'
+        remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
+        @prev_main_button = nil
+        @pushed_button = nil
+=end
+      else
+        puts "/////// このアニメーションの後処理はありません。 ///////"
+    end
   end
 
   def set_clear_button

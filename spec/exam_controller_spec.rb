@@ -99,29 +99,41 @@ describe 'ExamController' do
   end
 
 
-=begin
   describe 'あるMainButtonが押されたときの動作' do
     tests ExamController
 
     before do
       @tap_button = controller.main_buttons[0]
-      #noinspection RubyArgCount
+      # 注) ここでは、ボタンそのものを指定してtapを実行すると、失敗した。
       #tap(@tap_button)
+
+      # AccessibilityLabelを指定すると、うまくいった！
+      #noinspection RubyArgCount
+      tap @tap_button.currentTitle # AccessibilityLabelに同じ値が設定されている
     end
 
     it '押されたボタンをちゃんと把握できている' do
-      @tap_button.should.not.be.nil
-      #controller.pushed_button.should.not.be.nil
+#      puts "-- tapped button in spec => #{@tap_button.currentTitle}"
+      controller.pushed_button.should.not.be.nil
     end
 
+    it 'メイン・ボタン・スロットの、押されたボタンに該当する位置は空白(nil)' do
+      controller.main_buttons[0].should.be.nil
+    end
+
+=begin
       it '押されたボタンは、サブボタン用スロットへと移る' do
         @input_view.main_buttons.include?(@button).should.be.false
         @input_view.sub_buttons.size == 1
         @input_view.sub_buttons.last == @button
       end
-
-  end
 =end
+
+    it 'メインボタンが押されたときの描画処理を終えたInputViewからCallbackが返ってくる' do
+      controller.button_is_moved.should.not.be.nil
+      controller.button_is_moved.should.be.true
+    end
+  end
 
 
 

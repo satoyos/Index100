@@ -18,25 +18,25 @@ class InputView < UIView
   A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
 
   PROPERTIES_READER = [:main_4frames, :main_buttons, :clear_button, :challenge_button,
-                :sub_buttons, :sub_6frames, :selected_num, :supplier,
-                :pushed_button, :result_view]
+                :sub_buttons, :sub_6frames, :selected_num,
+                :pushed_button, :result_view, :controller]
   PROPERTIES_READER.each do |prop|
     attr_reader prop
   end
 
-  PROPERTIES_ACCESSOR = [:button_moved, :new_buttons_set,
+  PROPERTIES_ACCESSOR = [:new_buttons_set,
                          :new_buttons_are_being_created]
   PROPERTIES_ACCESSOR.each do |prop|
     attr_accessor prop
   end
 
   # @param [CharSupplier] supplier
-  def initWithFrame(frame, supplier: supplier)
+  def initWithFrame(frame, controller: controller)
     super.initWithFrame(frame)
 
-    @supplier = supplier
     self.backgroundColor = BG_COLOR
     @selected_num = 0
+    @controller = controller
     create_main_4frames()
 #    set_main_buttons(supplier.get_4strings)
 #    make_main_buttons_appear
@@ -47,11 +47,12 @@ class InputView < UIView
     self
   end
 
-  def main_button_pushed(sender)
+  def main_button_pushed(sender, callback: cb_method_name)
     return unless sender.is_a?(UIButton)
     @pushed_button = sender
     if RUBYMOTION_ENV == 'test'
       move_selected_button
+      @controller.send("#{cb_method_name}")
     else
       i_view_animation_def('move_selected_button',
                            duration: MOVE_SELECTED_DURATION)
@@ -60,7 +61,6 @@ class InputView < UIView
 
   def clear_prove_variable
     @pushed_button = nil
-    self.button_moved = false
     self.new_buttons_set = false
     self.new_buttons_are_being_created = false
   end
@@ -179,12 +179,6 @@ class InputView < UIView
       button.setFrame(hidden_main_frame_at(idx))
       button.titleLabel.font = UIFont.systemFontOfSize(MAIN_BUTTON_SIZE.height/2)
     end
-=begin
-    @main_buttons = ButtonSlot.new(MAIN_BUTTON_NUM)
-    (0..MAIN_BUTTON_NUM-1).each do |idx|
-      button = create_a_main_button_at(idx, title: strings[idx])
-    end
-=end
     @main_buttons = main_buttons
   end
 
@@ -221,22 +215,6 @@ class InputView < UIView
                self_width/2, CLEAR_BUTTON_HEIGHT)
   end
 
-=begin
-  def create_a_main_button_at(idx, title: title)
-    button = UIButton.buttonWithType(MAIN_BUTTON_TYPE)
-    button.setFrame(hidden_main_frame_at(idx))
-    button.tap do |b|
-      b.setTitle(title, forState: UIControlStateNormal) if title
-      b.titleLabel.font = UIFont.systemFontOfSize(MAIN_BUTTON_SIZE.height/2)
-      b.addTarget(self,
-                  action: "main_button_pushed:",
-                  forControlEvents: UIControlEventTouchUpInside)
-      @main_buttons[idx] = b
-      self.addSubview(b)
-    end
-    button
-  end
-=end
 
   def hidden_main_frame_at(idx)
     CGRectMake(nth_main_frame(idx).origin.x,
@@ -255,10 +233,8 @@ class InputView < UIView
     #%Todo: 誰が次のmain_buttonsを作るのか、考えなければならない！！
     @prev_main_button = @main_buttons.dup
     self.new_buttons_are_being_created = true
-#    puts '==== ボタンを作る直前まで来ました！'
-    set_main_buttons(@supplier.get_4strings)
+#    set_main_buttons(@supplier.get_4strings)
     if RUBYMOTION_ENV == 'test'
-#      puts '!!! テストモードで次のボタン群を生成しました !!!'
       make_main_buttons_appear
     else
       i_view_animation_def('make_main_buttons_appear',
@@ -269,7 +245,7 @@ class InputView < UIView
 
   def i_view_animation_def(method_name, duration: duration)
     UIView.beginAnimations(method_name, context: nil)
-    UIView.setAnimationDelegate(self) #％ToDO: ここでは何をselfにしているのか？
+    UIView.setAnimationDelegate(@controller)
     UIView.setAnimationDuration(duration)
     self.send("#{method_name}")
     UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
@@ -277,33 +253,13 @@ class InputView < UIView
   end
 
 
-  #%ToDo: もしかしたら、このメソッドがViewControllerに移る必要が?
-
-  def i_view_animation_has_finished(animation_id)
-    case animation_id
-      when 'move_selected_button'
-        if can_create_new_button?
-          exchange_main_buttons
-        else
-          disable_main_buttons
-        end
-      when 'make_main_buttons_appear'
-        remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
-        @prev_main_button = nil
-        @pushed_button = nil
-      else
-        puts "/////// このアニメーションの後処理はありません。 ///////"
-    end
-  end
-
 
   def move_selected_button
     @pushed_button.tap do |button|
       button.frame = @sub_6frames[@selected_num]
       button.titleLabel.font = UIFont.systemFontOfSize(SUB_BUTTON_SIZE.height/2)
       button.enabled = false
-      @main_buttons.transfer(button, to: @sub_buttons)
-      self.button_moved = true
+      @sub_buttons << button
     end
 
     change_color_of_button(@pushed_button)
