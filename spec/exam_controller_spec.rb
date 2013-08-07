@@ -117,17 +117,11 @@ describe 'ExamController' do
       controller.pushed_button.should.not.be.nil
     end
 
-    it 'メイン・ボタン・スロットの、押されたボタンに該当する位置は空白(nil)' do
-      controller.main_buttons[0].should.be.nil
+    it 'メイン・ボタン・スロットの、押されたボタンに該当する位置は新しいボタンが補充されている' do
+      controller.main_buttons[0].should.not.be.nil
+      controller.main_buttons[0].should.not == @tap_button
     end
 
-=begin
-      it '押されたボタンは、サブボタン用スロットへと移る' do
-        @input_view.main_buttons.include?(@button).should.be.false
-        @input_view.sub_buttons.size == 1
-        @input_view.sub_buttons.last == @button
-      end
-=end
 
     it 'メインボタンが押されたときの描画処理を終えたInputViewからCallbackが返ってくる' do
       controller.button_is_moved.should.not.be.nil

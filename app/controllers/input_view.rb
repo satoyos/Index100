@@ -121,9 +121,11 @@ class InputView < UIView
 
   :private
 
+=begin
   def can_create_new_button?
     @selected_num < @sub_buttons.limit_size
   end
+=end
 
 
   def clean_up_result_view
@@ -229,6 +231,7 @@ class InputView < UIView
                 frame.origin.y + frame.size.height / 2)
   end
 
+=begin
   def exchange_main_buttons
     #%Todo: 誰が次のmain_buttonsを作るのか、考えなければならない！！
     @prev_main_button = @main_buttons.dup
@@ -242,6 +245,7 @@ class InputView < UIView
     end
 
   end
+=end
 
   def i_view_animation_def(method_name, duration: duration)
     UIView.beginAnimations(method_name, context: nil)
@@ -273,11 +277,13 @@ class InputView < UIView
                          forState: UIControlStateDisabled)
   end
 
+=begin
   def disable_main_buttons
     @main_buttons.each do |button|
       button.enabled = false if button
     end
   end
+=end
 
   def create_sub_6frames
     @sub_6frames = []

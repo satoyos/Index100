@@ -7,6 +7,8 @@ class ExamController < RMViewController
   MAIN_BUTTON_NUM = 4
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
 
+  KIMARI_JI_MAX = 6 # 決まり字は、最長で6文字
+
   CALLBACK_AFTER_BUTTON_MOVED = 'exchange_main_buttons'
 
   VOLUME_ICON_MARGIN = 10
@@ -123,6 +125,23 @@ class ExamController < RMViewController
 
   def exchange_main_buttons
     self.button_is_moved = true
+    @prev_main_buttons = @main_buttons.dup
+    set_main_buttons(@supplier.get_4strings)
+    make_main_buttons_appear
+    remove_buttons_from_super_view(@prev_main_buttons)
+    @prev_main_buttons = nil
+#    @pushed_button = nil
+  end
+
+  def has_room_for_new_string?
+    @supplier.counter < KIMARI_JI_MAX
+  end
+
+  def remove_buttons_from_super_view(slot)
+    slot.each do |button|
+      next unless button.is_a?(UIButton)
+      button.removeFromSuperview
+    end
   end
 
   def pushed_button_index
@@ -132,22 +151,23 @@ class ExamController < RMViewController
   def i_view_animation_has_finished(animation_id)
     case animation_id
       when 'move_selected_button'
-        self.send("#{CALLBACK_AFTER_BUTTON_MOVED}")
-=begin
-        if can_create_new_button?
-          exchange_main_buttons
+        if has_room_for_new_string?
+          self.send("#{CALLBACK_AFTER_BUTTON_MOVED}")
         else
           disable_main_buttons
         end
-=end
-=begin
       when 'make_main_buttons_appear'
-        remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
-        @prev_main_button = nil
+        remove_buttons_from_super_view(@prev_main_buttons) if @prev_main_buttons
+        @prev_main_buttons = nil
         @pushed_button = nil
-=end
       else
         puts "/////// このアニメーションの後処理はありません。 ///////"
+    end
+  end
+
+  def disable_main_buttons
+    @main_buttons.each do |button|
+      button.enabled = false if button
     end
   end
 
