@@ -55,6 +55,7 @@ class InputView < UIView
       @controller.send("#{cb_method_name}")
     else
       i_view_animation_def('move_selected_button',
+                           arg: nil,
                            duration: MOVE_SELECTED_DURATION)
     end
   end
@@ -66,19 +67,21 @@ class InputView < UIView
   end
 
   def clear_button_pushed
-    remove_buttons_from_super_view(@main_buttons)
+#    remove_buttons_from_super_view(@main_buttons)
     remove_buttons_from_super_view(@sub_buttons)
     setup_sub_button_slot()
     clean_up_result_view()
-    remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
-    reset_instance_variables()
+#    remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
+#    reset_instance_variables()
   end
 
+=begin
   def reset_instance_variables
     @selected_num = 0
     @prev_main_button = nil
     @pushed_button = nil
   end
+=end
 
 
 =begin
@@ -118,14 +121,14 @@ class InputView < UIView
     SUB_BUTTON_SIZE.width / MAIN_BUTTON_SIZE.width
   end
 
+  def main_buttons_appearing_motion(buttons, callback: method_name)
+    i_view_animation_def('make_main_buttons_appear',
+                         arg: buttons,
+                         duration: EXCHANGE_MAIN_BUTTONS_DURATION)
+  end
+
 
   :private
-
-=begin
-  def can_create_new_button?
-    @selected_num < @sub_buttons.limit_size
-  end
-=end
 
 
   def clean_up_result_view
@@ -164,16 +167,9 @@ class InputView < UIView
     # 仕方ないので、ここで「既にChallengeResultViewがある場合には何もしない」処理を入れ、
     # 擬似的に上記動作に近い挙動をするようにしてみる。
     return if subviews.find { |view| view.is_a?(ChallengeResultView) }
-    make_main_buttons_disabled
+#    make_main_buttons_disabled
     display_result_view(get_result_type(supplier))
     AudioPlayerFactory.players[get_result_type(supplier)].play
-  end
-
-  def make_main_buttons_disabled
-    @main_buttons.each do |m_button|
-      next unless m_button
-      m_button.enabled = false
-    end
   end
 
   def set_main_buttons(main_buttons)
@@ -184,8 +180,8 @@ class InputView < UIView
     @main_buttons = main_buttons
   end
 
-  def make_main_buttons_appear
-    @main_buttons.each_with_index do |button, idx|
+  def make_main_buttons_appear(buttons)
+    buttons.each_with_index do |button, idx|
       button.frame = @main_4frames[idx]
     end
   end
@@ -247,11 +243,15 @@ class InputView < UIView
   end
 =end
 
-  def i_view_animation_def(method_name, duration: duration)
+  def i_view_animation_def(method_name, arg: arg, duration: duration)
     UIView.beginAnimations(method_name, context: nil)
     UIView.setAnimationDelegate(@controller)
     UIView.setAnimationDuration(duration)
-    self.send("#{method_name}")
+    if arg
+      self.send("#{method_name}", arg)
+    else
+      self.send("#{method_name}")
+    end
     UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
     UIView.commitAnimations
   end
@@ -276,14 +276,6 @@ class InputView < UIView
     button.setTitleColor(SELECTED_BUTTON_TITLE_COLOR,
                          forState: UIControlStateDisabled)
   end
-
-=begin
-  def disable_main_buttons
-    @main_buttons.each do |button|
-      button.enabled = false if button
-    end
-  end
-=end
 
   def create_sub_6frames
     @sub_6frames = []
@@ -336,4 +328,5 @@ class InputView < UIView
   def self_width
     self_size.width
   end
+
 end

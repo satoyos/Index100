@@ -10,6 +10,7 @@ class ExamController < RMViewController
   KIMARI_JI_MAX = 6 # 決まり字は、最長で6文字
 
   CALLBACK_AFTER_BUTTON_MOVED = 'exchange_main_buttons'
+  CALLBACK_AFTER_EXCHANGE     = 'remove_prev_main_buttons'
 
   VOLUME_ICON_MARGIN = 10
   INITIAL_VOLUME = 0.5
@@ -113,7 +114,14 @@ class ExamController < RMViewController
   end
 
   def make_main_buttons_appear
-    @input_view.make_main_buttons_appear
+    @input_view.make_main_buttons_appear(@main_buttons)
+  end
+
+  def make_main_buttons_disabled
+    @main_buttons.each do |m_button|
+      next unless m_button
+      m_button.enabled = false
+    end
   end
 
   def main_button_pushed(sender)
@@ -127,11 +135,20 @@ class ExamController < RMViewController
     self.button_is_moved = true
     @prev_main_buttons = @main_buttons.dup
     set_main_buttons(@supplier.get_4strings)
-    make_main_buttons_appear
+    if RUBYMOTION_ENV == 'test'
+      make_main_buttons_appear()
+      remove_prev_main_buttons()
+    else
+      @input_view.main_buttons_appearing_motion(@main_buttons,
+                                                callback: CALLBACK_AFTER_EXCHANGE)
+    end
+  end
+
+  def remove_prev_main_buttons
     remove_buttons_from_super_view(@prev_main_buttons)
     @prev_main_buttons = nil
-#    @pushed_button = nil
   end
+
 
   def has_room_for_new_string?
     @supplier.counter < KIMARI_JI_MAX
@@ -190,7 +207,10 @@ class ExamController < RMViewController
 
   def clear_button_pushed
     sweep_volume_view if volume_view_is_coming_out?
+    remove_buttons_from_super_view(@main_buttons)
     @input_view.clear_button_pushed
+    remove_prev_main_buttons if @prev_main_button
+
   end
 
   def challenge_button_pushed
