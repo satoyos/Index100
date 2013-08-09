@@ -17,15 +17,14 @@ class InputView < UIView
   A_LABEL_CLEAR_BUTTON     = 'clear_button'
   A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
 
-  PROPERTIES_READER = [:main_4frames, :main_buttons, :clear_button, :challenge_button,
+  PROPERTIES_READER = [:main_4frames, :clear_button, :challenge_button,
                 :sub_buttons, :sub_6frames, :selected_num,
-                :pushed_button, :result_view, :controller]
+                :result_view, :controller]
   PROPERTIES_READER.each do |prop|
     attr_reader prop
   end
 
-  PROPERTIES_ACCESSOR = [:new_buttons_set,
-                         :new_buttons_are_being_created]
+  PROPERTIES_ACCESSOR = [:pushed_button]
   PROPERTIES_ACCESSOR.each do |prop|
     attr_accessor prop
   end
@@ -42,7 +41,7 @@ class InputView < UIView
 #    make_main_buttons_appear
     create_sub_6frames()
     setup_sub_button_slot()
-    clear_prove_variable
+#    clear_prove_variable
 
     self
   end
@@ -60,11 +59,13 @@ class InputView < UIView
     end
   end
 
+=begin
   def clear_prove_variable
     @pushed_button = nil
     self.new_buttons_set = false
     self.new_buttons_are_being_created = false
   end
+=end
 
   def clear_button_pushed
 #    remove_buttons_from_super_view(@main_buttons)
@@ -177,7 +178,7 @@ class InputView < UIView
       button.setFrame(hidden_main_frame_at(idx))
       button.titleLabel.font = UIFont.systemFontOfSize(MAIN_BUTTON_SIZE.height/2)
     end
-    @main_buttons = main_buttons
+#    @main_buttons = main_buttons
   end
 
   def make_main_buttons_appear(buttons)

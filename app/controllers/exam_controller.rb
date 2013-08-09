@@ -210,7 +210,8 @@ class ExamController < RMViewController
     remove_buttons_from_super_view(@main_buttons)
     @input_view.clear_button_pushed
     remove_prev_main_buttons if @prev_main_button
-
+    set_main_buttons(@supplier.clear.get_4strings)
+    make_main_buttons_appear
   end
 
   def challenge_button_pushed

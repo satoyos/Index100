@@ -35,25 +35,6 @@ describe 'ExamController' do
       controller.clear_button.frame.size.height.should == InputView::CLEAR_BUTTON_HEIGHT
     end
 
-=begin
-
-    it 'クリアボタンをタップすると、InputViewの状態が元に戻る' do
-      i_view = controller.input_view
-      i_view.main_button_pushed(i_view.main_buttons[0])
-      i_view.sub_buttons.size.should == 1
-      #noinspection RubyArgCount
-      tap(controller.clear_button)
-      i_view.sub_buttons.empty?.should.be.true
-    end
-    it '四つのメインボタンの文字が、適切に初期設定されている' do
-      initial_strings = controller.supplier.clear.get_4strings
-      controller.main_buttons.each_with_index do |button, idx|
-        button.currentTitle.should == initial_strings[idx]
-      end
-    end
-
-=end
-
     it 'input_viewのmain_4framesを描画領域とするボタンを4つ持つ' do
       controller.main_buttons.tap do |buttons|
         buttons.should.not.be.nil
@@ -129,6 +110,24 @@ describe 'ExamController' do
     end
   end
 
+  describe 'クリアボタンが押されたときの動作' do
+    tests ExamController
 
+    it 'クリアボタンをタップすると、InputViewの状態が元に戻る' do
+      supplier = controller.supplier
+      i_view = controller.input_view
+      first_strings = controller.main_buttons.map{|b| b.currentTitle}
 
+      # メインボタンを一回タップすると、表示されるメインボタンは変化する。
+      # [注意] もしかしたら、たまたま二文字目のメインボタン群の表示と一致してしまうかもしれない
+      #noinspection RubyArgCount
+      tap("#{first_strings[0]}")
+      controller.main_buttons.map{|b| b.currentTitle}.should.not == first_strings
+
+      # その状態で、クリアボタンを押す
+      #noinspection RubyArgCount
+      tap(controller.clear_button)
+      controller.main_buttons.map{|b| b.currentTitle}.should == first_strings
+    end
+  end
 end

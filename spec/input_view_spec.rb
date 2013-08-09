@@ -55,23 +55,22 @@ describe 'InputView' do
     third_frame.origin.y.should.be.close(expected_third_y, 0.1)
   end
 
-=begin
-  describe 'あるMainButtonが押されたときの動作' do
+  describe 'move_selected_button' do
     before do
-      @button = @input_view.main_buttons[1]
-      @input_view.main_button_pushed(@button)
+      @button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+      @input_view.pushed_button = @button
+      @input_view.move_selected_button
     end
 
-    it 'should not be nil' do
-      @button.should.not.be.nil
-      @button.is_a?(UIButton).should.be.true
-      @input_view.should.not.be.nil
+    it '@pushed_button is set' do
+      @input_view.pushed_button.should.not.be.nil
+      @input_view.pushed_button.is_a?(UIButton).should.be.true
+      @input_view.pushed_button.should == @button
     end
 
-    it '押されたボタンは、サブボタン用スロットへと移る' do
-      @input_view.main_buttons.include?(@button).should.be.false
-      @input_view.sub_buttons.size == 1
-      @input_view.sub_buttons.last == @button
+    it '押されたボタンは、サブボタン用スロットに入る' do
+      @input_view.sub_buttons.size.should == 1
+      @input_view.sub_buttons.last.should == @button
     end
 
     it '押されたボタンの文字色は、指定された色に変わる' do
@@ -79,6 +78,7 @@ describe 'InputView' do
           InputView::SELECTED_BUTTON_TITLE_COLOR
     end
 
+=begin
     it 'クリアボタンが押されたら、各スロットは元に戻る' do
       @input_view.clear_button_pushed
       @input_view.main_buttons.map{|button| button}.size.should == 4
@@ -93,8 +93,10 @@ describe 'InputView' do
     it '押されたボタンが、サブボタン・スロットに移籍した' do
       @input_view.button_moved.should.be.true
     end
+=end
   end
 
+=begin
   describe 'チャレンジボタンが押されるときの動作[正解編]' do
     before do
       # まず、正解の状態を作る！
