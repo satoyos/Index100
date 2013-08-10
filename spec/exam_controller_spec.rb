@@ -35,6 +35,11 @@ describe 'ExamController' do
       controller.clear_button.frame.size.height.should == InputView::CLEAR_BUTTON_HEIGHT
     end
 
+    it 'この時点では、「これまで入力された文字列」は空っぽ(長さが0)' do
+      controller.current_challenge_string.is_a?(String).should.be.true
+      controller.current_challenge_string.length.should == 0
+    end
+
     it 'input_viewのmain_4framesを描画領域とするボタンを4つ持つ' do
       controller.main_buttons.tap do |buttons|
         buttons.should.not.be.nil
@@ -110,12 +115,29 @@ describe 'ExamController' do
     end
   end
 
+  # 下記テストは、なぜかメインボタンのenabledが呼び出せないので、無効。
+  # ちゃんとenabledを呼び出せるようになったら、これもテストしたい。
+=begin
+  describe 'メインボタンがKIMARI_JI_MAX回押されたときの状態' do
+    tests ExamController
+
+    before do
+      ExamController::KIMARI_JI_MAX.times do
+        #noinspection RubyArgCount
+        tap(controller.main_buttons[0])
+      end
+    end
+
+    it 'メインボタンがもう押せない状態になっている' do
+      controller.main_buttons[1].enabled.should.be.true
+    end
+  end
+=end
+
   describe 'クリアボタンが押されたときの動作' do
     tests ExamController
 
     it 'クリアボタンをタップすると、InputViewの状態が元に戻る' do
-      supplier = controller.supplier
-      i_view = controller.input_view
       first_strings = controller.main_buttons.map{|b| b.currentTitle}
 
       # メインボタンを一回タップすると、表示されるメインボタンは変化する。
@@ -129,5 +151,41 @@ describe 'ExamController' do
       tap(controller.clear_button)
       controller.main_buttons.map{|b| b.currentTitle}.should == first_strings
     end
+  end
+
+  describe 'current_challenge_string' do
+    tests ExamController
+
+    it '正解ボタンが一つ押されたら、このメソッドで取得できる文字列の長さは1' do
+      supplier = controller.supplier
+
+      # 注)
+      # ↓ ここでも、ボタンをタップするときに、ボタンオブジェクト自体を
+      #   tap()の引数にすると誤動作し、ボタンを押していないかのような状態になった。
+      #   accessibilityLabelを指定すると、なぜか成功した。
+
+      #noinspection RubyArgCount
+      tap(controller.main_buttons[supplier.current_right_index].currentTitle)
+      controller.current_challenge_string.length.should == 1
+    end
+  end
+
+
+  describe 'チャレンジボタンが押されたときの動作: 正解編' do
+    tests ExamController
+
+    before do
+      @supplier = controller.supplier
+      @supplier.answer.length.times do
+        # ここのtapも、ボタン自体を引数に指定→誤動作, accessibilityLabel指定→正常動作
+        #noinspection RubyArgCount
+        tap(controller.main_buttons[@supplier.current_right_index].currentTitle)
+      end
+    end
+
+    it 'チャレンジ文字列は、正解と一致するはず' do
+      controller.current_challenge_string.should == @supplier.answer
+    end
+
   end
 end

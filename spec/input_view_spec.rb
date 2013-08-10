@@ -190,7 +190,4 @@ describe 'InputView' do
   end
 =end
 
-  #%ToDo: こうなったら、メインボタンもViewControllerを起点にして作りたい。
-  #%ToDo: そして、メインボタンを押したときにもボリュームビューが引っ込むようにしたい。
-
 end

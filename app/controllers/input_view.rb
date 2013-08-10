@@ -192,22 +192,6 @@ class InputView < UIView
                 frame.origin.y + frame.size.height / 2)
   end
 
-=begin
-  def exchange_main_buttons
-    #%Todo: 誰が次のmain_buttonsを作るのか、考えなければならない！！
-    @prev_main_button = @main_buttons.dup
-    self.new_buttons_are_being_created = true
-#    set_main_buttons(@supplier.get_4strings)
-    if RUBYMOTION_ENV == 'test'
-      make_main_buttons_appear
-    else
-      i_view_animation_def('make_main_buttons_appear',
-                           duration: EXCHANGE_MAIN_BUTTONS_DURATION)
-    end
-
-  end
-=end
-
   def i_view_animation_def(method_name, arg: arg, duration: duration)
     UIView.beginAnimations(method_name, context: nil)
     UIView.setAnimationDelegate(@controller)

@@ -107,5 +107,13 @@ describe 'CharSupplier' do
         end
       end
     end
+
+    it 'テスト実装では正解は「あらし」固定なので、4回供給した後はnilを返す' do
+      strings1 = @supplier.get_4strings #1回目
+      strings2 = @supplier.get_4strings #2回目
+      strings3 = @supplier.get_4strings #3回目
+      strings4 = @supplier.get_4strings #4回目
+      @supplier.current_right_index.should.be.nil
+    end
   end
 end

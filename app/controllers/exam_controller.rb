@@ -25,7 +25,7 @@ class ExamController < RMViewController
 
   PROPERTIES = [:fuda_view, :tatami_view, :input_view, :supplier,
                 :challenge_button, :clear_button, :main_buttons,
-                :pushed_button]
+                :pushed_button, :current_challenge_string]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
@@ -50,6 +50,7 @@ class ExamController < RMViewController
     set_main_buttons(@supplier.get_4strings)
     make_main_buttons_appear()
     set_hidden_volume_view_on_me()
+    init_challenge_status()
   end
 
   def create_fuda_view
@@ -126,6 +127,7 @@ class ExamController < RMViewController
 
   def main_button_pushed(sender)
 #    puts "-- tapped button in ExamController => #{sender.currentTitle}"
+    @current_challenge_string += sender.currentTitle
     @pushed_button = sender
     @main_buttons[pushed_button_index] = nil
     @input_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
@@ -212,6 +214,11 @@ class ExamController < RMViewController
     remove_prev_main_buttons if @prev_main_button
     set_main_buttons(@supplier.clear.get_4strings)
     make_main_buttons_appear
+    init_challenge_status()
+  end
+
+  def init_challenge_status
+    @current_challenge_string = ''
   end
 
   def challenge_button_pushed

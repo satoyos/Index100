@@ -42,7 +42,8 @@ class CharSupplier
   end
 
   def current_right_index
-    if @counter == 0
+    # 境界条件
+    if @counter == 0 || @counter > @answer.length
       return nil
     end
 
