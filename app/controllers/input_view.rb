@@ -18,8 +18,7 @@ class InputView < UIView
   A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
 
   PROPERTIES_READER = [:main_4frames, :clear_button, :challenge_button,
-                :sub_buttons, :sub_6frames, :selected_num,
-                :result_view, :controller]
+                :sub_buttons, :sub_6frames, :result_view, :controller]
   PROPERTIES_READER.each do |prop|
     attr_reader prop
   end
@@ -34,14 +33,10 @@ class InputView < UIView
     super.initWithFrame(frame)
 
     self.backgroundColor = BG_COLOR
-    @selected_num = 0
     @controller = controller
     create_main_4frames()
-#    set_main_buttons(supplier.get_4strings)
-#    make_main_buttons_appear
     create_sub_6frames()
     setup_sub_button_slot()
-#    clear_prove_variable
 
     self
   end
@@ -59,43 +54,12 @@ class InputView < UIView
     end
   end
 
-=begin
-  def clear_prove_variable
-    @pushed_button = nil
-    self.new_buttons_set = false
-    self.new_buttons_are_being_created = false
-  end
-=end
-
   def clear_button_pushed
-#    remove_buttons_from_super_view(@main_buttons)
     remove_buttons_from_super_view(@sub_buttons)
     setup_sub_button_slot()
     clean_up_result_view()
-#    remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
-#    reset_instance_variables()
   end
 
-=begin
-  def reset_instance_variables
-    @selected_num = 0
-    @prev_main_button = nil
-    @pushed_button = nil
-  end
-=end
-
-
-=begin
-  def test_pushed_sequence(button)
-    main_button_pushed(button)
-    if can_create_new_button?
-      exchange_main_buttons()
-      remove_buttons_from_super_view(@prev_main_button) if @prev_main_button
-      @prev_main_button = nil
-      @pushed_button = nil
-    end
-  end
-=end
 
   def get_result_type(supplier)
     case supplier.test_challenge_string(challenge_strings)
@@ -261,15 +225,18 @@ class InputView < UIView
 
   def move_selected_button
     @pushed_button.tap do |button|
-      button.frame = @sub_6frames[@selected_num]
+      button.frame = @sub_6frames[selected_num]
       button.titleLabel.font = UIFont.systemFontOfSize(SUB_BUTTON_SIZE.height/2)
       button.enabled = false
       @sub_buttons << button
     end
 
     change_color_of_button(@pushed_button)
-    @selected_num += 1
 
+  end
+
+  def selected_num
+    @sub_buttons.size
   end
 
   # @param [UIButton] button

@@ -78,22 +78,32 @@ describe 'InputView' do
           InputView::SELECTED_BUTTON_TITLE_COLOR
     end
 
-=begin
+  end
+
+  describe 'clear_button_pushed' do
+    before do
+      @button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+      @input_view.pushed_button = @button
+      @input_view.move_selected_button
+    end
+
+    it 'この時点では、サブボタン用スロットに入っているボタンは1個' do
+      @input_view.sub_buttons.size.should == 1
+    end
+
     it 'クリアボタンが押されたら、各スロットは元に戻る' do
       @input_view.clear_button_pushed
-      @input_view.main_buttons.map{|button| button}.size.should == 4
       @input_view.sub_buttons.size.should == 0
-      @input_view.supplier.counter.should == 1 # 0に戻るがすぐに初期文字列を供給するため、1になる
     end
 
-    it '押されたボタンを把握できている' do
-      @input_view.pushed_button.should.not.be.nil
-    end
+    it 'クリアボタンが押されたら、selected_numは初期化される' do
+      # この時点では、「選択されている文字数」は1
+      @input_view.selected_num.should == 1
 
-    it '押されたボタンが、サブボタン・スロットに移籍した' do
-      @input_view.button_moved.should.be.true
+      # クリアボタンがタップされたら0に戻る
+      @input_view.clear_button_pushed
+      @input_view.selected_num.should == 0
     end
-=end
   end
 
 =begin
