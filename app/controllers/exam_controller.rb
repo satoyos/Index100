@@ -9,6 +9,9 @@ class ExamController < RMViewController
 
   KIMARI_JI_MAX = 6 # 決まり字は、最長で6文字
 
+  A_LABEL_CLEAR_BUTTON     = 'clear_button'
+  A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
+
   CALLBACK_AFTER_BUTTON_MOVED = 'exchange_main_buttons'
   CALLBACK_AFTER_EXCHANGE     = 'remove_prev_main_buttons'
 
@@ -84,6 +87,12 @@ class ExamController < RMViewController
     self.view.addSubview(@input_view)
   end
 
+  def get_result_type
+    case @supplier.test_challenge_string(@current_challenge_string)
+      when true; :right
+      else     ; :wrong
+    end
+  end
 
   :private
 
@@ -195,6 +204,7 @@ class ExamController < RMViewController
     @clear_button.addTarget(self,
                             action: 'clear_button_pushed',
                             forControlEvents: UIControlEventTouchUpInside)
+    @clear_button.accessibilityLabel = A_LABEL_CLEAR_BUTTON
     @input_view.set_clear_button(@clear_button)
   end
 
@@ -203,6 +213,7 @@ class ExamController < RMViewController
     @challenge_button.addTarget(self,
                             action: 'challenge_button_pushed',
                             forControlEvents: UIControlEventTouchUpInside)
+    @challenge_button.accessibilityLabel = A_LABEL_CHALLENGE_BUTTON
     @input_view.set_challenge_button(@challenge_button)
 
   end
@@ -218,15 +229,17 @@ class ExamController < RMViewController
   end
 
   def init_challenge_status
+    @challenge_button.enabled = true
     @current_challenge_string = ''
   end
 
   def challenge_button_pushed
     sweep_volume_view if volume_view_is_coming_out?
-    @input_view.challenge_button_pushed(@supplier)
-    set_main_buttons(@supplier.clear.get_4strings)
-    make_main_buttons_appear
+    @challenge_button.enabled = false
+    @input_view.display_result_view(get_result_type)
+    AudioPlayerFactory.players[get_result_type].play
   end
+
 
   def create_volume_icon_on_tatami
     @volume_icon = VolumeIcon.alloc.init

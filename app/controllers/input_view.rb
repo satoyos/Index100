@@ -14,9 +14,6 @@ class InputView < UIView
 
   SELECTED_BUTTON_TITLE_COLOR = ColorFactory.str_to_color('#c85179') #中紅
 
-  A_LABEL_CLEAR_BUTTON     = 'clear_button'
-  A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
-
   PROPERTIES_READER = [:main_4frames, :clear_button, :challenge_button,
                 :sub_buttons, :sub_6frames, :result_view, :controller]
   PROPERTIES_READER.each do |prop|
@@ -61,12 +58,14 @@ class InputView < UIView
   end
 
 
+=begin
   def get_result_type(supplier)
     case supplier.test_challenge_string(challenge_strings)
       when true; :right
       else     ; :wrong
     end
   end
+=end
 
   def display_result_view(result_type)
     @result_view = ChallengeResultView.alloc.initWithResult(result_type)
@@ -122,19 +121,8 @@ class InputView < UIView
                       title: CHALLENGE_BUTTON_TITLE,
                       bg_color: CHALLENGE_BUTTON_COLOR)
     self.addSubview(button)
-    button.accessibilityLabel = A_LABEL_CHALLENGE_BUTTON
+#    button.accessibilityLabel = A_LABEL_CHALLENGE_BUTTON
     @challenge_button = button
-  end
-
-  def challenge_button_pushed(supplier)
-    # 本来は、チャレンジボタンが押されたら、一旦チャレンジボタンをdisabledにしたかった。
-    # しかし、今の実装ではなぜかこのボタンがenabledメソッドを受けてくれない。
-    # 仕方ないので、ここで「既にChallengeResultViewがある場合には何もしない」処理を入れ、
-    # 擬似的に上記動作に近い挙動をするようにしてみる。
-    return if subviews.find { |view| view.is_a?(ChallengeResultView) }
-#    make_main_buttons_disabled
-    display_result_view(get_result_type(supplier))
-    AudioPlayerFactory.players[get_result_type(supplier)].play
   end
 
   def set_main_buttons(main_buttons)
@@ -163,7 +151,7 @@ class InputView < UIView
                       title: CLEAR_BUTTON_TITLE,
                       bg_color: CLEAR_BUTTON_COLOR)
     self.addSubview(c_button)
-    c_button.accessibilityLabel = A_LABEL_CLEAR_BUTTON
+#    c_button.accessibilityLabel = A_LABEL_CLEAR_BUTTON
     @clear_button = c_button
   end
 

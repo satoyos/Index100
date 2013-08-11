@@ -69,7 +69,7 @@ describe 'ExamController' do
       tap VolumeIcon::A_LABEL
       controller.volume_view_is_coming_out?.should.be.true
       #noinspection RubyArgCount
-      tap InputView::A_LABEL_CLEAR_BUTTON
+      tap ExamController::A_LABEL_CLEAR_BUTTON
       controller.volume_view_is_coming_out?.should.be.false
     end
 
@@ -78,7 +78,7 @@ describe 'ExamController' do
       tap VolumeIcon::A_LABEL
       controller.volume_view_is_coming_out?.should.be.true
       #noinspection RubyArgCount
-      tap InputView::A_LABEL_CHALLENGE_BUTTON
+      tap ExamController::A_LABEL_CHALLENGE_BUTTON
       controller.volume_view_is_coming_out?.should.be.false
     end
 
@@ -187,5 +187,8 @@ describe 'ExamController' do
       controller.current_challenge_string.should == @supplier.answer
     end
 
+    it '正解判定を出す' do
+      controller.get_result_type.should == :right
+    end
   end
 end
