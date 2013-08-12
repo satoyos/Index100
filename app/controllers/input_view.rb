@@ -14,7 +14,7 @@ class InputView < UIView
 
   SELECTED_BUTTON_TITLE_COLOR = ColorFactory.str_to_color('#c85179') #中紅
 
-  PROPERTIES_READER = [:main_4frames, :clear_button, :challenge_button,
+  PROPERTIES_READER = [:main_4frames, :clear_button,
                 :sub_buttons, :sub_6frames, :result_view, :controller]
   PROPERTIES_READER.each do |prop|
     attr_reader prop
@@ -25,7 +25,6 @@ class InputView < UIView
     attr_accessor prop
   end
 
-  # @param [CharSupplier] supplier
   def initWithFrame(frame, controller: controller)
     super.initWithFrame(frame)
 
@@ -57,16 +56,6 @@ class InputView < UIView
     clean_up_result_view()
   end
 
-
-=begin
-  def get_result_type(supplier)
-    case supplier.test_challenge_string(challenge_strings)
-      when true; :right
-      else     ; :wrong
-    end
-  end
-=end
-
   def display_result_view(result_type)
     @result_view = ChallengeResultView.alloc.initWithResult(result_type)
     @result_view.center = self.center
@@ -75,10 +64,6 @@ class InputView < UIView
                      0 - ChallengeResultView::RESULT_VIEW_SIZE.height/2),
          @result_view.frame.size]
     self.addSubview(@result_view)
-  end
-
-  def challenge_strings
-    sub_buttons.inject(''){|str, b| str += b.currentTitle if b}
   end
 
   def ratio_of_sub_to_main
@@ -94,7 +79,6 @@ class InputView < UIView
 
   :private
 
-
   def clean_up_result_view
     return unless @result_view
     @result_view.clean_up_subviews
@@ -104,7 +88,6 @@ class InputView < UIView
 
 
   def remove_buttons_from_super_view(slot)
-#    puts "--- 不要なボタンの消去を開始 (スロットのサイズ=[#{slot.size}])"
     slot.each do |button|
       next unless button.is_a?(UIButton)
       button.removeFromSuperview
@@ -121,8 +104,6 @@ class InputView < UIView
                       title: CHALLENGE_BUTTON_TITLE,
                       bg_color: CHALLENGE_BUTTON_COLOR)
     self.addSubview(button)
-#    button.accessibilityLabel = A_LABEL_CHALLENGE_BUTTON
-    @challenge_button = button
   end
 
   def set_main_buttons(main_buttons)
@@ -130,7 +111,6 @@ class InputView < UIView
       button.setFrame(hidden_main_frame_at(idx))
       button.titleLabel.font = UIFont.systemFontOfSize(MAIN_BUTTON_SIZE.height/2)
     end
-#    @main_buttons = main_buttons
   end
 
   def make_main_buttons_appear(buttons)
@@ -151,7 +131,6 @@ class InputView < UIView
                       title: CLEAR_BUTTON_TITLE,
                       bg_color: CLEAR_BUTTON_COLOR)
     self.addSubview(c_button)
-#    c_button.accessibilityLabel = A_LABEL_CLEAR_BUTTON
     @clear_button = c_button
   end
 
@@ -193,8 +172,6 @@ class InputView < UIView
     UIView.commitAnimations
   end
 
-
-
   def move_selected_button
     @pushed_button.tap do |button|
       button.frame = @sub_6frames[selected_num]
@@ -202,9 +179,7 @@ class InputView < UIView
       button.enabled = false
       @sub_buttons << button
     end
-
     change_color_of_button(@pushed_button)
-
   end
 
   def selected_num
@@ -230,7 +205,6 @@ class InputView < UIView
     (0..3).each do |idx|
       @main_4frames << nth_main_frame(idx)
     end
-
   end
 
   def x_gap

@@ -1,6 +1,5 @@
 class ExamController < RMViewController
   FUDA_INITIAL_STRING = 'これから札に歌を設定します。'
-#  TATAMI_COLOR = ColorFactory.str_to_color('#deb068')
   TATAMI_JPG_FILE = 'tatami_moved.jpg'
   FUDA_HEIGHT_POWER = 0.95 # 札ビューの高さは、畳ビューの何倍にするか
 
@@ -82,7 +81,6 @@ class ExamController < RMViewController
     @input_view = InputView.alloc.initWithFrame(
         CGRectMake(0, tatami_origin.y + tatami_size.height,
                    tatami_size.width, self_size.height - tatami_size.height),
-#        supplier: CharSupplier.new({deck: Deck.new}))
         controller: self)
     self.view.addSubview(@input_view)
   end
@@ -98,7 +96,6 @@ class ExamController < RMViewController
 
   def set_char_supplier
     @supplier = CharSupplier.new({deck: Deck.new})
-
   end
 
   def set_main_buttons(strings)
@@ -135,7 +132,7 @@ class ExamController < RMViewController
   end
 
   def main_button_pushed(sender)
-#    puts "-- tapped button in ExamController => #{sender.currentTitle}"
+    sweep_volume_view if volume_view_is_coming_out?
     @current_challenge_string += sender.currentTitle
     @pushed_button = sender
     @main_buttons[pushed_button_index] = nil
@@ -236,10 +233,10 @@ class ExamController < RMViewController
   def challenge_button_pushed
     sweep_volume_view if volume_view_is_coming_out?
     @challenge_button.enabled = false
+    make_main_buttons_disabled
     @input_view.display_result_view(get_result_type)
     AudioPlayerFactory.players[get_result_type].play
   end
-
 
   def create_volume_icon_on_tatami
     @volume_icon = VolumeIcon.alloc.init
@@ -255,7 +252,6 @@ class ExamController < RMViewController
   end
 
   def volume_icon_tapped
-    # puts '(^^)/ volume_icon_is_tapped!'
     show_or_hide_volume_view
   end
 

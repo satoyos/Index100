@@ -64,7 +64,7 @@ describe 'ExamController' do
       controller.volume_view_is_coming_out?.should.be.true
     end
 
-    it 'ボリュームビューが出ているときに、クリアボタンをタップすると、ボリュームビューも隠れる' do
+    it 'ボリュームビューが出ているときに、クリアボタンをタップすると、ボリュームビューが隠れる' do
       #noinspection RubyArgCount
       tap VolumeIcon::A_LABEL
       controller.volume_view_is_coming_out?.should.be.true
@@ -73,7 +73,7 @@ describe 'ExamController' do
       controller.volume_view_is_coming_out?.should.be.false
     end
 
-    it 'ボリュームビューが出ているときに、チャレンジボタンをタップすると、ボリュームビューも隠れる' do
+    it 'ボリュームビューが出ているときに、チャレンジボタンをタップすると、ボリュームビューが隠れる' do
       #noinspection RubyArgCount
       tap VolumeIcon::A_LABEL
       controller.volume_view_is_coming_out?.should.be.true
@@ -82,6 +82,14 @@ describe 'ExamController' do
       controller.volume_view_is_coming_out?.should.be.false
     end
 
+    it 'ボリュームビューが出ているときに、メインボタンをタップすると、ボリュームビューが隠れる' do
+      #noinspection RubyArgCount
+      tap VolumeIcon::A_LABEL
+      controller.volume_view_is_coming_out?.should.be.true
+      #noinspection RubyArgCount
+      tap controller.main_buttons[0].currentTitle
+      controller.volume_view_is_coming_out?.should.be.false
+    end
   end
 
 
@@ -189,6 +197,26 @@ describe 'ExamController' do
 
     it '正解判定を出す' do
       controller.get_result_type.should == :right
+    end
+  end
+
+  describe 'チャレンジボタンが押されたときの動作：間違い編' do
+    tests ExamController
+
+    before do
+      @supplier = controller.supplier
+      (@supplier.answer.length-1).times do
+        #noinspection RubyArgCount
+        tap(controller.main_buttons[@supplier.current_right_index].currentTitle)
+      end
+    end
+
+    it 'チャレンジ文字列の長さは、正解(文字列)の長さより1少ない' do
+      controller.current_challenge_string.length.should ==
+          @supplier.answer.length-1
+    end
+    it '誤り判定を出す' do
+      controller.get_result_type.should == :wrong
     end
   end
 end
