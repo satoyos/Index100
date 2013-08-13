@@ -43,9 +43,10 @@ class ExamController < RMViewController
 
     create_tatami_view()
     create_fuda_view()
-    @fuda_view.rewrite_string('たつたのかはのにしきなりけり')
-
     set_char_supplier()
+#    @fuda_view.rewrite_string('たつたのかはのにしきなりけり')
+    @fuda_view.rewrite_string(@supplier.current_poem.in_hiragana.shimo)
+
     create_input_view()
     set_clear_button()
     set_challenge_button()

@@ -1,5 +1,5 @@
 class CharSupplier
-  PROPERTIES = [:deck, :counter, :answer]
+  PROPERTIES = [:deck, :current_poem, :counter, :answer]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
@@ -8,10 +8,18 @@ class CharSupplier
 
   def initialize(init_hash)
     @deck = init_hash[:deck]
+    @current_poem = @deck.next_poem
     @counter = 0
 
     ## テスト実装
     @answer = TEST_ANSWER
+  end
+
+  def draw_next_poem
+    case @current_poem = @deck.next_poem
+      when nil; nil
+      else    ; self
+    end
   end
 
   TEST_ARRAY = [
@@ -24,6 +32,8 @@ class CharSupplier
   ]
 
   TEST_ANSWER = 'あらし'
+
+
 
   def get_4strings
     return nil if @counter == COUNTER_MAX
@@ -49,4 +59,19 @@ class CharSupplier
 
     TEST_ARRAY[@counter-1].find_index(TEST_ANSWER[@counter-1])
   end
+
+  def make_4strings_at(count)
+    right_char = @current_poem.kimari_ji[count]
+    ['か', 'い', right_char, 'す']
+  end
+
+  def char_candidate_at(count)
+    @deck.poems.map{|poem|
+      case count+1 <= poem.kimari_ji.length
+        when true; poem.kimari_ji[count]
+        else     ; poem.in_hiragana.kami[count]
+      end
+    }.uniq
+  end
+
 end
