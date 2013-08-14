@@ -70,6 +70,11 @@ describe 'CharSupplier' do
         first_strings.include?(@supplier.current_poem.kimari_ji[0]).should.be.true
       end
     end
+
+    it 'ちゃんと毎度ランダムな文字群を返す(二回このメソッドを読んだら違う配列を返す)' do
+      #低い確率で本テストは失敗してしまう可能性があります。
+      @supplier.make_4strings_at(0).should.not == @supplier.make_4strings_at(0)
+    end
   end
 
   describe 'char_candidate_at' do

@@ -4,7 +4,8 @@ class CharSupplier
     attr_reader prop
   end
 
-  COUNTER_MAX = 6
+  NUM_TO_SUPPLY = 4
+  COUNTER_MAX   = 6
 
   def initialize(init_hash)
     @deck = init_hash[:deck]
@@ -62,7 +63,13 @@ class CharSupplier
 
   def make_4strings_at(count)
     right_char = @current_poem.kimari_ji[count]
-    ['か', 'い', right_char, 'す']
+    all_candidates = char_candidate_at(count)
+    all_candidates.delete(right_char)
+    # 先頭に正解文字、その後ろは候補文字がシャッフルされた配列を作る
+    shuffled_candidates = all_candidates.shuffle.unshift(right_char)
+    # 先頭からNUM_TO_SUPPLY個を取得し、シャッフルして戻り値とする。
+    shuffled_candidates[0..NUM_TO_SUPPLY-1].shuffle
+#    ['か', 'い', right_char, 'す']
   end
 
   def char_candidate_at(count)
