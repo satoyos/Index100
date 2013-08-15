@@ -1,5 +1,5 @@
 class CharSupplier
-  PROPERTIES = [:deck, :current_poem, :counter, :answer]
+  PROPERTIES = [:deck, :current_poem, :counter, :answer, :difficulty]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
@@ -7,10 +7,15 @@ class CharSupplier
   NUM_TO_SUPPLY = 4
   COUNTER_MAX   = 6
 
+  DIFFICULTIES = [:easy, :normal]
+
   def initialize(init_hash)
     @deck = init_hash[:deck]
     @current_poem = @deck.next_poem
     @counter = 0
+
+    # まずは、難易度はeasyモードのみ用意。
+    @difficulty = :easy
 
     ## テスト実装
     @answer = TEST_ANSWER
@@ -63,22 +68,43 @@ class CharSupplier
 
   def make_4strings_at(count)
     right_char = @current_poem.kimari_ji[count]
-    all_candidates = char_candidate_at(count)
+    all_candidates = char_candidates_at(count)
     all_candidates.delete(right_char)
     # 先頭に正解文字、その後ろは候補文字がシャッフルされた配列を作る
     shuffled_candidates = all_candidates.shuffle.unshift(right_char)
     # 先頭からNUM_TO_SUPPLY個を取得し、シャッフルして戻り値とする。
     shuffled_candidates[0..NUM_TO_SUPPLY-1].shuffle
-#    ['か', 'い', right_char, 'す']
   end
 
-  def char_candidate_at(count)
-    @deck.poems.map{|poem|
-      case count+1 <= poem.kimari_ji.length
-        when true; poem.kimari_ji[count]
-        else     ; poem.in_hiragana.kami[count]
-      end
+  def char_candidates_at(nth)
+    case nth
+      when 0 #一文字目
+        @deck.poems.map{|poem|
+          case nth+1 <= poem.kimari_ji.length
+            when true; poem.kimari_ji[nth]
+            else     ; poem.in_hiragana.kami[nth]
+          end
+        }.uniq
+      else  #二文字目以降
+        easy_candidates_at(nth)
+    end
+  end
+
+  def easy_candidates_at(nth)
+    regexp = Regexp.new("^#{current_selected(nth)}")
+    puts "regexp => #{regexp}"
+    @deck.poems.select{|poem|
+      poem.kimari_ji =~ regexp
+    }.map{|poem|
+      poem.kimari_ji[nth]
     }.uniq
+  end
+
+  def current_selected(when_supplying_nth)
+    case when_supplying_nth
+      when 0 ; ''
+      else   ; @current_poem.kimari_ji[0..when_supplying_nth-1]
+    end
   end
 
 end

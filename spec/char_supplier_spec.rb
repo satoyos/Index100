@@ -9,6 +9,7 @@ describe 'CharSupplier' do
   end
 
   FIRST_CHARS = %w(む す め ふ さ ほ せ う つ し も ゆ い ち ひ き は や よ か み た こ お わ な あ)
+  CHARS_NEXT_TO_A = %w(わ ら き ま り さ し い け)
 
   describe 'first_chars' do
     it 'ひらがなの中で、歌の一文字目(=決まり字の一文字目)になりうる字は27文字' do
@@ -36,6 +37,11 @@ describe 'CharSupplier' do
     it 'has an answer' do
       @supplier.answer.should.not.be.nil
       @supplier.answer.is_a?(String).should.be.true
+    end
+
+    it '難易度が設定されていて、予め定められているもののいずれかである' do
+      @supplier.difficulty.should.not.be.nil
+      CharSupplier::DIFFICULTIES.include?(@supplier.difficulty).should.be.true
     end
   end
 
@@ -66,7 +72,7 @@ describe 'CharSupplier' do
       @supplier.make_4strings_at(0).tap do |first_strings|
         first_strings.should.not.be.nil
         first_strings.is_a?(Array).should.be.true
-        first_strings.size.should == 4
+        first_strings.size.should == CharSupplier::NUM_TO_SUPPLY
         first_strings.include?(@supplier.current_poem.kimari_ji[0]).should.be.true
       end
     end
@@ -75,6 +81,18 @@ describe 'CharSupplier' do
       #低い確率で本テストは失敗してしまう可能性があります。
       @supplier.make_4strings_at(0).should.not == @supplier.make_4strings_at(0)
     end
+
+    #%Todo: 続きは、このテストを通すところから！
+=begin
+    it '歌#1の2文字目候補群は、「あ」で始まる歌の二文字目の中から四つ選んだもので、「き」を含む' do
+      @supplier.make_4strings_at(1).tap do |second_strings|
+        second_strings.should.not.be.nil
+        second_strings.size.should == CharSupplier::NUM_TO_SUPPLY
+        second_strings.include?(@supplier.current_poem.kimari_ji[1]).should.be.true
+        (second_strings & CHARS_NEXT_TO_A).size.should == CharSupplier::NUM_TO_SUPPLY
+      end
+    end
+=end
   end
 
   describe 'char_candidate_at' do
@@ -83,8 +101,38 @@ describe 'CharSupplier' do
     end
 
     it '選別していないDeckの一文字目の候補字群は、27文字' do
-      @supplier.char_candidate_at(0).size.should == FIRST_CHARS.size
+      @supplier.char_candidates_at(0).size.should == FIRST_CHARS.size
 #      puts "一文字目候補 => #{@supplier.char_candidate_at(0)}"
+    end
+
+    it '#1の歌の二文字目候補字群は、CHARS_NEXT_TO_Aの文字群と一致する' do
+#      puts "「あ」に続く二文字目候補字群 => #{@supplier.char_candidates_at(1)}"
+      @supplier.char_candidates_at(1).tap do |second_strings|
+        second_strings.size.should == CHARS_NEXT_TO_A.size
+        second_strings.sort.should == CHARS_NEXT_TO_A.sort
+      end
+
+    end
+
+  end
+
+  describe 'current_selected' do
+    before do
+      @supplier = CharSupplier.new({deck: Deck.new})
+    end
+
+    it '1文字目の候補文字群を供給するときには、空文字列を返す' do
+      @supplier.current_selected(0).length.should == 0
+    end
+
+    it '2文字目の候補文字群を供給するときには、決まり字の1文字目を返す' do
+      @supplier.current_selected(1).length.should == 1
+      @supplier.current_selected(1).should == @supplier.current_poem.kimari_ji[0]
+    end
+
+    it '3文字目の候補文字群を供給するときには、決まり字の冒頭2文字を返す' do
+      @supplier.current_selected(2).length.should == 2
+      @supplier.current_selected(2).should == @supplier.current_poem.kimari_ji[0..1]
     end
   end
 
