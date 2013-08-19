@@ -268,7 +268,37 @@ describe 'CharSupplier' do
       end
     end
 
-    #%ToDo 続きは、テストで無いモードでのget_4stringsのテストから
+    describe 'Context: シャッフルしていない本番デッキから文字群を取得' do
+      before do
+        @supplier = CharSupplier.new({deck: Deck.new})
+      end
+
+      it '歌#1の4文字目まで確認' do
+        @supplier.get_4strings.include?('あ').should.be.true
+        @supplier.get_4strings.include?('き').should.be.true
+        @supplier.get_4strings.include?('か').should.be.true #友札の文字
+        @supplier.get_4strings.include?('た').should.be.true #決まり字over状態
+      end
+
+      it '歌#1の2文字目まで取得した後、歌を#2, #3に切り替える' do
+        @supplier.get_4strings.include?('あ').should.be.true
+        @supplier.get_4strings.include?('き').should.be.true
+
+        # 歌#2へ
+        @supplier.draw_next_poem.should.not.be.nil
+        @supplier.get_4strings.include?('は').should.be.true
+        @supplier.get_4strings[0..1].sort.should == ['る', 'な'].sort #「は」に続く文字
+        @supplier.get_4strings[0..1].sort.should == ['す', 'の'].sort #「はる」に続く文字
+        @supplier.get_4strings[0].should == 'き' # これが「ぎ」になるように頑張る？
+
+        # 歌#3へ
+        @supplier.draw_next_poem.should.not.be.nil
+        @supplier.get_4strings.include?('あ').should.be.true
+        @supplier.get_4strings.include?('し').should.be.true
+
+      end
+
+    end
   end
 
   describe 'test_challenge_string' do

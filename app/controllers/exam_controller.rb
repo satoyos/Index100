@@ -32,7 +32,7 @@ class ExamController < RMViewController
     attr_reader prop
   end
 
-  PROPERTIES_ACCESSOR = [:button_is_moved]
+  PROPERTIES_ACCESSOR = [:button_is_moved, :challenge_button_is_pushed]
   PROPERTIES_ACCESSOR.each do |prop|
     attr_accessor prop
   end
@@ -233,9 +233,11 @@ class ExamController < RMViewController
   def init_challenge_status
     @challenge_button.enabled = true
     @current_challenge_string = ''
+    self.challenge_button_is_pushed = false
   end
 
   def challenge_button_pushed
+    self.challenge_button_is_pushed = true
     sweep_volume_view if volume_view_is_coming_out?
     @challenge_button.enabled = false
     make_main_buttons_disabled

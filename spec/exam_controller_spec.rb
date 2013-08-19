@@ -35,11 +35,6 @@ describe 'ExamController' do
       controller.clear_button.frame.size.height.should == InputView::CLEAR_BUTTON_HEIGHT
     end
 
-    it 'この時点では、「これまで入力された文字列」は空っぽ(長さが0)' do
-      controller.current_challenge_string.is_a?(String).should.be.true
-      controller.current_challenge_string.length.should == 0
-    end
-
     it 'input_viewのmain_4framesを描画領域とするボタンを4つ持つ' do
       controller.main_buttons.tap do |buttons|
         buttons.should.not.be.nil
@@ -53,10 +48,25 @@ describe 'ExamController' do
 
     end
 
+    describe '文字選択状態も、初期状態' do
+      it 'この時点では、「これまで入力された文字列」は空っぽ(長さが0)' do
+        controller.current_challenge_string.is_a?(String).should.be.true
+        controller.current_challenge_string.length.should == 0
+      end
+
+      it 'チャレンジボタンもまだ押されていない' do
+        controller.challenge_button_is_pushed.should.be.false
+      end
+    end
 
     it '最初、ボリュームアイコンは隠れている。' do
       controller.volume_view_is_coming_out?.should.be.false
     end
+
+  end
+
+  describe 'ボリュームビューの動作(他のボタンとの関連)' do
+    tests ExamController
 
     it 'ボリュームアイコンをタップすると、ボリュームビューが出現する。' do
       #noinspection RubyArgCount
@@ -91,7 +101,6 @@ describe 'ExamController' do
       controller.volume_view_is_coming_out?.should.be.false
     end
   end
-
 
   describe 'あるMainButtonが押されたときの動作' do
     tests ExamController
@@ -142,6 +151,8 @@ describe 'ExamController' do
   end
 =end
 
+  # 次のテストは、実際のデッキからの文字取得では成り立たなくなった。
+=begin
   describe 'クリアボタンが押されたときの動作' do
     tests ExamController
 
@@ -160,6 +171,7 @@ describe 'ExamController' do
       controller.main_buttons.map{|b| b.currentTitle}.should == first_strings
     end
   end
+=end
 
   describe 'current_challenge_string' do
     tests ExamController
@@ -198,6 +210,12 @@ describe 'ExamController' do
     it '正解判定を出す' do
       controller.get_result_type.should == :right
     end
+
+    it 'ボタンを押すと、「押された」フラグがtrueになる' do
+      #noinspection RubyArgCount
+      tap(ExamController::A_LABEL_CHALLENGE_BUTTON)
+      controller.challenge_button_is_pushed.should.be.true
+    end
   end
 
   describe 'チャレンジボタンが押されたときの動作：間違い編' do
@@ -219,4 +237,6 @@ describe 'ExamController' do
       controller.get_result_type.should == :wrong
     end
   end
+
+  # %ToDo: 間違ったメインボタンが押された時点で、即チャレンジが実施されるところから！
 end

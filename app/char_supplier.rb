@@ -1,5 +1,6 @@
 class CharSupplier
-  PROPERTIES = [:deck, :current_poem, :counter, :answer, :difficulty, :mode]
+  PROPERTIES = [:deck, :current_poem, :counter, :answer, :difficulty, :mode,
+                :supplying_strings]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
@@ -15,6 +16,7 @@ class CharSupplier
     @deck = init_hash[:deck]
     @current_poem = @deck.next_poem
     @counter = 0
+    @supplying_strings = nil
     @mode = init_hash[:mode]
 
     # まずは、難易度はeasyモードのみ用意。
@@ -30,7 +32,7 @@ class CharSupplier
   def draw_next_poem
     case @current_poem = @deck.next_poem
       when nil; nil
-      else    ; self
+      else    ; self.clear
     end
   end
 
@@ -52,14 +54,15 @@ class CharSupplier
 #    strings = TEST_ARRAY[@counter]
     strings = case @mode
                 when TEST_MODE1; TEST_ARRAY[@counter]
-                else           ; nil
+                else           ; make_4strings_at(@counter)
               end
     @counter += 1
-    strings
+    @supplying_strings = strings
   end
   
   def clear
     @counter = 0
+    @supplying_strings = nil
     self
   end
 
@@ -78,8 +81,11 @@ class CharSupplier
     if @counter == 0 || @counter > @answer.length
       return nil
     end
+    case @mode
+      when TEST_MODE1; TEST_ARRAY[@counter-1].find_index(TEST_ANSWER[@counter-1])
+      else           ; @supplying_strings.find_index(self.answer[@counter-1])
+    end
 
-    TEST_ARRAY[@counter-1].find_index(TEST_ANSWER[@counter-1])
   end
 
   def make_4strings_at(count)
