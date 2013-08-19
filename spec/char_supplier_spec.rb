@@ -82,8 +82,6 @@ describe 'CharSupplier' do
       @supplier.make_4strings_at(0).should.not == @supplier.make_4strings_at(0)
     end
 
-    #%Todo: 続きは、このテストを通すところから！
-=begin
     it '歌#1の2文字目候補群は、「あ」で始まる歌の二文字目の中から四つ選んだもので、「き」を含む' do
       @supplier.make_4strings_at(1).tap do |second_strings|
         second_strings.should.not.be.nil
@@ -92,7 +90,62 @@ describe 'CharSupplier' do
         (second_strings & CHARS_NEXT_TO_A).size.should == CharSupplier::NUM_TO_SUPPLY
       end
     end
-=end
+
+    describe '歌#1の3文字目候補群は、「か」と「の」と二つのnilから構成される' do
+      before do
+        @third_strings =  @supplier.make_4strings_at(2)
+      end
+
+      it '3文字目の正解文字は「の」' do
+        @supplier.right_char_at(2).should == 'の'
+      end
+
+      it '「あき」に続きうる文字は「か」と「の」' do
+        @supplier.char_candidates_at(2).sort.should == ['か', 'の']
+      end
+
+      it '正解文字を先頭にしてあとはシャッフルした配列も、やはり「か」と「の」からなる配列' do
+        @supplier.shuffled_candidates_at(2).sort.should == ['か', 'の']
+      end
+
+      it '大きさ4の配列を返す' do
+        @third_strings.should.not.be.nil
+        @third_strings.size.should == CharSupplier::NUM_TO_SUPPLY
+      end
+
+      it 'その配列は「の」を含む' do
+        @supplier.char_candidates_at(2).size.should == 2
+        @third_strings.include?(@supplier.current_poem.kimari_ji[2]).should.be.true
+      end
+
+      it 'その配列は2個のnilを含む' do
+        @third_strings.count(nil).should == 2
+      end
+    end
+
+
+    describe '決まり字の長さを超えても、上の句の文字列を正解文字として候補文字群を返す (#1の歌なら、4文字目も返す)' do
+      before do
+        @kimari_ji_length = @supplier.current_poem.kimari_ji.length
+        @beyond_strings = @supplier.make_4strings_at(@kimari_ji_length)
+      end
+      it '大きさ4の配列を返す' do
+        @beyond_strings.tap do |strings|
+          strings.should.not.be.nil
+          strings.size.should == CharSupplier::NUM_TO_SUPPLY
+          strings.include?(@supplier.current_poem.in_hiragana.kami[@kimari_ji_length]).should.be.true
+        end
+      end
+
+      it '正しい文字を含む' do
+        char_in_kami = @supplier.current_poem.in_hiragana.kami[@kimari_ji_length]
+        @beyond_strings.include?(char_in_kami).should.be.true
+      end
+
+      it '正しい文字以外の候補文字は無く、nilが入っている' do
+        @beyond_strings.count(nil).should == CharSupplier::NUM_TO_SUPPLY-1
+      end
+    end
   end
 
   describe 'char_candidate_at' do
@@ -106,12 +159,44 @@ describe 'CharSupplier' do
     end
 
     it '#1の歌の二文字目候補字群は、CHARS_NEXT_TO_Aの文字群と一致する' do
-#      puts "「あ」に続く二文字目候補字群 => #{@supplier.char_candidates_at(1)}"
       @supplier.char_candidates_at(1).tap do |second_strings|
         second_strings.size.should == CHARS_NEXT_TO_A.size
         second_strings.sort.should == CHARS_NEXT_TO_A.sort
       end
 
+    end
+
+    describe '#76の大山札「わたのはらこ」でのチェック' do
+      before do
+        poem76 = @supplier.set_current_poem_to_number(76)
+        @kimari = poem76.kimari_ji
+      end
+
+      it 'まず、正しく決まり字が取得できている' do
+        @kimari.should == 'わたのはらこ'
+      end
+
+      it '2文字目候補群は、順不同で「た す が び」を含む4文字' do
+        @supplier.char_candidates_at(1).tap do |second_strings|
+          second_strings.sort.should == %w(た す が び).sort
+        end
+      end
+
+      it '3文字目候補群は「の」のみ' do
+        @supplier.char_candidates_at(2).should == %w(の)
+      end
+
+      it '4文字目候補群は「は」のみ' do
+        @supplier.char_candidates_at(3).should == %w(は)
+      end
+
+      it '5文字目候補群は「ら」のみ' do
+        @supplier.char_candidates_at(4).should == %w(ら)
+      end
+
+      it '6文字目候補は二文字あり、順不同で「や こ」' do
+        @supplier.char_candidates_at(5).should == %w(や こ)
+      end
     end
 
   end
@@ -136,28 +221,54 @@ describe 'CharSupplier' do
     end
   end
 
-  describe 'get_4strings' do
+  describe 'set_current_poem_to_number' do
     before do
       @supplier = CharSupplier.new({deck: Deck.new})
     end
 
-    it 'return 4 strings determined by called order' do
-      first = @supplier.get_4strings
-      first.should.not.be.nil
-      first.is_a?(Array).should.be.true
-      first[2].should == 'あ'
-      second = @supplier.get_4strings
-      second[0].should == 'ら'
-      third = @supplier.get_4strings
-      forth = @supplier.get_4strings
-      fifth = @supplier.get_4strings
-      sixth = @supplier.get_4strings
-      sixth[2] == 'み'
-      @supplier.get_4strings.should.be.nil
-      @supplier.counter.should == 6
-
-
+    it '与えられた歌番号の歌をcurrent_poem_numberにセットする' do
+      @supplier.set_current_poem_to_number(4)
+      @supplier.current_poem.number.should == 4
     end
+
+    it '戻り値として、与えられた歌番号の歌(Poem)を返す' do
+      @supplier.set_current_poem_to_number(10).tap do |poem|
+        poem.should.not.be.nil
+        poem.number.should == 10
+      end
+    end
+
+    it '保持していない歌番号が引数で与えられたらnilを返す' do
+      @supplier.set_current_poem_to_number(0).should.be.nil
+      @supplier.set_current_poem_to_number(101).should.be.nil
+    end
+  end
+
+  describe 'get_4strings' do
+    describe 'Context: TEST_MODE1' do
+      before do
+        @supplier = CharSupplier.new({deck: Deck.new,
+                                      mode: CharSupplier::TEST_MODE1})
+      end
+
+      it 'return 4 strings determined by called order' do
+        first = @supplier.get_4strings
+        first.should.not.be.nil
+        first.is_a?(Array).should.be.true
+        first[2].should == 'あ'
+        second = @supplier.get_4strings
+        second[0].should == 'ら'
+        third = @supplier.get_4strings
+        forth = @supplier.get_4strings
+        fifth = @supplier.get_4strings
+        sixth = @supplier.get_4strings
+        sixth[2].should == 'み'
+        @supplier.get_4strings.should.be.nil
+        @supplier.counter.should == 6
+      end
+    end
+
+    #%ToDo 続きは、テストで無いモードでのget_4stringsのテストから
   end
 
   describe 'test_challenge_string' do
@@ -166,7 +277,7 @@ describe 'CharSupplier' do
     end
 
     it '正しい文字列でのチャレンジ時はtrueを返す' do
-      @supplier.test_challenge_string('あらし').should.be.true
+      @supplier.test_challenge_string(@supplier.answer).should.be.true
     end
 
     it '間違った文字列でのチャレンジ時は、falseを返す' do
@@ -186,43 +297,47 @@ describe 'CharSupplier' do
   end
 
   describe 'current_right_index' do
-    before do
-      @supplier = CharSupplier.new({deck: Deck.new})
-    end
-
-    it 'まだ文字列を供給していない場合には、nilを返す' do
-      @supplier.current_right_index.should.be.nil
-    end
-
-    it '1回供給したら、最初に渡した文字列群の中で正しいもののindexを返す' do
-      strings = @supplier.get_4strings
-      @supplier.current_right_index.tap do |idx|
-        idx.should.not.be.nil
-        idx.is_a?(Fixnum).should.be.true
-        strings[idx].should == @supplier.answer[0]
+    describe 'Context: TEST_MODE1' do
+      before do
+        @supplier = CharSupplier.new({deck: Deck.new,
+                                      mode: CharSupplier::TEST_MODE1})
       end
-    end
 
-    it '2回供給しても、やっぱり正しいもののindexを返す' do
-      if @supplier.answer.length == 1
-        1.should == 1
-      else
-        strings1 = @supplier.get_4strings #1回目
-        strings2 = @supplier.get_4strings #2回目
+      it 'まだ文字列を供給していない場合には、nilを返す' do
+        @supplier.current_right_index.should.be.nil
+      end
+
+      it '1回供給したら、最初に渡した文字列群の中で正しいもののindexを返す' do
+        strings = @supplier.get_4strings
         @supplier.current_right_index.tap do |idx|
+          idx.should.not.be.nil
           idx.is_a?(Fixnum).should.be.true
-          strings2[idx].should == @supplier.answer[1]
+          strings[idx].should == @supplier.answer[0]
         end
       end
-    end
 
-    it 'テスト実装では正解は「あらし」固定なので、4回供給した後はnilを返す' do
-      strings1 = @supplier.get_4strings #1回目
-      strings2 = @supplier.get_4strings #2回目
-      strings3 = @supplier.get_4strings #3回目
-      strings4 = @supplier.get_4strings #4回目
-      @supplier.current_right_index.should.be.nil
+      it '2回供給しても、やっぱり正しいもののindexを返す' do
+        if @supplier.answer.length == 1
+          1.should == 1
+        else
+          strings1 = @supplier.get_4strings #1回目
+          strings2 = @supplier.get_4strings #2回目
+          @supplier.current_right_index.tap do |idx|
+            idx.is_a?(Fixnum).should.be.true
+            strings2[idx].should == @supplier.answer[1]
+          end
+        end
+      end
+
+      it 'テスト実装では正解は「あらし」固定なので、4回供給した後はnilを返す' do
+        strings1 = @supplier.get_4strings #1回目
+        strings2 = @supplier.get_4strings #2回目
+        strings3 = @supplier.get_4strings #3回目
+        strings4 = @supplier.get_4strings #4回目
+        @supplier.current_right_index.should.be.nil
+      end
     end
   end
+
 
 end

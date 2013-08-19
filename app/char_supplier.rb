@@ -1,5 +1,5 @@
 class CharSupplier
-  PROPERTIES = [:deck, :current_poem, :counter, :answer, :difficulty]
+  PROPERTIES = [:deck, :current_poem, :counter, :answer, :difficulty, :mode]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
@@ -9,16 +9,22 @@ class CharSupplier
 
   DIFFICULTIES = [:easy, :normal]
 
+  TEST_MODE1 = :test_mode1
+
   def initialize(init_hash)
     @deck = init_hash[:deck]
     @current_poem = @deck.next_poem
     @counter = 0
+    @mode = init_hash[:mode]
 
     # まずは、難易度はeasyモードのみ用意。
     @difficulty = :easy
 
     ## テスト実装
-    @answer = TEST_ANSWER
+    @answer = case @mode
+                when TEST_MODE1; TEST_ANSWER
+                else           ; @current_poem.kimari_ji
+              end
   end
 
   def draw_next_poem
@@ -30,7 +36,7 @@ class CharSupplier
 
   TEST_ARRAY = [
       ['A1', 'A2', 'あ', 'A4'],
-      ['ら', 'B2', 'B3', 'B4'],
+      ['ら', 'B2', 'B3', nil],
       ['C1', 'C2', 'C3', 'し'],
       ['D1', 'D2', 'ふ', 'D4'],
       ['E1', 'く', 'E3', 'E4'],
@@ -43,7 +49,11 @@ class CharSupplier
 
   def get_4strings
     return nil if @counter == COUNTER_MAX
-    strings = TEST_ARRAY[@counter]
+#    strings = TEST_ARRAY[@counter]
+    strings = case @mode
+                when TEST_MODE1; TEST_ARRAY[@counter]
+                else           ; nil
+              end
     @counter += 1
     strings
   end
@@ -54,7 +64,13 @@ class CharSupplier
   end
 
   def test_challenge_string(str)
-    str == TEST_ANSWER
+    str == self.answer
+  end
+
+  # 与えられた歌番号の歌をcurrent_poemに設定して、その歌(Poem)を返す
+  # 現在のデッキにその歌が無い場合には、nilを返す
+  def set_current_poem_to_number(poem_number)
+    @current_poem = @deck.poems.find{|poem| poem.number == poem_number}
   end
 
   def current_right_index
@@ -67,13 +83,28 @@ class CharSupplier
   end
 
   def make_4strings_at(count)
-    right_char = @current_poem.kimari_ji[count]
-    all_candidates = char_candidates_at(count)
-    all_candidates.delete(right_char)
-    # 先頭に正解文字、その後ろは候補文字がシャッフルされた配列を作る
-    shuffled_candidates = all_candidates.shuffle.unshift(right_char)
+    if count >= @current_poem.kimari_ji.length
+      return [@current_poem.in_hiragana.kami[count], nil, nil, nil]
+    end
+    shuffled_candidates = shuffled_candidates_at(count)
     # 先頭からNUM_TO_SUPPLY個を取得し、シャッフルして戻り値とする。
-    shuffled_candidates[0..NUM_TO_SUPPLY-1].shuffle
+    shuffled_candidates[0..NUM_TO_SUPPLY-1].shuffle.fill(
+        nil,
+        shuffled_candidates.length..NUM_TO_SUPPLY-1
+    )
+  end
+
+  #count番目(1文字目はcount=0)の候補となる文字群を、正解文字を先頭にして返す。
+  #ただし、洗脳の正解文字以外はシャッフルする
+  def shuffled_candidates_at(count)
+    all_candidates = char_candidates_at(count)
+    all_candidates.delete(right_char_at(count))
+    # 先頭に正解文字、その後ろは候補文字がシャッフルされた配列を作る
+    all_candidates.shuffle.unshift(right_char_at(count))
+  end
+
+  def right_char_at(count)
+    right_char = @current_poem.kimari_ji[count]
   end
 
   def char_candidates_at(nth)
@@ -92,7 +123,7 @@ class CharSupplier
 
   def easy_candidates_at(nth)
     regexp = Regexp.new("^#{current_selected(nth)}")
-    puts "regexp => #{regexp}"
+#    puts "regexp => #{regexp}"
     @deck.poems.select{|poem|
       poem.kimari_ji =~ regexp
     }.map{|poem|
