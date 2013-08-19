@@ -121,8 +121,13 @@ describe 'ExamController' do
     end
 
     it 'メイン・ボタン・スロットの、押されたボタンに該当する位置は新しいボタンが補充されている' do
-      controller.main_buttons[0].should.not.be.nil
-      controller.main_buttons[0].should.not == @tap_button
+      # ただし、0番のボタンが正解の時に限る。
+      if 0 == controller.supplier.current_right_index
+        controller.main_buttons[0].should.not.be.nil
+        controller.main_buttons[0].should.not == @tap_button
+      else
+        1.should == 1
+      end
     end
 
 
@@ -236,7 +241,31 @@ describe 'ExamController' do
     it '誤り判定を出す' do
       controller.get_result_type.should == :wrong
     end
+    it '長さ判定で「短い」という結果を出す' do
+      controller.get_wrong_type.should == :short
+    end
   end
 
-  # %ToDo: 間違ったメインボタンが押された時点で、即チャレンジが実施されるところから！
+  # (入力された決まり字が他の歌の物だった場合、すぐにユーザに教えてあげる動作)
+  describe '間違ったメインボタンが押された時点で、即チャレンジが実施される' do
+    tests ExamController
+
+    before do
+      first_chars = controller.main_buttons.map{|button| button.currentTitle}
+      first_chars.delete_at(controller.supplier.current_right_index)
+      @wrong_char = first_chars[0]
+      #noinspection RubyArgCount
+      tap(@wrong_char)
+    end
+
+    it 'wrong_charのチェック' do
+      @wrong_char.should.not.be.nil
+      @wrong_char.length.should == 1
+      @wrong_char.should.not == 'あ'
+    end
+
+    it 'チャレンジが実行される(<= チャレンジボタンが押された状態になっている)' do
+      controller.challenge_button_is_pushed.should.be.true
+    end
+  end
 end

@@ -11,7 +11,8 @@ class ExamController < RMViewController
   A_LABEL_CLEAR_BUTTON     = 'clear_button'
   A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
 
-  CALLBACK_AFTER_BUTTON_MOVED = 'exchange_main_buttons'
+#  CALLBACK_AFTER_BUTTON_MOVED = 'exchange_main_buttons'
+  CALLBACK_AFTER_BUTTON_MOVED = 'check_if_right_button_pushed'
   CALLBACK_AFTER_EXCHANGE     = 'remove_prev_main_buttons'
 
   VOLUME_ICON_MARGIN = 10
@@ -93,6 +94,10 @@ class ExamController < RMViewController
     end
   end
 
+  def get_wrong_type
+    @supplier.length_check(@current_challenge_string)
+  end
+
   :private
 
   def set_char_supplier
@@ -144,8 +149,16 @@ class ExamController < RMViewController
     @input_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
   end
 
-  def exchange_main_buttons
+  def check_if_right_button_pushed
     self.button_is_moved = true
+    case @supplier.on_the_correct_line?(@current_challenge_string)
+      when true; exchange_main_buttons
+      else     ; challenge_button_pushed
+    end
+
+  end
+
+  def exchange_main_buttons
     @prev_main_buttons = @main_buttons.dup
     set_main_buttons(@supplier.get_4strings)
     if RUBYMOTION_ENV == 'test'
@@ -242,7 +255,15 @@ class ExamController < RMViewController
     @challenge_button.enabled = false
     make_main_buttons_disabled
     @input_view.display_result_view(get_result_type)
-    AudioPlayerFactory.players[get_result_type].play
+    audio_type = case get_result_type
+                   when :right  ; :right
+                   else
+                     case @supplier.on_the_correct_line?(@current_challenge_string)
+                       when true ; get_wrong_type
+                       else      ; :wrong
+                     end
+                 end
+    AudioPlayerFactory.players[audio_type].play
   end
 
   def create_volume_icon_on_tatami

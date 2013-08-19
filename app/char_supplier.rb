@@ -9,6 +9,7 @@ class CharSupplier
   COUNTER_MAX   = 6
 
   DIFFICULTIES = [:easy, :normal]
+  LENGTH_TYPES = [:short, :just, :long]
 
   TEST_MODE1 = :test_mode1
 
@@ -68,6 +69,23 @@ class CharSupplier
 
   def test_challenge_string(str)
     str == self.answer
+  end
+
+  def length_check(challenge_str)
+    case challenge_str.length - self.answer.length
+      when 1..5 ; :long
+      when 0    ; :just
+      else      ; :short
+    end
+  end
+
+  def on_the_correct_line?(partial_challenge_str)
+    regexp = Regexp.new("^#{partial_challenge_str}")
+    line_string = @current_poem.kimari_ji +
+        @current_poem.in_hiragana.kami[@current_poem.kimari_ji.length..5]
+#    puts "regexp => #{regexp}"
+#    puts "line_string => #{line_string}"
+    (regexp =~ line_string) == 0 # 0文字目からマッチする、という意味
   end
 
   # 与えられた歌番号の歌をcurrent_poemに設定して、その歌(Poem)を返す

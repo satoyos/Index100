@@ -369,5 +369,21 @@ describe 'CharSupplier' do
     end
   end
 
+  describe 'on_the_correct_line?' do
+    before do
+      @supplier = CharSupplier.new({deck: Deck.new})
+    end
 
+    it '「あき」は#1の歌に部分的に適合している' do
+      @supplier.on_the_correct_line?('あき').should.be.true
+    end
+
+    it '「あきのたの」も決まり字overだけど、on_the_lineの状態と見なす' do
+      @supplier.on_the_correct_line?('あきのたの').should.be.true
+    end
+
+    it '「あきか」は別の歌になるので、falseになる' do
+      @supplier.on_the_correct_line?('あきか').should.be.false
+    end
+  end
 end

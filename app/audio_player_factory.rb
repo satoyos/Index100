@@ -3,7 +3,9 @@ class AudioPlayerFactory
   AUDIO_PATH = {
       right: 'audio/0000_正解です！',
       wrong: 'audio/0002_違います！',
-      test:  'audio/0004_ボリューム調整用音声'
+      test:  'audio/0004_ボリューム調整用音声',
+      short: 'audio/1003_まだ決まりません',
+      long:  'audio/1004_長すぎます'
   }
 
   class << self
