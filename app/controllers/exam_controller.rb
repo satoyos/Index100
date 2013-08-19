@@ -110,11 +110,15 @@ class ExamController < RMViewController
   def create_a_main_button_at(idx, title: title)
     button = UIButton.buttonWithType(MAIN_BUTTON_TYPE)
     button.tap do |b|
-      b.setTitle(title, forState: UIControlStateNormal) if title
-      b.accessibilityLabel = title if title
-      b.addTarget(self,
-                  action: "main_button_pushed:",
-                  forControlEvents: UIControlEventTouchUpInside)
+      if title
+        b.setTitle(title, forState: UIControlStateNormal) if title
+        b.accessibilityLabel = title if title
+        b.addTarget(self,
+                    action: "main_button_pushed:",
+                    forControlEvents: UIControlEventTouchUpInside)
+      else
+        b.enabled = false
+      end
       @main_buttons[idx] = b
       @input_view.addSubview(b)
     end
