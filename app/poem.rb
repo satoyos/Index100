@@ -1,4 +1,4 @@
-class Poem
+ class Poem
   DEFAULT_LABEL_PATTERN = 'poem%03d'
   PROPERTIES = [:number, :poet, :liner, :in_hiragana, :kimari_ji]
   PROPERTIES.each do |prop|
@@ -10,5 +10,6 @@ class Poem
       self.send("#{key}=", value) if PROPERTIES.member? key.to_sym
     end
     self.in_hiragana = Liner_2_parts.new(self.in_hiragana)
+    @kimari_ji = @kimari_ji.gsub(/　/, '')
   end
 end
