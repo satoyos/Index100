@@ -6,21 +6,24 @@ describe 'ExamController' do
       controller.should.not.be.nil
     end
 
-    it '畳ビューを一枚もつ' do
-      controller.tatami_view.should.not.be.nil
-      controller.tatami_view.is_a?(UIView).should.be.true
-    end
+    describe 'game_view' do
+      before do
+        @game_view = controller.game_view
+      end
+      it 'ゲームビューを一つ持つ' do
+        @game_view.should.not.be.nil
+        @game_view.is_a?(GameView).should.be.true
+      end
 
-    it '札ビューを一枚もつ' do
-      controller.fuda_view.should.not.be.nil
-      controller.fuda_view.is_a?(FudaView).should.be.true
-    end
+      it 'ゲームビューがcontrollerのビューのsubviewになっている' do
+        controller.view.subviews.include?(@game_view).should.be.true
+      end
 
-    it '畳ビューと札ビューのcenterは一致！' do
-      controller.fuda_view.center.is_a?(CGPoint).should.be.true
-      controller.fuda_view.center.eql?(controller.tatami_view.center).should.be.true
+      it 'ゲームビューの始点(frame.origin)は(0, 0)でなければならない' do
+        @game_view.frame.origin.should == CGPointZero
+      end
     end
-
+=begin
 
     it 'チャレンジボタンを管理している' do
       controller.challenge_button.should.not.be.nil
@@ -62,9 +65,11 @@ describe 'ExamController' do
     it '最初、ボリュームアイコンは隠れている。' do
       controller.volume_view_is_coming_out?.should.be.false
     end
+=end
 
   end
 
+=begin
   describe 'ボリュームビューの動作(他のボタンとの関連)' do
     tests ExamController
 
@@ -101,7 +106,9 @@ describe 'ExamController' do
       controller.volume_view_is_coming_out?.should.be.false
     end
   end
+=end
 
+=begin
   describe 'あるMainButtonが押されたときの動作' do
     tests ExamController
 
@@ -136,6 +143,7 @@ describe 'ExamController' do
       controller.button_is_moved.should.be.true
     end
   end
+=end
 
   # 下記テストは、なぜかメインボタンのenabledが呼び出せないので、無効。
   # ちゃんとenabledを呼び出せるようになったら、これもテストしたい。
@@ -178,6 +186,8 @@ describe 'ExamController' do
   end
 =end
 
+
+=begin
   describe 'current_challenge_string' do
     tests ExamController
 
@@ -194,7 +204,6 @@ describe 'ExamController' do
       controller.current_challenge_string.length.should == 1
     end
   end
-
 
   describe 'チャレンジボタンが押されたときの動作: 正解編' do
     tests ExamController
@@ -245,7 +254,9 @@ describe 'ExamController' do
       controller.get_wrong_type.should == :short
     end
   end
+=end
 
+=begin
   # (入力された決まり字が他の歌の物だった場合、すぐにユーザに教えてあげる動作)
   describe '間違ったメインボタンが押された時点で、即チャレンジが実施される' do
     tests ExamController
@@ -268,4 +279,5 @@ describe 'ExamController' do
       controller.challenge_button_is_pushed.should.be.true
     end
   end
+=end
 end

@@ -1,7 +1,7 @@
 class ExamController < RMViewController
-  FUDA_INITIAL_STRING = 'これから札に歌を設定します。'
-  TATAMI_JPG_FILE = 'tatami_moved.jpg'
-  FUDA_HEIGHT_POWER = 0.95 # 札ビューの高さは、畳ビューの何倍にするか
+#  FUDA_INITIAL_STRING = 'これから札に歌を設定します。'
+#  TATAMI_JPG_FILE = 'tatami_moved.jpg'
+#  FUDA_HEIGHT_POWER = 0.95 # 札ビューの高さは、畳ビューの何倍にするか
 
   MAIN_BUTTON_NUM = 4
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
@@ -15,7 +15,7 @@ class ExamController < RMViewController
   CALLBACK_AFTER_BUTTON_MOVED = 'check_if_right_button_pushed'
   CALLBACK_AFTER_EXCHANGE     = 'remove_prev_main_buttons'
 
-  VOLUME_ICON_MARGIN = 10
+#  VOLUME_ICON_MARGIN = 10
   INITIAL_VOLUME = 0.5
   VOLUME_VIEW_HEIGHT = 60
   VOLUME_VIEW_COLOR = ColorFactory.str_to_color('#68be8d')
@@ -26,7 +26,7 @@ class ExamController < RMViewController
   SLIDER_X_MARGIN = 10
   SLIDER_HEIGHT = 20
 
-  PROPERTIES = [:fuda_view, :tatami_view, :input_view, :supplier,
+  PROPERTIES = [:game_view, :fuda_view, :tatami_view, :input_view, :supplier,
                 :challenge_button, :clear_button, :main_buttons,
                 :pushed_button, :current_challenge_string]
   PROPERTIES.each do |prop|
@@ -42,13 +42,13 @@ class ExamController < RMViewController
   def viewDidLoad
     super
 
-    create_tatami_view()
-    create_fuda_view()
     set_char_supplier()
-#    @fuda_view.rewrite_string('たつたのかはのにしきなりけり')
-    @fuda_view.rewrite_string(@supplier.current_poem.in_hiragana.shimo)
+    set_game_view()
+#    create_tatami_view()
+#    create_fuda_view()
+#    @fuda_view.rewrite_string(@supplier.current_poem.in_hiragana.shimo)
 
-    create_input_view()
+#    create_input_view()
     set_clear_button()
     set_challenge_button()
     set_main_buttons(@supplier.get_4strings)
@@ -57,34 +57,19 @@ class ExamController < RMViewController
     init_challenge_status()
   end
 
-  def create_fuda_view
-    @fuda_view = FudaView.alloc.initWithString(FUDA_INITIAL_STRING)
-    @fuda_view.tap do |f_view|
-      f_view.set_all_sizes_by(@tatami_view.frame.size.height * FUDA_HEIGHT_POWER)
-      f_view.center= @tatami_view.center
-      @tatami_view.addSubview(f_view)
-    end
-  end
-
-  def create_tatami_view
-    @tatami_view = UIImageView.alloc.initWithImage(UIImage.imageNamed(TATAMI_JPG_FILE))
-    @tatami_view.tap do |t_view|
-      t_view.frame = [CGRectZero.origin,
-                      CGSizeMake(self_size.width, self_size.height/2)]
-      t_view.clipsToBounds= true
-      t_view.userInteractionEnabled = true
-      create_volume_icon_on_tatami
-      self.view.addSubview(t_view)
-    end
+  def set_game_view
+    @game_view = GameView.alloc.initWithFrame(game_view_frame,
+                                              withPoem: @supplier.current_poem)
+    create_volume_icon()
+    create_input_view()
+    self.view.addSubview(@game_view)
   end
 
 
   def create_input_view
-    @input_view = InputView.alloc.initWithFrame(
-        CGRectMake(0, tatami_origin.y + tatami_size.height,
-                   tatami_size.width, self_size.height - tatami_size.height),
-        controller: self)
-    self.view.addSubview(@input_view)
+    @input_view = InputView.alloc.initWithFrame(@game_view.input_view_frame,
+                                                controller: self)
+    @game_view.addSubview(@input_view)
   end
 
   def get_result_type
@@ -99,6 +84,14 @@ class ExamController < RMViewController
   end
 
   :private
+
+  def game_view_frame
+    [
+#        CGRectZero.origin,
+        CGPointZero,
+        CGSizeMake(self_size.width, self_size.height)
+    ]
+  end
 
   def set_char_supplier
     @supplier = CharSupplier.new({deck: Deck.new})
@@ -266,16 +259,13 @@ class ExamController < RMViewController
     AudioPlayerFactory.players[audio_type].play
   end
 
-  def create_volume_icon_on_tatami
+  def create_volume_icon
     @volume_icon = VolumeIcon.alloc.init
     @volume_icon.init_icon
     @volume_icon.tap do |v_icon|
-      v_icon.frame = [CGPointMake(tatami_size.width -
-                                      v_icon.frame.size.width - VOLUME_ICON_MARGIN,
-                                  VOLUME_ICON_MARGIN),
-                      v_icon.frame.size]
+      v_icon.frame = @game_view.volume_icon_frame_with_size(v_icon.frame.size)
       v_icon.addTarget(self, action: :volume_icon_tapped, forControlEvents: UIControlEventTouchUpInside)
-      @tatami_view.addSubview(v_icon)
+      @game_view.addSubview(v_icon)
     end
   end
 
@@ -319,13 +309,15 @@ class ExamController < RMViewController
     self.view.frame.size
   end
 
+=begin
   def tatami_origin
-    @tatami_view.frame.origin
+    @game_view.tatami_view.frame.origin
   end
 
   def tatami_size
-    @tatami_view.frame.size
+    @game_view.tatami_view.frame.size
   end
+=end
 
   def volume_slider_frame
     [CGPointMake(SLIDER_X_MARGIN,
