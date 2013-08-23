@@ -5,17 +5,20 @@ class GameView < UIView
 
   VOLUME_ICON_MARGIN = 10
 
-  PROPERTIES = [:poem, :tatami_view, :fuda_view]
+  PROPERTIES = [:poem, :tatami_view, :fuda_view, :input_view, :controller]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
 
-  def initWithFrame(frame, withPoem: poem)
+  def initWithFrame(frame, withPoem: poem, controller: controller)
     super.initWithFrame(frame)
     @poem = poem
+    @conroller = controller
     create_tatami_view()
     create_fuda_view()
     @fuda_view.rewrite_string(@poem.in_hiragana.shimo)
+
+    create_input_view()
 
     self
   end
@@ -41,11 +44,6 @@ class GameView < UIView
     end
   end
 
-  def input_view_frame
-    CGRectMake(0, tatami_origin.y + tatami_size.height,
-               tatami_size.width, self_size.height - tatami_size.height)
-  end
-
   def volume_icon_frame_with_size(v_size)
     [CGPointMake(tatami_size.width -
                      v_size.width - VOLUME_ICON_MARGIN,
@@ -53,7 +51,22 @@ class GameView < UIView
      v_size]
   end
 
+  def draw_main_buttons(main_buttons)
+    @input_view.set_main_buttons(main_buttons)
+  end
+
   :private
+
+  def create_input_view
+    @input_view = InputView.alloc.initWithFrame(input_view_frame,
+                                                controller: @conroller)
+    self.addSubview(@input_view)
+  end
+
+  def input_view_frame
+    CGRectMake(0, tatami_origin.y + tatami_size.height,
+               tatami_size.width, self_size.height - tatami_size.height)
+  end
 
   def self_size
     self.frame.size

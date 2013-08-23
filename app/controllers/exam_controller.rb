@@ -15,7 +15,6 @@ class ExamController < RMViewController
   CALLBACK_AFTER_BUTTON_MOVED = 'check_if_right_button_pushed'
   CALLBACK_AFTER_EXCHANGE     = 'remove_prev_main_buttons'
 
-#  VOLUME_ICON_MARGIN = 10
   INITIAL_VOLUME = 0.5
   VOLUME_VIEW_HEIGHT = 60
   VOLUME_VIEW_COLOR = ColorFactory.str_to_color('#68be8d')
@@ -26,7 +25,8 @@ class ExamController < RMViewController
   SLIDER_X_MARGIN = 10
   SLIDER_HEIGHT = 20
 
-  PROPERTIES = [:game_view, :fuda_view, :tatami_view, :input_view, :supplier,
+  PROPERTIES = [:game_view, :fuda_view, :tatami_view,
+                :supplier,
                 :challenge_button, :clear_button, :main_buttons,
                 :pushed_button, :current_challenge_string]
   PROPERTIES.each do |prop|
@@ -59,17 +59,10 @@ class ExamController < RMViewController
 
   def set_game_view
     @game_view = GameView.alloc.initWithFrame(game_view_frame,
-                                              withPoem: @supplier.current_poem)
+                                              withPoem: @supplier.current_poem,
+                                              controller: self)
     create_volume_icon()
-    create_input_view()
     self.view.addSubview(@game_view)
-  end
-
-
-  def create_input_view
-    @input_view = InputView.alloc.initWithFrame(@game_view.input_view_frame,
-                                                controller: self)
-    @game_view.addSubview(@input_view)
   end
 
   def get_result_type
@@ -87,7 +80,6 @@ class ExamController < RMViewController
 
   def game_view_frame
     [
-#        CGRectZero.origin,
         CGPointZero,
         CGSizeMake(self_size.width, self_size.height)
     ]
@@ -102,7 +94,7 @@ class ExamController < RMViewController
     (0..MAIN_BUTTON_NUM-1).each do |idx|
       button = create_a_main_button_at(idx, title: strings[idx])
     end
-    @input_view.set_main_buttons(@main_buttons)
+    @game_view.draw_main_buttons(@main_buttons)
   end
 
   def create_a_main_button_at(idx, title: title)
@@ -118,13 +110,12 @@ class ExamController < RMViewController
         b.enabled = false
       end
       @main_buttons[idx] = b
-      @input_view.addSubview(b)
     end
     button
   end
 
   def make_main_buttons_appear
-    @input_view.make_main_buttons_appear(@main_buttons)
+    @game_view.input_view.make_main_buttons_appear(@main_buttons)
   end
 
   def make_main_buttons_disabled
@@ -139,7 +130,7 @@ class ExamController < RMViewController
     @current_challenge_string += sender.currentTitle
     @pushed_button = sender
     @main_buttons[pushed_button_index] = nil
-    @input_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
+    @game_view.input_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
   end
 
   def check_if_right_button_pushed
@@ -158,7 +149,7 @@ class ExamController < RMViewController
       make_main_buttons_appear()
       remove_prev_main_buttons()
     else
-      @input_view.main_buttons_appearing_motion(@main_buttons,
+      @game_view.input_view.main_buttons_appearing_motion(@main_buttons,
                                                 callback: CALLBACK_AFTER_EXCHANGE)
     end
   end
@@ -213,7 +204,7 @@ class ExamController < RMViewController
                             action: 'clear_button_pushed',
                             forControlEvents: UIControlEventTouchUpInside)
     @clear_button.accessibilityLabel = A_LABEL_CLEAR_BUTTON
-    @input_view.set_clear_button(@clear_button)
+    @game_view.input_view.set_clear_button(@clear_button)
   end
 
   def set_challenge_button
@@ -222,14 +213,14 @@ class ExamController < RMViewController
                             action: 'challenge_button_pushed',
                             forControlEvents: UIControlEventTouchUpInside)
     @challenge_button.accessibilityLabel = A_LABEL_CHALLENGE_BUTTON
-    @input_view.set_challenge_button(@challenge_button)
+    @game_view.input_view.set_challenge_button(@challenge_button)
 
   end
 
   def clear_button_pushed
     sweep_volume_view if volume_view_is_coming_out?
     remove_buttons_from_super_view(@main_buttons)
-    @input_view.clear_button_pushed
+    @game_view.input_view.clear_button_pushed
     remove_prev_main_buttons if @prev_main_button
     set_main_buttons(@supplier.clear.get_4strings)
     make_main_buttons_appear
@@ -247,7 +238,7 @@ class ExamController < RMViewController
     sweep_volume_view if volume_view_is_coming_out?
     @challenge_button.enabled = false
     make_main_buttons_disabled
-    @input_view.display_result_view(get_result_type)
+    @game_view.input_view.display_result_view(get_result_type)
     audio_type = case get_result_type
                    when :right  ; :right
                    else

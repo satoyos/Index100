@@ -14,7 +14,7 @@ class InputView < UIView
 
   SELECTED_BUTTON_TITLE_COLOR = ColorFactory.str_to_color('#c85179') #中紅
 
-  PROPERTIES_READER = [:main_4frames, :clear_button,
+  PROPERTIES_READER = [:main_4frames,
                 :sub_buttons, :sub_6frames, :result_view, :controller]
   PROPERTIES_READER.each do |prop|
     attr_reader prop
@@ -110,6 +110,7 @@ class InputView < UIView
     main_buttons.each_with_index do |button, idx|
       button.setFrame(hidden_main_frame_at(idx))
       button.titleLabel.font = UIFont.systemFontOfSize(MAIN_BUTTON_SIZE.height/2)
+      self.addSubview(button)
     end
   end
 
@@ -131,7 +132,6 @@ class InputView < UIView
                       title: CLEAR_BUTTON_TITLE,
                       bg_color: CLEAR_BUTTON_COLOR)
     self.addSubview(c_button)
-    @clear_button = c_button
   end
 
   def set_stable_button(button, title: text, bg_color: bg_color)
