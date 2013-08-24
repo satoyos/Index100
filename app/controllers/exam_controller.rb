@@ -1,32 +1,18 @@
 class ExamController < RMViewController
-#  FUDA_INITIAL_STRING = 'これから札に歌を設定します。'
-#  TATAMI_JPG_FILE = 'tatami_moved.jpg'
-#  FUDA_HEIGHT_POWER = 0.95 # 札ビューの高さは、畳ビューの何倍にするか
 
   MAIN_BUTTON_NUM = 4
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
 
-  KIMARI_JI_MAX = 6 # 決まり字は、最長で6文字
-
   A_LABEL_CLEAR_BUTTON     = 'clear_button'
   A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
 
-#  CALLBACK_AFTER_BUTTON_MOVED = 'exchange_main_buttons'
   CALLBACK_AFTER_BUTTON_MOVED = 'check_if_right_button_pushed'
   CALLBACK_AFTER_EXCHANGE     = 'remove_prev_main_buttons'
 
   INITIAL_VOLUME = 0.5
-  VOLUME_VIEW_HEIGHT = 60
-  VOLUME_VIEW_COLOR = ColorFactory.str_to_color('#68be8d')
-  VOLUME_VIEW_ALPHA = 0.7
   VOLUME_ANIMATE_DURATION = 0.3
-  VOLUME_VIEW_WIDTH_MARGIN = 10
 
-  SLIDER_X_MARGIN = 10
-  SLIDER_HEIGHT = 20
-
-  PROPERTIES = [:game_view, :fuda_view, :tatami_view,
-                :supplier,
+  PROPERTIES = [:game_view, :fuda_view, :tatami_view, :supplier,
                 :challenge_button, :clear_button, :main_buttons,
                 :pushed_button, :current_challenge_string]
   PROPERTIES.each do |prop|
@@ -38,17 +24,12 @@ class ExamController < RMViewController
     attr_accessor prop
   end
 
-
   def viewDidLoad
     super
 
     set_char_supplier()
     set_game_view()
-#    create_tatami_view()
-#    create_fuda_view()
-#    @fuda_view.rewrite_string(@supplier.current_poem.in_hiragana.shimo)
 
-#    create_input_view()
     set_clear_button()
     set_challenge_button()
     set_main_buttons(@supplier.get_4strings)
@@ -115,7 +96,7 @@ class ExamController < RMViewController
   end
 
   def make_main_buttons_appear
-    @game_view.input_view.make_main_buttons_appear(@main_buttons)
+    @game_view.make_main_buttons_appear(@main_buttons)
   end
 
   def make_main_buttons_disabled
@@ -126,11 +107,11 @@ class ExamController < RMViewController
   end
 
   def main_button_pushed(sender)
-    sweep_volume_view if volume_view_is_coming_out?
+    sweep_volume_view if @volume_view.is_coming_out?
     @current_challenge_string += sender.currentTitle
     @pushed_button = sender
     @main_buttons[pushed_button_index] = nil
-    @game_view.input_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
+    @game_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
   end
 
   def check_if_right_button_pushed
@@ -139,7 +120,6 @@ class ExamController < RMViewController
       when true; exchange_main_buttons
       else     ; challenge_button_pushed
     end
-
   end
 
   def exchange_main_buttons
@@ -149,8 +129,8 @@ class ExamController < RMViewController
       make_main_buttons_appear()
       remove_prev_main_buttons()
     else
-      @game_view.input_view.main_buttons_appearing_motion(@main_buttons,
-                                                callback: CALLBACK_AFTER_EXCHANGE)
+      @game_view.main_buttons_appearing_motion(@main_buttons,
+                                               callback: CALLBACK_AFTER_EXCHANGE)
     end
   end
 
@@ -159,9 +139,8 @@ class ExamController < RMViewController
     @prev_main_buttons = nil
   end
 
-
   def has_room_for_new_string?
-    @supplier.counter < KIMARI_JI_MAX
+    @supplier.counter < CharSupplier::COUNTER_MAX
   end
 
   def remove_buttons_from_super_view(slot)
@@ -204,7 +183,7 @@ class ExamController < RMViewController
                             action: 'clear_button_pushed',
                             forControlEvents: UIControlEventTouchUpInside)
     @clear_button.accessibilityLabel = A_LABEL_CLEAR_BUTTON
-    @game_view.input_view.set_clear_button(@clear_button)
+    @game_view.draw_clear_button(@clear_button)
   end
 
   def set_challenge_button
@@ -213,14 +192,13 @@ class ExamController < RMViewController
                             action: 'challenge_button_pushed',
                             forControlEvents: UIControlEventTouchUpInside)
     @challenge_button.accessibilityLabel = A_LABEL_CHALLENGE_BUTTON
-    @game_view.input_view.set_challenge_button(@challenge_button)
-
+    @game_view.draw_challenge_button(@challenge_button)
   end
 
   def clear_button_pushed
-    sweep_volume_view if volume_view_is_coming_out?
+    sweep_volume_view if @volume_view.is_coming_out?
     remove_buttons_from_super_view(@main_buttons)
-    @game_view.input_view.clear_button_pushed
+    @game_view.clear_button_pushed
     remove_prev_main_buttons if @prev_main_button
     set_main_buttons(@supplier.clear.get_4strings)
     make_main_buttons_appear
@@ -235,10 +213,10 @@ class ExamController < RMViewController
 
   def challenge_button_pushed
     self.challenge_button_is_pushed = true
-    sweep_volume_view if volume_view_is_coming_out?
+    sweep_volume_view if @volume_view.is_coming_out?
     @challenge_button.enabled = false
     make_main_buttons_disabled
-    @game_view.input_view.display_result_view(get_result_type)
+    @game_view.display_result(get_result_type)
     audio_type = case get_result_type
                    when :right  ; :right
                    else
@@ -265,25 +243,17 @@ class ExamController < RMViewController
   end
 
   def set_hidden_volume_view_on_me
-    @volume_view ||= UIView.alloc.initWithFrame(volume_view_initial_frame)
+    @volume_view ||=
+        VolumeView.alloc.initWithGameView(@game_view,
+                                          volume_icon: @volume_icon)
     @volume_view.tap do |v_view|
-      v_view.backgroundColor= VOLUME_VIEW_COLOR
-      v_view.alpha= VOLUME_VIEW_ALPHA
       v_view.addSubview(volume_slider)
       self.view.addSubview(v_view)
     end
   end
 
-  def volume_view_initial_frame
-    [CGPointMake(volume_icon_width + VOLUME_VIEW_WIDTH_MARGIN,
-                 -1*VOLUME_VIEW_HEIGHT),
-     CGSizeMake(self.view.frame.size.width - 2*(volume_icon_width+VOLUME_VIEW_WIDTH_MARGIN),
-                VOLUME_VIEW_HEIGHT)]
-  end
-
-
   def volume_slider
-    slider = UISlider.alloc.initWithFrame(volume_slider_frame)
+    slider = UISlider.alloc.initWithFrame(@volume_view.volume_slider_frame)
     slider.value= settings.volume || INITIAL_VOLUME
     AudioPlayerFactory.set_volume(slider.value)
     slider.addTarget(self, action: :slider_changed, forControlEvents: UIControlEventValueChanged)
@@ -295,72 +265,37 @@ class ExamController < RMViewController
     settings.volume = @slider.value
   end
 
-
   def self_size
     self.view.frame.size
   end
 
-=begin
-  def tatami_origin
-    @game_view.tatami_view.frame.origin
-  end
-
-  def tatami_size
-    @game_view.tatami_view.frame.size
-  end
-=end
-
-  def volume_slider_frame
-    [CGPointMake(SLIDER_X_MARGIN,
-                 (@volume_view.frame.size.height - SLIDER_HEIGHT)/2),
-     CGSizeMake(@volume_view.frame.size.width - 2 * SLIDER_X_MARGIN,
-                SLIDER_HEIGHT)
-    ]
-  end
-
-  def volume_icon_width
-    @volume_icon.frame.size.width
-  end
-
   def show_or_hide_volume_view
-    case volume_view_is_coming_out?
+    case @volume_view.is_coming_out?
       when true; sweep_volume_view
       else     ; show_volume_view
     end
-  end
-
-  def volume_view_is_coming_out?
-    @volume_view.frame.origin.y == 0
   end
 
   def show_volume_view
     AudioPlayerFactory.rewind_to_start_point
     AudioPlayerFactory.players[:test].play
     if RUBYMOTION_ENV == 'test'
-      set_volume_view_appear
+      @volume_view.make_appear
     else
-      UIView.animateWithDuration(VOLUME_ANIMATE_DURATION,
-                                 animations: lambda{set_volume_view_appear})
+      UIView.animateWithDuration(
+          VOLUME_ANIMATE_DURATION,
+          animations: lambda{@volume_view.make_appear})
     end
   end
 
   def sweep_volume_view
     AudioPlayerFactory.players[:test].stop
     if RUBYMOTION_ENV == 'test'
-      set_volume_view_disappear
+      @volume_view.make_disappear
     else
-      UIView.animateWithDuration(VOLUME_ANIMATE_DURATION,
-                                 animations: lambda{set_volume_view_disappear})
+      UIView.animateWithDuration(
+          VOLUME_ANIMATE_DURATION,
+          animations: lambda{@volume_view.make_disappear})
     end
   end
-
-  def set_volume_view_appear
-    @volume_view.frame= [CGPointMake(@volume_view.frame.origin.x, 0),
-                         @volume_view.frame.size]
-  end
-
-  def set_volume_view_disappear
-    @volume_view.frame= volume_view_initial_frame
-  end
-
 end

@@ -55,6 +55,36 @@ class GameView < UIView
     @input_view.set_main_buttons(main_buttons)
   end
 
+  def draw_clear_button(button)
+    @input_view.set_clear_button(button)
+  end
+
+  def draw_challenge_button(button)
+    @input_view.set_challenge_button(button)
+  end
+
+  def make_main_buttons_appear(main_buttons)
+    @input_view.make_main_buttons_appear(main_buttons)
+  end
+
+  def main_button_pushed(main_button, callback: callback_name)
+    @input_view.main_button_pushed(main_button,
+                                   callback: callback_name)
+  end
+
+  def main_buttons_appearing_motion(main_buttons, callback: callback_name)
+    @input_view.main_buttons_appearing_motion(main_buttons,
+                                              callback: callback_name)
+  end
+
+  def clear_button_pushed
+    @input_view.clear_button_pushed
+  end
+
+  def display_result(result_type)
+    @input_view.display_result_view(result_type)
+  end
+
   :private
 
   def create_input_view
