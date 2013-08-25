@@ -12,9 +12,9 @@ class ExamController < RMViewController
   INITIAL_VOLUME = 0.5
   VOLUME_ANIMATE_DURATION = 0.3
 
-  PROPERTIES = [:game_view, :fuda_view, :tatami_view, :supplier,
+  PROPERTIES = [:game_view, :fuda_view, :tatami_view, :volume_view,
                 :challenge_button, :clear_button, :main_buttons,
-                :pushed_button, :current_challenge_string]
+                :supplier, :pushed_button, :current_challenge_string]
   PROPERTIES.each do |prop|
     attr_reader prop
   end

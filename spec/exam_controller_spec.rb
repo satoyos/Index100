@@ -23,7 +23,6 @@ describe 'ExamController' do
         @game_view.frame.origin.should == CGPointZero
       end
     end
-=begin
 
     it 'チャレンジボタンを管理している' do
       controller.challenge_button.should.not.be.nil
@@ -63,57 +62,55 @@ describe 'ExamController' do
     end
 
     it '最初、ボリュームアイコンは隠れている。' do
-      controller.volume_view_is_coming_out?.should.be.false
+      controller.volume_view.is_coming_out?.should.be.false
     end
-=end
-
   end
 
-=begin
   describe 'ボリュームビューの動作(他のボタンとの関連)' do
     tests ExamController
 
     it 'ボリュームアイコンをタップすると、ボリュームビューが出現する。' do
       #noinspection RubyArgCount
       tap VolumeIcon::A_LABEL
-      controller.volume_view_is_coming_out?.should.be.true
+      controller.volume_view.is_coming_out?.should.be.true
     end
 
     it 'ボリュームビューが出ているときに、クリアボタンをタップすると、ボリュームビューが隠れる' do
       #noinspection RubyArgCount
       tap VolumeIcon::A_LABEL
-      controller.volume_view_is_coming_out?.should.be.true
+      controller.volume_view.is_coming_out?.should.be.true
       #noinspection RubyArgCount
       tap ExamController::A_LABEL_CLEAR_BUTTON
-      controller.volume_view_is_coming_out?.should.be.false
+      controller.volume_view.is_coming_out?.should.be.false
     end
 
     it 'ボリュームビューが出ているときに、チャレンジボタンをタップすると、ボリュームビューが隠れる' do
       #noinspection RubyArgCount
       tap VolumeIcon::A_LABEL
-      controller.volume_view_is_coming_out?.should.be.true
+      controller.volume_view.is_coming_out?.should.be.true
       #noinspection RubyArgCount
       tap ExamController::A_LABEL_CHALLENGE_BUTTON
-      controller.volume_view_is_coming_out?.should.be.false
+      controller.volume_view.is_coming_out?.should.be.false
     end
 
     it 'ボリュームビューが出ているときに、メインボタンをタップすると、ボリュームビューが隠れる' do
       #noinspection RubyArgCount
       tap VolumeIcon::A_LABEL
-      controller.volume_view_is_coming_out?.should.be.true
+      controller.volume_view.is_coming_out?.should.be.true
       #noinspection RubyArgCount
       tap controller.main_buttons[0].currentTitle
-      controller.volume_view_is_coming_out?.should.be.false
+      controller.volume_view.is_coming_out?.should.be.false
     end
   end
-=end
 
-=begin
   describe 'あるMainButtonが押されたときの動作' do
     tests ExamController
 
     before do
-      @tap_button = controller.main_buttons[0]
+      # 正解ボタンをタップする
+      @right_index = controller.supplier.current_right_index
+      @tap_button =
+          controller.main_buttons[@right_index]
       # 注) ここでは、ボタンそのものを指定してtapを実行すると、失敗した。
       #tap(@tap_button)
 
@@ -123,27 +120,19 @@ describe 'ExamController' do
     end
 
     it '押されたボタンをちゃんと把握できている' do
-#      puts "-- tapped button in spec => #{@tap_button.currentTitle}"
       controller.pushed_button.should.not.be.nil
     end
 
     it 'メイン・ボタン・スロットの、押されたボタンに該当する位置は新しいボタンが補充されている' do
-      # ただし、0番のボタンが正解の時に限る。
-      if 0 == controller.supplier.current_right_index
-        controller.main_buttons[0].should.not.be.nil
-        controller.main_buttons[0].should.not == @tap_button
-      else
-        1.should == 1
-      end
+      controller.main_buttons[@right_index].should.not.be.nil
+      controller.main_buttons[@right_index].should.not == @tap_button
     end
-
 
     it 'メインボタンが押されたときの描画処理を終えたInputViewからCallbackが返ってくる' do
       controller.button_is_moved.should.not.be.nil
       controller.button_is_moved.should.be.true
     end
   end
-=end
 
   # 下記テストは、なぜかメインボタンのenabledが呼び出せないので、無効。
   # ちゃんとenabledを呼び出せるようになったら、これもテストしたい。
@@ -164,30 +153,7 @@ describe 'ExamController' do
   end
 =end
 
-  # 次のテストは、実際のデッキからの文字取得では成り立たなくなった。
-=begin
-  describe 'クリアボタンが押されたときの動作' do
-    tests ExamController
 
-    it 'クリアボタンをタップすると、InputViewの状態が元に戻る' do
-      first_strings = controller.main_buttons.map{|b| b.currentTitle}
-
-      # メインボタンを一回タップすると、表示されるメインボタンは変化する。
-      # [注意] もしかしたら、たまたま二文字目のメインボタン群の表示と一致してしまうかもしれない
-      #noinspection RubyArgCount
-      tap("#{first_strings[0]}")
-      controller.main_buttons.map{|b| b.currentTitle}.should.not == first_strings
-
-      # その状態で、クリアボタンを押す
-      #noinspection RubyArgCount
-      tap(controller.clear_button)
-      controller.main_buttons.map{|b| b.currentTitle}.should == first_strings
-    end
-  end
-=end
-
-
-=begin
   describe 'current_challenge_string' do
     tests ExamController
 
@@ -254,9 +220,7 @@ describe 'ExamController' do
       controller.get_wrong_type.should == :short
     end
   end
-=end
 
-=begin
   # (入力された決まり字が他の歌の物だった場合、すぐにユーザに教えてあげる動作)
   describe '間違ったメインボタンが押された時点で、即チャレンジが実施される' do
     tests ExamController
@@ -279,5 +243,4 @@ describe 'ExamController' do
       controller.challenge_button_is_pushed.should.be.true
     end
   end
-=end
 end
