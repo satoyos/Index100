@@ -286,10 +286,20 @@ describe 'CharSupplier' do
 
         # 歌#2へ
         @supplier.draw_next_poem.should.not.be.nil
-        @supplier.get_4strings.include?('は').should.be.true
+        @supplier.get_4strings.tap do |poem2_strings1|
+#          puts "poem2_strings1 => [#{poem2_strings1}]"
+          poem2_strings1.include?('は').should.be.true
+          poem2_strings1[@supplier.current_right_index].should == 'は'
+        end
+        @supplier.current_right_index.should.not.be.nil
+
+
         @supplier.get_4strings[0..1].sort.should == ['る', 'な'].sort #「は」に続く文字
+        @supplier.current_right_index.should.not.be.nil
         @supplier.get_4strings[0..1].sort.should == ['す', 'の'].sort #「はる」に続く文字
+        @supplier.current_right_index.should.not.be.nil
         @supplier.get_4strings[0].should == 'き' # これが「ぎ」になるように頑張る？
+
 
         # 歌#3へ
         @supplier.draw_next_poem.should.not.be.nil

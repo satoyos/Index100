@@ -1,4 +1,6 @@
 describe 'ExamController' do
+  #時間短縮を考えて、初期化テストを外す
+=begin
   describe '初期化' do
     tests ExamController
 
@@ -65,7 +67,10 @@ describe 'ExamController' do
       controller.volume_view.is_coming_out?.should.be.false
     end
   end
+=end
 
+  # 時間短縮を考えて、固まってきたボリュームビューのテストをスキップする。
+=begin
   describe 'ボリュームビューの動作(他のボタンとの関連)' do
     tests ExamController
 
@@ -102,6 +107,7 @@ describe 'ExamController' do
       controller.volume_view.is_coming_out?.should.be.false
     end
   end
+=end
 
   describe 'あるMainButtonが押されたときの動作' do
     tests ExamController
@@ -183,6 +189,9 @@ describe 'ExamController' do
       end
     end
 
+    # 時間短縮のために無効化。
+    # 歌が切り替わったときに1文字目で正しい文字を入力しても不正解になるバグを追求
+=begin
     it 'チャレンジ文字列は、正解と一致するはず' do
       controller.current_challenge_string.should == @supplier.answer
     end
@@ -195,6 +204,34 @@ describe 'ExamController' do
       #noinspection RubyArgCount
       tap(ExamController::A_LABEL_CHALLENGE_BUTTON)
       controller.challenge_button_is_pushed.should.be.true
+    end
+
+    it 'supplierがデータを供給する歌が#2になる' do
+      #noinspection RubyArgCount
+      tap(ExamController::A_LABEL_CHALLENGE_BUTTON)
+      @supplier.current_poem.number.should == 2
+      @supplier.answer.should == 'はるす'
+    end
+=end
+
+    it '次の歌で正解を入力し、チャレンジボタンを押してみる' do
+      #noinspection RubyArgCount
+      tap(ExamController::A_LABEL_CHALLENGE_BUTTON)
+      @supplier.answer.length.times do
+        @supplier.current_right_index.should.not.be.nil
+=begin
+        puts "supplier.counter => #{@supplier.counter}"
+        puts "supplier.answer => #{@supplier.answer}"
+        puts "supplying_strings => #{@supplier.supplying_strings}"
+        puts "current_right_index => #{@supplier.current_right_index}"
+=end
+
+        #noinspection RubyArgCount
+        tap(controller.main_buttons[@supplier.current_right_index].currentTitle)
+        @supplier.on_the_correct_line?(
+            controller.current_challenge_string).should == true
+      end
+      controller.audio_type.should == :right
     end
   end
 
@@ -228,6 +265,7 @@ describe 'ExamController' do
     before do
       first_chars = controller.main_buttons.map{|button| button.currentTitle}
       first_chars.delete_at(controller.supplier.current_right_index)
+      @poem_before_tap = controller.supplier.current_poem
       @wrong_char = first_chars[0]
       #noinspection RubyArgCount
       tap(@wrong_char)
@@ -241,6 +279,10 @@ describe 'ExamController' do
 
     it 'チャレンジが実行される(<= チャレンジボタンが押された状態になっている)' do
       controller.challenge_button_is_pushed.should.be.true
+    end
+
+    it '間違いなので、次の歌には移らない' do
+      controller.supplier.current_poem.should == @poem_before_tap
     end
   end
 end

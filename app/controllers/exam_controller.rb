@@ -6,6 +6,8 @@ class ExamController < RMViewController
   A_LABEL_CLEAR_BUTTON     = 'clear_button'
   A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
 
+  GAME_VIEW_EXCHANGE_TRANSITION = UIViewAnimationTransitionFlipFromLeft
+
   CALLBACK_AFTER_BUTTON_MOVED = 'check_if_right_button_pushed'
   CALLBACK_AFTER_EXCHANGE     = 'remove_prev_main_buttons'
 
@@ -28,21 +30,22 @@ class ExamController < RMViewController
     super
 
     set_char_supplier()
-    set_game_view()
 
-    set_clear_button()
-    set_challenge_button()
-    set_main_buttons(@supplier.get_4strings)
-    make_main_buttons_appear()
-    set_hidden_volume_view_on_me()
-    init_challenge_status()
+    set_game_view_of_poem(@supplier.current_poem)
+
   end
 
-  def set_game_view
+  def set_game_view_of_poem(poem)
     @game_view = GameView.alloc.initWithFrame(game_view_frame,
-                                              withPoem: @supplier.current_poem,
+                                              withPoem: poem,
                                               controller: self)
     create_volume_icon()
+    set_clear_button()
+    set_challenge_button()
+    set_hidden_volume_view()
+    set_main_buttons(@supplier.get_4strings)
+    make_main_buttons_appear()
+    init_challenge_status()
     self.view.addSubview(@game_view)
   end
 
@@ -217,15 +220,55 @@ class ExamController < RMViewController
     @challenge_button.enabled = false
     make_main_buttons_disabled
     @game_view.display_result(get_result_type)
-    audio_type = case get_result_type
-                   when :right  ; :right
-                   else
-                     case @supplier.on_the_correct_line?(@current_challenge_string)
-                       when true ; get_wrong_type
-                       else      ; :wrong
-                     end
-                 end
     AudioPlayerFactory.players[audio_type].play
+
+    return if get_result_type == :wrong
+    return unless @supplier.draw_next_poem
+    if RUBYMOTION_ENV == 'test'
+      exchange_game_view
+    else
+      view_animation_def(
+          'exchange_game_view',
+          arg: nil,
+          duration: 0.5,
+          transition: GAME_VIEW_EXCHANGE_TRANSITION)
+    end
+  end
+
+  def exchange_game_view
+    @game_view.removeFromSuperview
+    set_game_view_of_poem(@supplier.current_poem)
+  end
+
+  def view_animation_def(method_name, arg: arg, duration: duration, transition: transition)
+    UIView.beginAnimations(method_name, context: nil)
+    UIView.setAnimationDelegate(self)
+    UIView.setAnimationDuration(duration)
+    if transition
+      UIView.setAnimationTransition(transition,
+                                    forView: self.view,
+                                    cache: true)
+
+    end
+    if arg
+      self.send("#{method_name}", arg)
+    else
+      self.send("#{method_name}")
+    end
+    UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
+    UIView.commitAnimations
+  end
+
+
+  def audio_type
+    case get_result_type
+      when :right  ; :right
+      else
+        case @supplier.on_the_correct_line?(@current_challenge_string)
+          when true ; get_wrong_type
+          else      ; :wrong
+        end
+    end
   end
 
   def create_volume_icon
@@ -242,13 +285,14 @@ class ExamController < RMViewController
     show_or_hide_volume_view
   end
 
-  def set_hidden_volume_view_on_me
+  def set_hidden_volume_view
     @volume_view ||=
         VolumeView.alloc.initWithGameView(@game_view,
                                           volume_icon: @volume_icon)
     @volume_view.tap do |v_view|
       v_view.addSubview(volume_slider)
-      self.view.addSubview(v_view)
+#      self.view.addSubview(v_view)
+      @game_view.addSubview(v_view)
     end
   end
 

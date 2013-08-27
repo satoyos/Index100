@@ -85,6 +85,7 @@ class GameView < UIView
     @input_view.display_result_view(result_type)
   end
 
+
   :private
 
   def create_input_view

@@ -1,5 +1,5 @@
 class CharSupplier
-  PROPERTIES = [:deck, :current_poem, :counter, :answer, :difficulty, :mode,
+  PROPERTIES = [:deck, :current_poem, :counter, :difficulty, :mode,
                 :supplying_strings]
   PROPERTIES.each do |prop|
     attr_reader prop
@@ -24,10 +24,13 @@ class CharSupplier
     @difficulty = :easy
 
     ## テスト実装
-    @answer = case @mode
-                when TEST_MODE1; TEST_ANSWER
-                else           ; @current_poem.kimari_ji
-              end
+  end
+
+  def answer
+    case @mode
+      when TEST_MODE1; TEST_ANSWER
+      else           ; @current_poem.kimari_ji
+    end
   end
 
   def draw_next_poem
@@ -96,7 +99,7 @@ class CharSupplier
 
   def current_right_index
     # 境界条件
-    if @counter == 0 || @counter > @answer.length
+    if @counter == 0 || @counter > answer.length
       return nil
     end
     case @mode
