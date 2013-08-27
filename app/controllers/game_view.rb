@@ -13,7 +13,7 @@ class GameView < UIView
   def initWithFrame(frame, withPoem: poem, controller: controller)
     super.initWithFrame(frame)
     @poem = poem
-    @conroller = controller
+    @controller = controller
     create_tatami_view()
     create_fuda_view()
     @fuda_view.rewrite_string(@poem.in_hiragana.shimo)
@@ -85,12 +85,30 @@ class GameView < UIView
     @input_view.display_result_view(result_type)
   end
 
+  def view_animation_def(method_name, arg: arg, duration: duration, transition: transition)
+    UIView.beginAnimations(method_name, context: nil)
+    UIView.setAnimationDelegate(@controller)
+    UIView.setAnimationDuration(duration)
+    if transition
+      UIView.setAnimationTransition(transition,
+                                    forView: @controller.view,
+                                    cache: true)
+
+    end
+    if arg
+      @controller.send("#{method_name}", arg)
+    else
+      @controller.send("#{method_name}")
+    end
+    UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
+    UIView.commitAnimations
+  end
 
   :private
 
   def create_input_view
     @input_view = InputView.alloc.initWithFrame(input_view_frame,
-                                                controller: @conroller)
+                                                controller: @controller)
     self.addSubview(@input_view)
   end
 

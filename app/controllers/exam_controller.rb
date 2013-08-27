@@ -13,6 +13,7 @@ class ExamController < RMViewController
 
   INITIAL_VOLUME = 0.5
   VOLUME_ANIMATE_DURATION = 0.3
+  EXCHANGE_GAME_VIEW_DURATION = 0.5
 
   PROPERTIES = [:game_view, :fuda_view, :tatami_view, :volume_view,
                 :challenge_button, :clear_button, :main_buttons,
@@ -28,11 +29,9 @@ class ExamController < RMViewController
 
   def viewDidLoad
     super
-
     set_char_supplier()
-
     set_game_view_of_poem(@supplier.current_poem)
-
+    draw_game_view()
   end
 
   def set_game_view_of_poem(poem)
@@ -46,7 +45,6 @@ class ExamController < RMViewController
     set_main_buttons(@supplier.get_4strings)
     make_main_buttons_appear()
     init_challenge_status()
-    self.view.addSubview(@game_view)
   end
 
   def get_result_type
@@ -63,10 +61,7 @@ class ExamController < RMViewController
   :private
 
   def game_view_frame
-    [
-        CGPointZero,
-        CGSizeMake(self_size.width, self_size.height)
-    ]
+    [CGPointZero, CGSizeMake(self_size.width, self_size.height)]
   end
 
   def set_char_supplier
@@ -169,6 +164,7 @@ class ExamController < RMViewController
         remove_buttons_from_super_view(@prev_main_buttons) if @prev_main_buttons
         @prev_main_buttons = nil
         @pushed_button = nil
+      when 'draw_game_view'
       else
         puts "/////// このアニメーションの後処理はありません。 ///////"
     end
@@ -224,41 +220,22 @@ class ExamController < RMViewController
 
     return if get_result_type == :wrong
     return unless @supplier.draw_next_poem
+    @game_view.removeFromSuperview
+    set_game_view_of_poem(@supplier.current_poem)
     if RUBYMOTION_ENV == 'test'
-      exchange_game_view
+      draw_game_view
     else
-      view_animation_def(
-          'exchange_game_view',
+      @game_view.view_animation_def(
+          'draw_game_view',
           arg: nil,
-          duration: 0.5,
+          duration: EXCHANGE_GAME_VIEW_DURATION,
           transition: GAME_VIEW_EXCHANGE_TRANSITION)
     end
   end
 
-  def exchange_game_view
-    @game_view.removeFromSuperview
-    set_game_view_of_poem(@supplier.current_poem)
+  def draw_game_view
+    self.view.addSubview(@game_view)
   end
-
-  def view_animation_def(method_name, arg: arg, duration: duration, transition: transition)
-    UIView.beginAnimations(method_name, context: nil)
-    UIView.setAnimationDelegate(self)
-    UIView.setAnimationDuration(duration)
-    if transition
-      UIView.setAnimationTransition(transition,
-                                    forView: self.view,
-                                    cache: true)
-
-    end
-    if arg
-      self.send("#{method_name}", arg)
-    else
-      self.send("#{method_name}")
-    end
-    UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
-    UIView.commitAnimations
-  end
-
 
   def audio_type
     case get_result_type
@@ -291,7 +268,6 @@ class ExamController < RMViewController
                                           volume_icon: @volume_icon)
     @volume_view.tap do |v_view|
       v_view.addSubview(volume_slider)
-#      self.view.addSubview(v_view)
       @game_view.addSubview(v_view)
     end
   end
