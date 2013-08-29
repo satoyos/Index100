@@ -10,10 +10,12 @@ class AppDelegate
     end
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    @exam_controller = ExamController.alloc.initWithNibName(nil, bundle: nil)
+#    @exam_controller = ExamController.alloc.initWithNibName(nil, bundle: nil)
+    @start_view_controller = StartViewController.alloc.initWithNibName(nil, bundle: nil)
     @nav_controller = UINavigationController.alloc.
-        initWithRootViewController(@exam_controller)
-    @nav_controller.setNavigationBarHidden(true, animated: true)
+#        initWithRootViewController(@exam_controller)
+        initWithRootViewController(@start_view_controller)
+#    @nav_controller.setNavigationBarHidden(true, animated: true)
     @window.rootViewController= @nav_controller
     @window.makeKeyAndVisible
 

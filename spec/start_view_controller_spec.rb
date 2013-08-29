@@ -9,9 +9,15 @@ describe 'StartViewController' do
     it 'ツールバーがある' do
       controller.toolbarItems.should.not.be.nil
     end
-    it 'ツールバーには、唯一ボタンがある' do
-      controller.toolbarItems.size.should == 1
-      controller.toolbarItems.first.is_a?(UIBarButtonItem).should.be.true
+    it 'ツールバーには三つの要素がある' do
+      controller.toolbarItems.size.should == 3
+    end
+    it '二つ目の要素がボタン' do
+      controller.toolbarItems[1].tap do |second_item|
+        second_item.is_a?(UIBarButtonItem).should.be.true
+        second_item.title.should == StartViewController::GAME_START_BUTTON_TITLE
+      end
+
     end
   end
 end

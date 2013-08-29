@@ -1,5 +1,4 @@
 class GameView < UIView
-  TATAMI_JPG_FILE = 'tatami_moved.jpg'
   FUDA_INITIAL_STRING = 'これから札に歌を設定します。'
   FUDA_HEIGHT_POWER = 0.95 # 札ビューの高さは、畳ビューの何倍にするか
 
@@ -24,15 +23,18 @@ class GameView < UIView
   end
 
   def create_tatami_view
-    @tatami_view = UIImageView.alloc.initWithImage(UIImage.imageNamed(TATAMI_JPG_FILE))
+    @tatami_view = TatamiView.alloc.initWithFrame(tatami_view_frame,
+                                                  controller: @controller)
     @tatami_view.tap do |t_view|
-      t_view.frame = [CGRectZero.origin,
-                      CGSizeMake(self_size.width, self_size.height/2)]
       t_view.clipsToBounds= true
       t_view.userInteractionEnabled = true
-#      create_volume_icon_on_tatami
       self.addSubview(t_view)
     end
+  end
+
+  def tatami_view_frame
+    [CGRectZero.origin,
+     CGSizeMake(self_size.width, self_size.height/2)]
   end
 
   def create_fuda_view

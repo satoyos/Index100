@@ -22,16 +22,37 @@ class ExamController < RMViewController
     attr_reader prop
   end
 
-  PROPERTIES_ACCESSOR = [:button_is_moved, :challenge_button_is_pushed]
+  PROPERTIES_ACCESSOR = [:full_screen,
+                         :button_is_moved, :challenge_button_is_pushed]
   PROPERTIES_ACCESSOR.each do |prop|
     attr_accessor prop
+  end
+
+  def initWithNibName(nibName, bundle: bundle)
+    super
+    self.hidesBottomBarWhenPushed = true
+    @full_screen = true
+    self
   end
 
   def viewDidLoad
     super
     set_char_supplier()
+    hide_navigation_bar() unless RUBYMOTION_ENV == 'test'
     set_game_view_of_poem(@supplier.current_poem)
     draw_game_view()
+  end
+
+  def viewWillAppear(animated)
+    unless RUBYMOTION_ENV == 'test'
+      navigationController.navigationBar.translucent = true
+      navigationController.navigationBar.alpha = 0.0
+    end
+  end
+
+  def hide_navigation_bar
+
+
   end
 
   def set_game_view_of_poem(poem)
@@ -56,6 +77,19 @@ class ExamController < RMViewController
 
   def get_wrong_type
     @supplier.length_check(@current_challenge_string)
+  end
+
+  def switch_full_screen
+    @full_screen = !@full_screen
+
+    UIView.beginAnimations(nil, context: nil)
+    UIView.setAnimationDuration(0.3)
+    self.navigationController.navigationBar.alpha =
+        case @full_screen
+          when true ; 0.0
+          else      ; 1.0
+        end
+    UIView.commitAnimations
   end
 
   :private
