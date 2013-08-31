@@ -160,6 +160,9 @@ describe 'ExamController' do
 =end
 
 
+  # 時間短縮のために無効化。
+  # 歌が切り替わったときに1文字目で正しい文字を入力しても不正解になるバグを追求
+=begin
   describe 'current_challenge_string' do
     tests ExamController
 
@@ -176,7 +179,10 @@ describe 'ExamController' do
       controller.current_challenge_string.length.should == 1
     end
   end
+=end
 
+  # 時間短縮のために無効化。
+=begin
   describe 'チャレンジボタンが押されたときの動作: 正解編' do
     tests ExamController
 
@@ -189,9 +195,6 @@ describe 'ExamController' do
       end
     end
 
-    # 時間短縮のために無効化。
-    # 歌が切り替わったときに1文字目で正しい文字を入力しても不正解になるバグを追求
-=begin
     it 'チャレンジ文字列は、正解と一致するはず' do
       controller.current_challenge_string.should == @supplier.answer
     end
@@ -212,20 +215,12 @@ describe 'ExamController' do
       @supplier.current_poem.number.should == 2
       @supplier.answer.should == 'はるす'
     end
-=end
 
     it '次の歌で正解を入力し、チャレンジボタンを押してみる' do
       #noinspection RubyArgCount
       tap(ExamController::A_LABEL_CHALLENGE_BUTTON)
       @supplier.answer.length.times do
         @supplier.current_right_index.should.not.be.nil
-=begin
-        puts "supplier.counter => #{@supplier.counter}"
-        puts "supplier.answer => #{@supplier.answer}"
-        puts "supplying_strings => #{@supplier.supplying_strings}"
-        puts "current_right_index => #{@supplier.current_right_index}"
-=end
-
         #noinspection RubyArgCount
         tap(controller.main_buttons[@supplier.current_right_index].currentTitle)
         @supplier.on_the_correct_line?(
@@ -234,7 +229,10 @@ describe 'ExamController' do
       controller.audio_type.should == :right
     end
   end
+=end
 
+# #時間短縮のために無効化。
+=begin
   describe 'チャレンジボタンが押されたときの動作：間違い編' do
     tests ExamController
 
@@ -283,6 +281,36 @@ describe 'ExamController' do
 
     it '間違いなので、次の歌には移らない' do
       controller.supplier.current_poem.should == @poem_before_tap
+    end
+  end
+=end
+
+  describe 'ゲーム終了のテスト' do
+    before do
+      @controller =
+          ExamController.alloc.initWithNibName(nil,
+                                               bundle: nil,
+                                               shuffle_with_size: 2)
+      @controller.viewDidLoad
+    end
+
+    it 'controllerの初期化は正常' do
+      @controller.should.not.be.nil
+      @controller.supplier.deck.size.should == 2
+    end
+
+    it '[正解入力→チャレンジボタン入力]を2回繰り返すと、ゲーム終了状態になる' do
+      @supplier = @controller.supplier
+      2.times do
+#        puts "今の歌の決まり字 => #{@supplier.answer}"
+        # 奥の手のショートカット
+        @controller.current_challenge_string = @supplier.answer
+        #noinspection RubyArgCount
+        @controller.challenge_button_pushed
+      end
+      @controller.game_is_completed.should.be.true
+      @controller.view.subviews.last.is_a?(CompleteView).should.be.true
+
     end
   end
 end

@@ -6,18 +6,18 @@ describe 'StartViewController' do
       controller.should.not.be.nil
     end
 
-    it 'ツールバーがある' do
-      controller.toolbarItems.should.not.be.nil
-    end
-    it 'ツールバーには三つの要素がある' do
-      controller.toolbarItems.size.should == 3
-    end
-    it '二つ目の要素がボタン' do
-      controller.toolbarItems[1].tap do |second_item|
-        second_item.is_a?(UIBarButtonItem).should.be.true
-        second_item.title.should == StartViewController::GAME_START_BUTTON_TITLE
-      end
-
+    it 'スタイルが UITableViewStyleGrouped に設定されている' do
+      controller.view.style.should == UITableViewStyleGrouped
     end
   end
+
+  describe 'tableView:numberOfRowsInSection' do
+    tests StartViewController
+
+    it 'section=0のときは、定められた設定項目数を返す' do
+      controller.tableView(nil, numberOfRowsInSection: 0).should ==
+          StartViewController::SETTING_ITEMS.size
+    end
+  end
+
 end

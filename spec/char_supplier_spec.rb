@@ -46,21 +46,33 @@ describe 'CharSupplier' do
   end
 
   describe 'draw_next_poem' do
-    before do
-      @supplier = CharSupplier.new({deck: Deck.new})
+    describe 'Context: 100首の通常デッキで初期化'do
+      before do
+        @supplier = CharSupplier.new({deck: Deck.new})
+      end
+
+      it '次の歌をDeckから読み込む (シャッフルも選別もしていないので、#2の歌になる)' do
+        @supplier.draw_next_poem.should == @supplier
+        @supplier.current_poem.number.should == 2
+      end
+
+      it '100首のDeckだと、さらに99首を読み込んでも大丈夫だが、その次はnilになる' do
+        (@supplier.deck.size-1).times {@supplier.draw_next_poem}
+        @supplier.current_poem.is_a?(Poem).should.be.true
+        @supplier.draw_next_poem.should.be.nil
+      end
     end
 
-    it '次の歌をDeckから読み込む (シャッフルも選別もしていないので、#2の歌になる)' do
-      @supplier.draw_next_poem.should == @supplier
-      @supplier.current_poem.number.should == 2
+    describe 'Context: 10首のランダムデッキで初期化' do
+      before do
+        @supplier = CharSupplier.new({deck: Deck.new.shuffle_with_size(10)})
+      end
+      it 'さらに9枚札をめくっても大丈夫だけど、もう1枚めくろうとするとnilになる' do
+        9.times {@supplier.draw_next_poem}
+        @supplier.current_poem.is_a?(Poem).should.be.true
+        @supplier.draw_next_poem.should.be.nil
+      end
     end
-
-    it '100首のDeckだと、さらに99首を読み込んでも大丈夫だが、その次はnilになる' do
-      (@supplier.deck.size-1).times {@supplier.draw_next_poem}
-      @supplier.current_poem.is_a?(Poem).should.be.true
-      @supplier.draw_next_poem.should.be.nil
-    end
-
   end
 
   describe 'make_4strings_at' do

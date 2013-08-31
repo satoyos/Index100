@@ -87,4 +87,15 @@ describe 'Deck' do
     end
 
   end
+
+  describe 'shuffle_with_size:' do
+    before do
+      @deck = Deck.new.shuffle_with_size(10)
+    end
+
+    it 'should not be nil' do
+      @deck.should.not.be.nil
+      @deck.size.should == 10
+    end
+  end
 end

@@ -31,4 +31,10 @@ class Deck
     @poems.size
   end
 
+  def shuffle_with_size(new_size)
+    return nil if new_size > self.size
+    @poems = @poems.shuffle[0..new_size-1]
+    self
+  end
+
 end

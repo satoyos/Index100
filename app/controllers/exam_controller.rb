@@ -17,30 +17,31 @@ class ExamController < RMViewController
 
   PROPERTIES = [:game_view, :fuda_view, :tatami_view, :volume_view,
                 :challenge_button, :clear_button, :main_buttons,
-                :supplier, :pushed_button, :current_challenge_string]
+                :supplier, :pushed_button,
+  ]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
 
-  PROPERTIES_ACCESSOR = [:full_screen,
-                         :button_is_moved, :challenge_button_is_pushed]
+  PROPERTIES_ACCESSOR = [:full_screen, :current_challenge_string,
+                         :button_is_moved, :challenge_button_is_pushed,
+                         :game_is_completed]
   PROPERTIES_ACCESSOR.each do |prop|
     attr_accessor prop
   end
 
-  def initWithNibName(nibName, bundle: bundle)
-    super
+  def initWithNibName(nibName, bundle: bundle, shuffle_with_size: s_size)
     self.hidesBottomBarWhenPushed = true
+    @shuffle_with_size = s_size
     @full_screen = true
     self
   end
 
   def viewDidLoad
     super
-    set_char_supplier()
-    hide_navigation_bar() unless RUBYMOTION_ENV == 'test'
+    set_char_supplier
     set_game_view_of_poem(@supplier.current_poem)
-    draw_game_view()
+    draw_sub_view(@game_view)
   end
 
   def viewWillAppear(animated)
@@ -48,11 +49,6 @@ class ExamController < RMViewController
       navigationController.navigationBar.translucent = true
       navigationController.navigationBar.alpha = 0.0
     end
-  end
-
-  def hide_navigation_bar
-
-
   end
 
   def set_game_view_of_poem(poem)
@@ -92,6 +88,34 @@ class ExamController < RMViewController
     UIView.commitAnimations
   end
 
+  def challenge_button_pushed
+    self.challenge_button_is_pushed = true
+    sweep_volume_view if @volume_view.is_coming_out?
+    @challenge_button.enabled = false
+    make_main_buttons_disabled
+    @game_view.display_result(get_result_type)
+    AudioPlayerFactory.players[audio_type].play
+
+    return if get_result_type == :wrong
+    return game_is_finished unless @supplier.draw_next_poem
+    @game_view.removeFromSuperview
+    set_game_view_of_poem(@supplier.current_poem)
+    if RUBYMOTION_ENV == 'test'
+      draw_sub_view(@game_view)
+    else
+      @game_view.view_animation_def(
+          'draw_sub_view',
+          arg: @game_view,
+          duration: EXCHANGE_GAME_VIEW_DURATION,
+          transition: GAME_VIEW_EXCHANGE_TRANSITION)
+    end
+  end
+
+  def back_to_the_beginning
+    puts "Let's go back to the beginning!"
+    navigationController.popViewControllerAnimated(true)
+  end
+
   :private
 
   def game_view_frame
@@ -99,7 +123,12 @@ class ExamController < RMViewController
   end
 
   def set_char_supplier
-    @supplier = CharSupplier.new({deck: Deck.new})
+    unless @shuffle_with_size
+      @supplier = CharSupplier.new({deck: Deck.new})
+    else
+      @supplier =
+          CharSupplier.new({deck: Deck.new.shuffle_with_size(@shuffle_with_size)})
+    end
   end
 
   def set_main_buttons(strings)
@@ -198,7 +227,7 @@ class ExamController < RMViewController
         remove_buttons_from_super_view(@prev_main_buttons) if @prev_main_buttons
         @prev_main_buttons = nil
         @pushed_button = nil
-      when 'draw_game_view'
+      when 'draw_sub_view'
       else
         puts "/////// このアニメーションの後処理はありません。 ///////"
     end
@@ -244,24 +273,17 @@ class ExamController < RMViewController
     self.challenge_button_is_pushed = false
   end
 
-  def challenge_button_pushed
-    self.challenge_button_is_pushed = true
-    sweep_volume_view if @volume_view.is_coming_out?
-    @challenge_button.enabled = false
-    make_main_buttons_disabled
-    @game_view.display_result(get_result_type)
-    AudioPlayerFactory.players[audio_type].play
-
-    return if get_result_type == :wrong
-    return unless @supplier.draw_next_poem
+  def game_is_finished
+    self.game_is_completed = true
+    comp_view = CompleteView.alloc.initWithFrame(self.view.frame,
+                                                 controller: self)
     @game_view.removeFromSuperview
-    set_game_view_of_poem(@supplier.current_poem)
     if RUBYMOTION_ENV == 'test'
-      draw_game_view
+      draw_sub_view(comp_view)
     else
       @game_view.view_animation_def(
-          'draw_game_view',
-          arg: nil,
+          'draw_sub_view',
+          arg: comp_view,
           duration: EXCHANGE_GAME_VIEW_DURATION,
           transition: GAME_VIEW_EXCHANGE_TRANSITION)
     end
@@ -269,6 +291,10 @@ class ExamController < RMViewController
 
   def draw_game_view
     self.view.addSubview(@game_view)
+  end
+
+  def draw_sub_view(sub_view)
+    self.view.addSubview(sub_view)
   end
 
   def audio_type
