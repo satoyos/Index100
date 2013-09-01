@@ -97,5 +97,10 @@ describe 'Deck' do
       @deck.should.not.be.nil
       @deck.size.should == 10
     end
+
+    it 'オリジナルデッキ(poems100)のサイズには影響を与えない' do
+      @deck.poems100.should.not.be.nil
+      @deck.poems100.size.should == 100
+    end
   end
 end

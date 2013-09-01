@@ -137,7 +137,8 @@ class CharSupplier
   def char_candidates_at(nth)
     case nth
       when 0 #一文字目
-        @deck.poems.map{|poem|
+#        @deck.poems.map{|poem|
+        @deck.poems100.map{|poem|
           case nth+1 <= poem.kimari_ji.length
             when true; poem.kimari_ji[nth]
             else     ; poem.in_hiragana.kami[nth]
@@ -151,7 +152,8 @@ class CharSupplier
   def easy_candidates_at(nth)
     regexp = Regexp.new("^#{current_selected(nth)}")
 #    puts "regexp => #{regexp}"
-    @deck.poems.select{|poem|
+#    @deck.poems.select{|poem|
+    @deck.poems100.select{|poem|
       poem.kimari_ji =~ regexp
     }.map{|poem|
       poem.kimari_ji[nth]
