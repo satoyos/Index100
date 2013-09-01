@@ -2,6 +2,11 @@ class PoemsNumberPicker < RMViewController
 
   INITIAL_POEMS_NUM = 100
   COMPONENT_ID = 0
+  POEM_NUM_CANDIDATES = [
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+      15, 20, 25, 30, 35, 40, 45, 50,
+      60, 70, 80, 90, 100
+  ]
 
   class << self
     def poems_num
@@ -19,7 +24,8 @@ class PoemsNumberPicker < RMViewController
       p_view.delegate = self
       p_view.dataSource = self
       p_view.showsSelectionIndicator = true
-      p_view.selectRow(PoemsNumberPicker.poems_num-1,
+      p_view.selectRow(POEM_NUM_CANDIDATES.find_index(
+                           PoemsNumberPicker.poems_num),
                        inComponent: COMPONENT_ID,
                        animated: false)
       self.view.addSubview(p_view)
@@ -28,7 +34,7 @@ class PoemsNumberPicker < RMViewController
 
   def viewWillDisappear(animated)
     PoemsNumberPicker.poems_num =
-        @picker_view.selectedRowInComponent(COMPONENT_ID)+1
+        POEM_NUM_CANDIDATES[@picker_view.selectedRowInComponent(COMPONENT_ID)]
 #    puts "- 永続化データ[poems_num]の値を[#{PoemsNumberPicker.poems_num}]に書き換えました。"
   end
 
@@ -37,11 +43,11 @@ class PoemsNumberPicker < RMViewController
   end
 
   def pickerView(pickerView, numberOfRowsInComponent: component)
-    100
+    POEM_NUM_CANDIDATES.size
   end
 
   def pickerView(pickerView, titleForRow: row, forComponent: component)
-    "#{row+1}"
+    "#{POEM_NUM_CANDIDATES[row]}"
   end
 
 end
