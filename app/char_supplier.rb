@@ -167,4 +167,12 @@ class CharSupplier
     end
   end
 
+  def deck_size
+    @deck.size
+  end
+
+  def poem_counter
+    @deck.counter
+  end
+
 end

@@ -3,6 +3,10 @@ class GameView < UIView
   FUDA_HEIGHT_POWER = 0.95 # 札ビューの高さは、畳ビューの何倍にするか
 
   VOLUME_ICON_MARGIN = 10
+  COUNTER_LABEL_MARGIN = VOLUME_ICON_MARGIN
+
+  A_LABEL_COUNTER_LABEL = 'poem_counter_label'
+  COUNTER_LABEL_FOR_TEST = 'xx/yy'
 
   PROPERTIES = [:poem, :tatami_view, :fuda_view, :input_view, :controller]
   PROPERTIES.each do |prop|
@@ -15,11 +19,28 @@ class GameView < UIView
     @controller = controller
     create_tatami_view()
     create_fuda_view()
+    create_counter_label()
     @fuda_view.rewrite_string(@poem.in_hiragana.shimo)
 
     create_input_view()
 
     self
+  end
+
+  def create_counter_label
+    counter_label = UILabel.alloc.initWithFrame(CGRectZero)
+    # @param [UILabel] c_label
+    counter_label.tap do |c_label|
+      c_label.backgroundColor = UIColor.clearColor
+      c_label.textColor = UIColor.whiteColor
+      c_label.text = case RUBYMOTION_ENV
+                       when 'test' ; COUNTER_LABEL_FOR_TEST
+                       else "#{poem_counter}/#{deck_size}"
+                     end
+      c_label.sizeToFit
+      c_label.frame = counter_label_frame(c_label.frame.size)
+      self.addSubview(c_label)
+    end
   end
 
   def create_tatami_view
@@ -119,6 +140,14 @@ class GameView < UIView
                tatami_size.width, self_size.height - tatami_size.height)
   end
 
+  def counter_label_frame(label_size)
+    [CGPointMake(COUNTER_LABEL_MARGIN, COUNTER_LABEL_MARGIN),
+     label_size
+    ]
+  end
+
+
+
   def self_size
     self.frame.size
   end
@@ -131,4 +160,11 @@ class GameView < UIView
     @tatami_view.frame.size
   end
 
+  def deck_size
+    @controller.supplier.deck_size
+  end
+
+  def poem_counter
+    @controller.supplier.poem_counter
+  end
 end

@@ -15,7 +15,7 @@ class ExamController < RMViewController
   VOLUME_ANIMATE_DURATION = 0.3
   EXCHANGE_GAME_VIEW_DURATION = 0.5
 
-  PROPERTIES = [:game_view, :fuda_view, :tatami_view, :volume_view,
+  PROPERTIES = [:game_view, :tatami_view, :volume_view,
                 :challenge_button, :clear_button, :main_buttons,
                 :supplier, :pushed_button,
   ]

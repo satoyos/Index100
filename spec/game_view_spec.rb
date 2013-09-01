@@ -51,5 +51,12 @@ EOF
       @game_view.fuda_view.center.eql?(@game_view.tatami_view.center).should.be.true
     end
 
+    it 'カウンターラベルがある' do
+      c_label = @game_view.subviews.find{|view| view.is_a?(UILabel)}
+      c_label.should.not.be.nil
+      c_label.text.should == GameView::COUNTER_LABEL_FOR_TEST
+      c_label.textColor.should == UIColor.whiteColor
+    end
+
   end
 end

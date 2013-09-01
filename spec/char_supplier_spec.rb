@@ -34,6 +34,10 @@ describe 'CharSupplier' do
       @supplier.current_poem.number.should == 1
     end
 
+    it 'デッキのサイズは100' do
+      @supplier.deck_size.should == 100
+    end
+
     it 'has an answer' do
       @supplier.answer.should.not.be.nil
       @supplier.answer.is_a?(String).should.be.true
@@ -71,6 +75,23 @@ describe 'CharSupplier' do
         9.times {@supplier.draw_next_poem}
         @supplier.current_poem.is_a?(Poem).should.be.true
         @supplier.draw_next_poem.should.be.nil
+      end
+    end
+  end
+
+  describe 'poem_counter' do
+    describe 'Context: 10首のランダムデッキで初期化' do
+      before do
+        @supplier = CharSupplier.new({deck: Deck.new.shuffle_with_size(10)})
+      end
+
+      it '初期化した時点で1枚めくっているので、poem_counterの値は1' do
+        @supplier.poem_counter.should == 1
+      end
+
+      it 'さらに2枚札をめくると、値は3になる' do
+        2.times {@supplier.draw_next_poem}
+        @supplier.poem_counter.should == 3
       end
     end
   end
