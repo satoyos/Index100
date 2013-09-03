@@ -15,20 +15,13 @@ class ExamController < RMViewController
   VOLUME_ANIMATE_DURATION = 0.3
   EXCHANGE_GAME_VIEW_DURATION = 0.5
 
-  PROPERTIES = [:game_view, :tatami_view, :volume_view,
-                :challenge_button, :clear_button, :main_buttons,
-                :supplier, :pushed_button,
-  ]
-  PROPERTIES.each do |prop|
-    attr_reader prop
-  end
+  attr_reader :game_view, :tatami_view, :volume_view
+  attr_reader :challenge_button, :clear_button, :main_buttons
+  attr_reader :supplier, :pushed_button
 
-  PROPERTIES_ACCESSOR = [:full_screen, :current_challenge_string,
-                         :button_is_moved, :challenge_button_is_pushed,
-                         :game_is_completed]
-  PROPERTIES_ACCESSOR.each do |prop|
-    attr_accessor prop
-  end
+  attr_accessor :full_screen, :current_challenge_string
+  attr_accessor :button_is_moved, :challenge_button_is_pushed
+  attr_accessor :game_is_completed
 
   def initWithNibName(nibName, bundle: bundle, shuffle_with_size: s_size)
     self.hidesBottomBarWhenPushed = true
@@ -49,6 +42,10 @@ class ExamController < RMViewController
       navigationController.navigationBar.translucent = true
       navigationController.navigationBar.alpha = 0.0
     end
+  end
+
+  def viewWillDisappear(animated)
+    UIApplication.sharedApplication.setStatusBarHidden(false, animated: false)
   end
 
   def set_game_view_of_poem(poem)
@@ -112,7 +109,6 @@ class ExamController < RMViewController
   end
 
   def back_to_the_beginning
-    puts "Let's go back to the beginning!"
     navigationController.popViewControllerAnimated(true)
   end
 
@@ -127,7 +123,9 @@ class ExamController < RMViewController
       @supplier = CharSupplier.new({deck: Deck.new})
     else
       @supplier =
-          CharSupplier.new({deck: Deck.new.shuffle_with_size(@shuffle_with_size)})
+          CharSupplier.new({deck: Deck.new.shuffle_with_size(@shuffle_with_size),
+                            sort_strings: true}
+          )
     end
   end
 

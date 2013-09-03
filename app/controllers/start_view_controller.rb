@@ -119,6 +119,7 @@ class StartViewController < UITableViewController
   end
 
   def start_test
+    UIApplication.sharedApplication.setStatusBarHidden(true, animated: true)
     navigationController.pushViewController(
         ExamController.alloc.initWithNibName(nil,
                                              bundle: nil,

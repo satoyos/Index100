@@ -19,6 +19,7 @@ class CharSupplier
     @counter = 0
     @supplying_strings = nil
     @mode = init_hash[:mode]
+    @sort_strings = init_hash[:sort_strings]
 
     # まずは、難易度はeasyモードのみ用意。
     @difficulty = :easy
@@ -114,15 +115,23 @@ class CharSupplier
       return [@current_poem.in_hiragana.kami[count], nil, nil, nil]
     end
     shuffled_candidates = shuffled_candidates_at(count)
-    # 先頭からNUM_TO_SUPPLY個を取得し、シャッフルして戻り値とする。
-    shuffled_candidates[0..NUM_TO_SUPPLY-1].shuffle.fill(
-        nil,
-        shuffled_candidates.length..NUM_TO_SUPPLY-1
-    )
+    if @sort_strings
+      shuffled_candidates[0..NUM_TO_SUPPLY-1].sort.fill(
+          nil,
+          shuffled_candidates.length..NUM_TO_SUPPLY-1
+      )
+    else
+      # 先頭からNUM_TO_SUPPLY個を取得し、シャッフルして戻り値とする。
+      shuffled_candidates[0..NUM_TO_SUPPLY-1].shuffle.fill(
+          nil,
+          shuffled_candidates.length..NUM_TO_SUPPLY-1
+      )
+
+    end
   end
 
   #count番目(1文字目はcount=0)の候補となる文字群を、正解文字を先頭にして返す。
-  #ただし、洗脳の正解文字以外はシャッフルする
+  #ただし、先頭の正解文字以外はシャッフルする
   def shuffled_candidates_at(count)
     all_candidates = char_candidates_at(count)
     all_candidates.delete(right_char_at(count))
