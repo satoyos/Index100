@@ -125,9 +125,11 @@ describe 'ExamController' do
       tap @tap_button.currentTitle # AccessibilityLabelに同じ値が設定されている
     end
 
+=begin
     it '押されたボタンをちゃんと把握できている' do
       controller.pushed_button.should.not.be.nil
     end
+=end
 
     it 'メイン・ボタン・スロットの、押されたボタンに該当する位置は新しいボタンが補充されている' do
       controller.main_buttons[@right_index].should.not.be.nil
@@ -287,10 +289,14 @@ describe 'ExamController' do
 
   describe 'ゲーム終了のテスト' do
     before do
+=begin
       @controller =
           ExamController.alloc.initWithNibName(nil,
                                                bundle: nil,
                                                shuffle_with_size: 2)
+=end
+      @controller =
+          ExamController.alloc.initWithHash({shuffle_with_size: 2})
       @controller.viewDidLoad
     end
 

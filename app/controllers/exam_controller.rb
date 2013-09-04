@@ -20,13 +20,31 @@ class ExamController < RMViewController
   attr_reader :supplier, :pushed_button
 
   attr_accessor :full_screen, :current_challenge_string
+  attr_accessor :shuffle_with_size, :wrong_char_allowed
   attr_accessor :button_is_moved, :challenge_button_is_pushed
   attr_accessor :game_is_completed
 
+=begin
   def initWithNibName(nibName, bundle: bundle, shuffle_with_size: s_size)
     self.hidesBottomBarWhenPushed = true
     @shuffle_with_size = s_size
     @full_screen = true
+    self
+  end
+=end
+
+  def initWithHash(init_hash)
+    init_hash.each do |key, value|
+      unless self.respond_to?("#{key}=")
+        puts "ExamControllerにはメソッド[#{key}=]がありません"
+        next
+      end
+      self.send("#{key}=", value)
+    end
+
+    self.hidesBottomBarWhenPushed = true
+    @full_screen = true
+
     self
   end
 
@@ -119,7 +137,7 @@ class ExamController < RMViewController
   end
 
   def set_char_supplier
-    unless @shuffle_with_size
+    unless self.shuffle_with_size
       @supplier = CharSupplier.new({deck: Deck.new})
     else
       @supplier =
@@ -175,7 +193,8 @@ class ExamController < RMViewController
 
   def check_if_right_button_pushed
     self.button_is_moved = true
-    case @supplier.on_the_correct_line?(@current_challenge_string)
+    case self.wrong_char_allowed ||
+        @supplier.on_the_correct_line?(@current_challenge_string)
       when true; exchange_main_buttons
       else     ; challenge_button_pushed
     end

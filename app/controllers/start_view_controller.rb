@@ -121,9 +121,11 @@ class StartViewController < UITableViewController
   def start_test
     UIApplication.sharedApplication.setStatusBarHidden(true, animated: true)
     navigationController.pushViewController(
-        ExamController.alloc.initWithNibName(nil,
-                                             bundle: nil,
-                                             shuffle_with_size: PoemsNumberPicker.poems_num),
+    ExamController.alloc.initWithHash(
+        {
+          shuffle_with_size: PoemsNumberPicker.poems_num,
+          wrong_char_allowed: true,
+        }),
         animated: true)
   end
 
