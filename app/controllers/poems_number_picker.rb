@@ -1,3 +1,8 @@
+#####
+# To get selected [Number of Poems],
+# call class method of this class; 'poems_num'
+#####
+
 class PoemsNumberPicker < RMViewController
 
   INITIAL_POEMS_NUM = 100
