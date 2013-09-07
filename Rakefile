@@ -3,6 +3,7 @@ $:.unshift("/Library/RubyMotion/lib")
 require 'motion/project/template/ios'
 # require 'bubble-wrap'
 require 'guard/motion'
+require 'motion-localization'
 require 'bundler/setup'
 Bundler.require :default
 

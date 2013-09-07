@@ -1,4 +1,5 @@
-class PoemsNumberPicker < RMViewController
+# class PoemsNumberPicker < RMViewController
+ class PoemsNumberPicker < UIViewController
 
   INITIAL_POEMS_NUM = 100
   COMPONENT_ID = 0

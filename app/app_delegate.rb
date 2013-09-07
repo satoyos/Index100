@@ -2,7 +2,9 @@ class AppDelegate
   include RMSettable
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    rm_settable :volume, :poems_num
+#    NSBundle.mainBundle.loca
+
+    rm_settable :volume, :poems_num, :wrong_asap
     AudioPlayerFactory.prepare_embedded_players
 
     if RUBYMOTION_ENV == 'test'

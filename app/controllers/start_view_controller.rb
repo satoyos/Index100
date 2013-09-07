@@ -2,23 +2,16 @@
 
 class StartViewController < UITableViewController
 
-  READ_PROPERTIES = [:table]
-  READ_PROPERTIES.each do |prop|
-    attr_reader prop
-  end
-
-  ACCESS_PROPERTIES = []
-  ACCESS_PROPERTIES.each do |prop|
-    attr_accessor prop
-  end
+  attr_reader :table, :wrong_asap_cell
 
   START_VIEW_SECTIONS = [
       {section_id: :settings,
        header_title: '設定',
        items: [
            {id: :number_of_poems, title: '使う歌の数'},
-           {id: :show_wrong_asap, title: '間違えたらすぐにお知らせ',
-            detail: '誤った文字を押した時点で通知します'},
+           {id: :show_wrong_asap, title: '間違ったらすぐお知らせ',
+            detail: '誤った文字を押した時点で通知します',
+            no_action: true},
        ]
       },
       {section_id: :games,
@@ -78,17 +71,13 @@ class StartViewController < UITableViewController
                                                     detail: detail_text(indexPath),
                                                     reuseIdentifier: @reuseIdentifier)
           when :show_wrong_asap
-            cell_style, cell_accessory_type =
-                [UITableViewCellStyleSubtitle,
-                 UITableViewCellAccessoryNone]
-            setting_cell = UITableViewCell.alloc.initWithStyle(cell_style,
-                                                               reuseIdentifier: @reuseIdentifier)
-            setting_cell.tap do |c|
-              c.textLabel.text = item_hash(indexPath)[:title]
-              c.detailTextLabel.text = detail_text(indexPath)
-              c.accessoryType= cell_accessory_type
-            end
-            setting_cell
+            @wrong_asap_cell =
+                SettingCellWithSwitch.alloc.initWithText(text_of(indexPath),
+                                                         detail: detail_text(indexPath),
+                                                         on_status: initial_wrong_asap,
+                                                         reuseIdentifier: @reuseIdentifier)
+            @wrong_asap_cell.set_callback(self, method: 'save_wrong_asap_flg')
+            @wrong_asap_cell
           else
             nil
         end
@@ -98,7 +87,7 @@ class StartViewController < UITableViewController
   end
 
   def tableView(tableView, didSelectRowAtIndexPath: indexPath)
-
+    return if item_hash(indexPath)[:no_action]
     method_name = case id_of_section(indexPath)
                     when :settings ; "set_#{item_hash(indexPath)[:id]}"
                     when :games    ; "#{item_hash(indexPath)[:id]}"
@@ -134,17 +123,31 @@ class StartViewController < UITableViewController
 
   def start_test
     UIApplication.sharedApplication.setStatusBarHidden(true, animated: true)
+#    save_wrong_asap_flg()
     navigationController.pushViewController(
     ExamController.alloc.initWithHash(
         {
           shuffle_with_size: PoemsNumberPicker.poems_num,
-          wrong_char_allowed: true,
+          wrong_char_allowed: !@wrong_asap_cell.switch_on?,
         }),
         animated: true)
   end
 
+  def save_wrong_asap_flg
+    puts '- saving [wrong_asap]'
+    UIApplication.sharedApplication.delegate.settings.wrong_asap = @wrong_asap_cell.switch_on?
+  end
+
+  def initial_wrong_asap
+    saved_flg = UIApplication.sharedApplication.delegate.settings.wrong_asap
+    case saved_flg
+      when nil; false
+      else    ; saved_flg
+    end
+  end
+
   def set_number_of_poems
-    puts '  → これから歌の数を設定します！'
+#    puts '  → これから歌の数を設定します！'
     navigationController.pushViewController(
         PoemsNumberPicker.alloc.initWithNibName(nil, bundle: nil),
         animated: true)
