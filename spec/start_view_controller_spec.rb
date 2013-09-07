@@ -16,7 +16,7 @@ describe 'StartViewController' do
 
     it 'section=0のときは、定められた設定項目数を返す' do
       controller.tableView(nil, numberOfRowsInSection: 0).should ==
-          StartViewController::SETTING_ITEMS.size
+          StartViewController::START_VIEW_SECTIONS[0][:items].size
     end
   end
 

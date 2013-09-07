@@ -1,5 +1,6 @@
-class StartViewController < UITableViewController
+# coding: utf-8
 
+class StartViewController < UITableViewController
 
   READ_PROPERTIES = [:table]
   READ_PROPERTIES.each do |prop|
@@ -11,18 +12,21 @@ class StartViewController < UITableViewController
     attr_accessor prop
   end
 
-  SECTIONS = [
-      {id: :settings, header_title: '設定'},
-      {id: :games, header_title: 'ゲーム開始'}
-  ]
-
-  SETTING_ITEMS = [
-      {id: :number_of_poems, title: '使う歌の数'},
-#      {id: :how_to_select  , title: '使う歌の選び方'}
-  ]
-
-  GAMES = [
-      {id: :start_test, title: 'テスト(時間計測なし)'}
+  START_VIEW_SECTIONS = [
+      {section_id: :settings,
+       header_title: '設定',
+       items: [
+           {id: :number_of_poems, title: '使う歌の数'},
+           {id: :show_wrong_asap, title: '間違えたらすぐにお知らせ',
+            detail: '誤った文字を押した時点で通知します'},
+       ]
+      },
+      {section_id: :games,
+       header_title: 'ゲーム開始',
+       items: [
+           {id: :start_test, title: 'テスト(時間計測なし)'}
+       ]
+      },
   ]
 
   def viewDidLoad
@@ -47,20 +51,15 @@ class StartViewController < UITableViewController
 
 
   def numberOfSectionsInTableView(tableView)
-    SECTIONS.size
+    START_VIEW_SECTIONS.size
   end
 
   def tableView(tableView, titleForHeaderInSection: section)
-    SECTIONS[section][:header_title]
+    START_VIEW_SECTIONS[section][:header_title]
   end
 
   def tableView(tableView, numberOfRowsInSection: section)
-    case SECTIONS[section][:id]
-      when :settings ; SETTING_ITEMS.size
-      when :games    ; GAMES.size
-      else ; 0
-    end
-
+    START_VIEW_SECTIONS[section][:items].size
   end
 
   def tableView(tableView, cellForRowAtIndexPath: indexPath)
@@ -71,51 +70,63 @@ class StartViewController < UITableViewController
           when :games
             [UITableViewCellStyleDefault,
              UITableViewCellAccessoryNone]
-          else
-            [UITableViewCellStyleValue1,
-             UITableViewCellAccessoryDetailDisclosureButton]
+          when :settings
+            case item_hash(indexPath)[:id]
+              when :number_of_poems
+                [UITableViewCellStyleValue1,
+                 UITableViewCellAccessoryDetailDisclosureButton]
+              when :show_wrong_asap
+                [UITableViewCellStyleSubtitle,
+                UITableViewCellAccessoryNone]
+              else ; [nil, nil]
+            end
+
+          else ; [nil, nil]
         end
     cell = tableView.dequeueReusableCellWithIdentifier(@reuseIdentifier) ||
         UITableViewCell.alloc.initWithStyle(cell_style,
                                             reuseIdentifier: @reuseIdentifier)
 
-    hash =  case id_of_section(indexPath.section)
-              when :settings ; SETTING_ITEMS[indexPath.row]
-              when :games    ; GAMES[indexPath.row]
-            end
+
     cell.tap do |c|
-      c.textLabel.text = hash[:title]
+      c.textLabel.text = item_hash(indexPath)[:title]
       if c.detailTextLabel
-        c.detailTextLabel.text = detail_text(SETTING_ITEMS[indexPath.row][:id])
+        c.detailTextLabel.text = detail_text(indexPath)
       else
         c.textLabel.textAlignment = UITextAlignmentCenter
         c.textLabel.textColor = UIColor.redColor
       end
       c.accessoryType= cell_accessory_type
-      c.accessibilityLabel = "#{hash[:id]}"
+      c.accessibilityLabel = "#{item_hash(indexPath)[:id]}"
     end
 
     cell
   end
 
-  def detail_text(setting_id)
-    case setting_id
+  def tableView(tableView, didSelectRowAtIndexPath: indexPath)
+
+    method_name = case id_of_section(indexPath.section)
+                    when :settings ; "set_#{item_hash(indexPath)[:id]}"
+                    when :games    ; "#{item_hash(indexPath)[:id]}"
+                  end
+    puts "- 呼び出すメソッド => [#{method_name}]"
+    self.send("#{method_name}")
+  end
+
+  def detail_text(indexPath)
+    case item_hash(indexPath)[:id]
       when :number_of_poems ; "#{PoemsNumberPicker.poems_num}"
+      when :show_wrong_asap ; item_hash(indexPath)[:detail]
       else ; '未設定'
     end
   end
 
   def id_of_section(section_idx)
-    SECTIONS[section_idx][:id]
+    START_VIEW_SECTIONS[section_idx][:section_id]
   end
 
-  def tableView(tableView, didSelectRowAtIndexPath: indexPath)
-    method_name = case id_of_section(indexPath.section)
-            when :settings ; "set_#{SETTING_ITEMS[indexPath.row][:id]}"
-            when :games    ; "#{GAMES[indexPath.row][:id]}"
-          end
-    puts "- 呼び出すメソッド => [#{method_name}]"
-    self.send("#{method_name}")
+  def item_hash(indexPath)
+    START_VIEW_SECTIONS[indexPath.section][:items][indexPath.row]
   end
 
   def start_test
