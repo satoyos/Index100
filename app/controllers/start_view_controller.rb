@@ -63,49 +63,43 @@ class StartViewController < UITableViewController
   end
 
   def tableView(tableView, cellForRowAtIndexPath: indexPath)
+    # 一応慣例に従ってreuseIdentifierは作成するが、
+    # この画面を作る負荷は小さいので、問題が出ない限り使わない。
     @reuseIdentifier ||= 'CELL_IDENTIFIER'
 
-    cell_style, cell_accessory_type =
-        case id_of_section(indexPath.section)
-          when :games
-            [UITableViewCellStyleDefault,
-             UITableViewCellAccessoryNone]
-          when :settings
-            case item_hash(indexPath)[:id]
-              when :number_of_poems
-                [UITableViewCellStyleValue1,
-                 UITableViewCellAccessoryDetailDisclosureButton]
-              when :show_wrong_asap
+    case id_of_section(indexPath)
+      when :games
+        GameStartCell.alloc.initWithText(text_of(indexPath),
+                                         reuseIdentifier: @reuseIdentifier)
+      when :settings
+        case id_of_item(indexPath)
+          when :number_of_poems
+            SettingCellWithArrow.alloc.initWithText(text_of(indexPath),
+                                                    detail: detail_text(indexPath),
+                                                    reuseIdentifier: @reuseIdentifier)
+          when :show_wrong_asap
+            cell_style, cell_accessory_type =
                 [UITableViewCellStyleSubtitle,
-                UITableViewCellAccessoryNone]
-              else ; [nil, nil]
+                 UITableViewCellAccessoryNone]
+            setting_cell = UITableViewCell.alloc.initWithStyle(cell_style,
+                                                               reuseIdentifier: @reuseIdentifier)
+            setting_cell.tap do |c|
+              c.textLabel.text = item_hash(indexPath)[:title]
+              c.detailTextLabel.text = detail_text(indexPath)
+              c.accessoryType= cell_accessory_type
             end
-
-          else ; [nil, nil]
+            setting_cell
+          else
+            nil
         end
-    cell = tableView.dequeueReusableCellWithIdentifier(@reuseIdentifier) ||
-        UITableViewCell.alloc.initWithStyle(cell_style,
-                                            reuseIdentifier: @reuseIdentifier)
-
-
-    cell.tap do |c|
-      c.textLabel.text = item_hash(indexPath)[:title]
-      if c.detailTextLabel
-        c.detailTextLabel.text = detail_text(indexPath)
       else
-        c.textLabel.textAlignment = UITextAlignmentCenter
-        c.textLabel.textColor = UIColor.redColor
-      end
-      c.accessoryType= cell_accessory_type
-      c.accessibilityLabel = "#{item_hash(indexPath)[:id]}"
+        nil
     end
-
-    cell
   end
 
   def tableView(tableView, didSelectRowAtIndexPath: indexPath)
 
-    method_name = case id_of_section(indexPath.section)
+    method_name = case id_of_section(indexPath)
                     when :settings ; "set_#{item_hash(indexPath)[:id]}"
                     when :games    ; "#{item_hash(indexPath)[:id]}"
                   end
@@ -121,12 +115,21 @@ class StartViewController < UITableViewController
     end
   end
 
-  def id_of_section(section_idx)
-    START_VIEW_SECTIONS[section_idx][:section_id]
+  def id_of_section(indexPath)
+    START_VIEW_SECTIONS[indexPath.section][:section_id]
   end
 
   def item_hash(indexPath)
     START_VIEW_SECTIONS[indexPath.section][:items][indexPath.row]
+  end
+
+  def id_of_item(indexPath)
+    item_hash(indexPath)[:id]
+  end
+
+
+  def text_of(indexPath)
+    item_hash(indexPath)[:title]
   end
 
   def start_test
