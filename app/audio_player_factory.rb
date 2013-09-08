@@ -1,11 +1,15 @@
 class AudioPlayerFactory
   BASENAME_OF_SORRY = 'audio/not_recorded_yet'
-  AUDIO_PATH = {
-      right: 'audio/0000_正解です！',
-      wrong: 'audio/0002_違います！',
-      test:  'audio/0004_ボリューム調整用音声',
-      short: 'audio/1003_まだ決まりません',
-      long:  'audio/1004_長すぎます'
+  VOICE_AUDIO_PATH = {
+      right: 'audio/voice/0000_正解です！',
+      wrong: 'audio/voice/0002_違います！',
+      test:  'audio/voice/0004_ボリューム調整用音声',
+      short: 'audio/voice/1003_まだ決まりません',
+      long:  'audio/voice/1004_長すぎます'
+  }
+
+  BUTTON_AUDIO_PATH = {
+      button5: 'audio/button/button5'
   }
 
   class << self
@@ -13,8 +17,11 @@ class AudioPlayerFactory
 
     def prepare_embedded_players
       @players = {}
-      AUDIO_PATH.each do |key, path|
+      VOICE_AUDIO_PATH.each do |key, path|
         @players[key] = create_player_by_path(path, ofType: 'm4a')
+      end
+      BUTTON_AUDIO_PATH.each do |key, path|
+        @players[key] = create_player_by_path(path, ofType: 'wav')
       end
     end
 

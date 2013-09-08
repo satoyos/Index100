@@ -32,8 +32,13 @@ describe 'AudioPlayerFactory' do
     it 'AudioPlayerFactory class has a member "players"' do
       @players.should.not.be.nil
     end
-    it 'all player can be played' do
-      AudioPlayerFactory::AUDIO_PATH.keys.each do |key|
+    it 'all voice player can be played' do
+      AudioPlayerFactory::VOICE_AUDIO_PATH.keys.each do |key|
+        @players[key].play.should.be.true
+      end
+    end
+    it 'all button player can be played' do
+      AudioPlayerFactory::BUTTON_AUDIO_PATH.keys.each do |key|
         @players[key].play.should.be.true
       end
     end
