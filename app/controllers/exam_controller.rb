@@ -24,15 +24,6 @@ class ExamController < RMViewController
   attr_accessor :button_is_moved, :challenge_button_is_pushed
   attr_accessor :game_is_completed
 
-=begin
-  def initWithNibName(nibName, bundle: bundle, shuffle_with_size: s_size)
-    self.hidesBottomBarWhenPushed = true
-    @shuffle_with_size = s_size
-    @full_screen = true
-    self
-  end
-=end
-
   def initWithHash(init_hash)
     init_hash.each do |key, value|
       unless self.respond_to?("#{key}=")
@@ -63,7 +54,7 @@ class ExamController < RMViewController
   end
 
   def viewWillDisappear(animated)
-    UIApplication.sharedApplication.setStatusBarHidden(false, animated: false)
+    UIApplication.sharedApplication.setStatusBarHidden(false, animated: true)
   end
 
   def set_game_view_of_poem(poem)
@@ -100,6 +91,7 @@ class ExamController < RMViewController
           when true ; 0.0
           else      ; 1.0
         end
+    UIApplication.sharedApplication.setStatusBarHidden(@full_screen, animated: true)
     UIView.commitAnimations
   end
 
@@ -188,6 +180,8 @@ class ExamController < RMViewController
     @current_challenge_string += sender.currentTitle
     @pushed_button = sender
     @main_buttons[pushed_button_index] = nil
+#    puts 'MainButtonSoundPicker.button_sound => ' + "#{MainButtonSoundPicker.button_sound} (#{MainButtonSoundPicker.button_sound.class})"
+    AudioPlayerFactory.players[MainButtonSoundPicker.button_sound].play
     @game_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
   end
 

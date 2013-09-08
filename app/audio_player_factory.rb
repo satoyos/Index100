@@ -9,7 +9,16 @@ class AudioPlayerFactory
   }
 
   BUTTON_AUDIO_PATH = {
-      button5: 'audio/button/button5'
+      button1: 'audio/button/button1',
+      button2: 'audio/button/button2',
+      button3: 'audio/button/button3',
+      button4: 'audio/button/button4',
+      button5: 'audio/button/button5',
+      button6: 'audio/button/button6',
+      button7: 'audio/button/button7',
+      button8: 'audio/button/button8',
+      button9: 'audio/button/button9',
+      button10: 'audio/button/button10',
   }
 
   class << self

@@ -12,6 +12,7 @@ class StartViewController < UITableViewController
            {id: :show_wrong_asap, title: '間違ったらすぐお知らせ',
             detail: '誤った文字を押した時点で通知します',
             no_action: true},
+           {id: :main_button_sound, title: '字を選んだ時の音'},
        ]
       },
       {section_id: :games,
@@ -78,6 +79,11 @@ class StartViewController < UITableViewController
                                                          reuseIdentifier: @reuseIdentifier)
             @wrong_asap_cell.set_callback(self, method: 'save_wrong_asap_flg')
             @wrong_asap_cell
+          when :main_button_sound
+            SettingCellWithArrow.alloc.initWithText(text_of(indexPath),
+                                                    detail: detail_text(indexPath),
+                                                    reuseIdentifier: @reuseIdentifier)
+
           else
             nil
         end
@@ -91,6 +97,7 @@ class StartViewController < UITableViewController
     method_name = case id_of_section(indexPath)
                     when :settings ; "set_#{item_hash(indexPath)[:id]}"
                     when :games    ; "#{item_hash(indexPath)[:id]}"
+                    else ; nil
                   end
     puts "- 呼び出すメソッド => [#{method_name}]"
     self.send("#{method_name}")
@@ -100,6 +107,7 @@ class StartViewController < UITableViewController
     case item_hash(indexPath)[:id]
       when :number_of_poems ; "#{PoemsNumberPicker.poems_num}"
       when :show_wrong_asap ; item_hash(indexPath)[:detail]
+      when :main_button_sound ; MainButtonSoundPicker.current_label_name
       else ; '未設定'
     end
   end
@@ -153,9 +161,17 @@ class StartViewController < UITableViewController
         animated: true)
   end
 
+  def set_main_button_sound
+    puts '  → これからメインボタンを押したときのサウンドを設定します！'
+    navigationController.pushViewController(
+        MainButtonSoundPicker.alloc.init,
+        animated: true)
+  end
+=begin
   def set_how_to_select
     puts '  → これから歌の選択方法を設定します！'
   end
+=end
 
 
 end

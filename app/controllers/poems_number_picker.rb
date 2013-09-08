@@ -1,5 +1,4 @@
-# class PoemsNumberPicker < RMViewController
- class PoemsNumberPicker < UIViewController
+class PoemsNumberPicker < UIViewController
 
   PICKER_VIEW_WIDTH = 100
   INITIAL_POEMS_NUM = 100
