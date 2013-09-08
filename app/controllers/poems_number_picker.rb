@@ -1,6 +1,7 @@
 # class PoemsNumberPicker < RMViewController
  class PoemsNumberPicker < UIViewController
 
+  PICKER_VIEW_WIDTH = 100
   INITIAL_POEMS_NUM = 100
   COMPONENT_ID = 0
   POEM_NUM_CANDIDATES = [
@@ -49,6 +50,10 @@
 
   def pickerView(pickerView, titleForRow: row, forComponent: component)
     "#{POEM_NUM_CANDIDATES[row]}"
+  end
+
+  def pickerView(pickerView, widthForComponent: component)
+    PICKER_VIEW_WIDTH
   end
 
 end
