@@ -21,6 +21,7 @@ class AudioPlayerFactory
       button10: 'audio/button/button10',
   }
 
+
   class << self
     attr_reader :players
 
@@ -29,8 +30,15 @@ class AudioPlayerFactory
       VOICE_AUDIO_PATH.each do |key, path|
         @players[key] = create_player_by_path(path, ofType: 'm4a')
       end
+=begin
       BUTTON_AUDIO_PATH.each do |key, path|
         @players[key] = create_player_by_path(path, ofType: 'wav')
+      end
+=end
+      buttons_sounds = ButtonSound.create_sounds
+      buttons_sounds.each do |b_sound|
+        @players[b_sound.id] = create_player_by_path(b_sound.path,
+                                                     ofType: b_sound.type)
       end
     end
 

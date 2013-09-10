@@ -3,13 +3,12 @@ class MainButtonSoundPicker < UIViewController
   PICKER_VIEW_WIDTH = 180
   INITIAL_SOUND = :button5
   COMPONENT_ID = 0
-  MAIN_BUTTON_SOUND_CANDIDATES = AudioPlayerFactory::BUTTON_AUDIO_PATH.keys
 
   PLAY_BUTTON_TITLE = '聞いてみる'
   PLAY_BUTTON_TOP_MARGIN = 30
 
   class << self
-    def button_sound
+    def button_sound_id
       saved_data = UIApplication.sharedApplication.delegate.settings.main_button_sound
       case saved_data
         when nil ; INITIAL_SOUND
@@ -17,27 +16,29 @@ class MainButtonSoundPicker < UIViewController
       end
     end
 
-    def button_sound=(sound_sym)
-      UIApplication.sharedApplication.delegate.settings.main_button_sound = sound_sym
+    def button_sound_id=(sound_id)
+      UIApplication.sharedApplication.delegate.settings.main_button_sound = sound_id
     end
 
-    def label_name(button_sym)
-      m = /([0-9]+)\z/.match(button_sym.to_s)
-      if m
-        "ボタン音#{m[1]}"
-      else
-        button_name.to_s
-      end
+    def label_name(sound_id)
+      sound = ButtonSound.sounds.find{|sound| sound.id == sound_id} ||
+          ButtonSound.sounds.first
+      sound.label
     end
 
     def current_label_name
-      label_name(button_sound)
+      label_name(button_sound_id)
     end
   end
 
   def viewDidLoad
+    set_button_sounds()
     set_picker_view()
     set_play_button()
+  end
+
+  def set_button_sounds
+    @button_sounds = ButtonSound.sounds
   end
 
   def set_play_button
@@ -69,9 +70,9 @@ class MainButtonSoundPicker < UIViewController
       p_view.delegate = self
       p_view.dataSource = self
       p_view.showsSelectionIndicator = true
-      puts '- 設定されている音は[%s]です' % self.class.button_sound
-      p_view.selectRow(MAIN_BUTTON_SOUND_CANDIDATES.find_index(
-                           self.class.button_sound),
+      puts '- 設定されている音は[%s]です' % self.class.button_sound_id
+      p_view.selectRow(@button_sounds.find_index{|sound|
+                           sound.id == self.class.button_sound_id} || 0,
                        inComponent: COMPONENT_ID,
                        animated: false)
       self.view.addSubview(p_view)
@@ -80,12 +81,12 @@ class MainButtonSoundPicker < UIViewController
 
 
   def viewWillDisappear(animated)
-    MainButtonSoundPicker.button_sound = current_selected_sound()
-    puts "- 永続化データ[button_sound]の値を[#{MainButtonSoundPicker.button_sound}]に書き換えました。"
+    MainButtonSoundPicker.button_sound_id = current_selected_sound_id()
+    puts "- 永続化データ[button_sound]の値を[#{MainButtonSoundPicker.button_sound_id}]に書き換えました。"
   end
 
-  def current_selected_sound
-    MAIN_BUTTON_SOUND_CANDIDATES[@picker_view.selectedRowInComponent(COMPONENT_ID)]
+  def current_selected_sound_id
+    @button_sounds[@picker_view.selectedRowInComponent(COMPONENT_ID)].id
   end
 
   def numberOfComponentsInPickerView(pickerView)
@@ -93,11 +94,11 @@ class MainButtonSoundPicker < UIViewController
   end
 
   def pickerView(pickerView, numberOfRowsInComponent: component)
-    MAIN_BUTTON_SOUND_CANDIDATES.size
+    @button_sounds.size
   end
 
   def pickerView(pickerView, titleForRow: row, forComponent: component)
-    self.class.label_name(MAIN_BUTTON_SOUND_CANDIDATES[row])
+    @button_sounds[row].label
   end
 
   def pickerView(pickerView, widthForComponent: component)
@@ -105,7 +106,7 @@ class MainButtonSoundPicker < UIViewController
   end
 
   def play_current_sound
-    AudioPlayerFactory.players[current_selected_sound].play
+    AudioPlayerFactory.players[current_selected_sound_id].play
   end
 end
 

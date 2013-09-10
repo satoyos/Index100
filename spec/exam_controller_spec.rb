@@ -1,6 +1,4 @@
 describe 'ExamController' do
-  #時間短縮を考えて、初期化テストを外す
-=begin
   describe '初期化' do
     tests ExamController
 
@@ -8,6 +6,8 @@ describe 'ExamController' do
       controller.should.not.be.nil
     end
 
+    #時間短縮を考えて、初期化テストの大部分を外す
+=begin
     describe 'game_view' do
       before do
         @game_view = controller.game_view
@@ -66,8 +66,8 @@ describe 'ExamController' do
     it '最初、ボリュームアイコンは隠れている。' do
       controller.volume_view.is_coming_out?.should.be.false
     end
-  end
 =end
+  end
 
   # 時間短縮を考えて、固まってきたボリュームビューのテストをスキップする。
 =begin
@@ -109,6 +109,7 @@ describe 'ExamController' do
   end
 =end
 
+=begin
   describe 'あるMainButtonが押されたときの動作' do
     tests ExamController
 
@@ -125,11 +126,9 @@ describe 'ExamController' do
       tap @tap_button.currentTitle # AccessibilityLabelに同じ値が設定されている
     end
 
-=begin
     it '押されたボタンをちゃんと把握できている' do
       controller.pushed_button.should.not.be.nil
     end
-=end
 
     it 'メイン・ボタン・スロットの、押されたボタンに該当する位置は新しいボタンが補充されている' do
       controller.main_buttons[@right_index].should.not.be.nil
@@ -141,6 +140,7 @@ describe 'ExamController' do
       controller.button_is_moved.should.be.true
     end
   end
+=end
 
   # 下記テストは、なぜかメインボタンのenabledが呼び出せないので、無効。
   # ちゃんとenabledを呼び出せるようになったら、これもテストしたい。
@@ -319,4 +319,5 @@ describe 'ExamController' do
 
     end
   end
+
 end

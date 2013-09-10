@@ -181,7 +181,7 @@ class ExamController < RMViewController
     @pushed_button = sender
     @main_buttons[pushed_button_index] = nil
 #    puts 'MainButtonSoundPicker.button_sound => ' + "#{MainButtonSoundPicker.button_sound} (#{MainButtonSoundPicker.button_sound.class})"
-    AudioPlayerFactory.players[MainButtonSoundPicker.button_sound].play
+    AudioPlayerFactory.players[MainButtonSoundPicker.button_sound_id].play
     @game_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
   end
 

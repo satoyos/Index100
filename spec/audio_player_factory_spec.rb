@@ -38,8 +38,8 @@ describe 'AudioPlayerFactory' do
       end
     end
     it 'all button player can be played' do
-      AudioPlayerFactory::BUTTON_AUDIO_PATH.keys.each do |key|
-        @players[key].play.should.be.true
+      ButtonSound.sounds.each do |sound|
+        @players[sound.id].play.should.be.true
       end
     end
   end
