@@ -87,8 +87,6 @@ class CharSupplier
     regexp = Regexp.new("^#{partial_challenge_str}")
     line_string = @current_poem.kimari_ji +
         @current_poem.in_hiragana.kami[@current_poem.kimari_ji.length..5]
-#    puts "regexp => #{regexp}"
-#    puts "line_string => #{line_string}"
     (regexp =~ line_string) == 0 # 0文字目からマッチする、という意味
   end
 
@@ -146,8 +144,7 @@ class CharSupplier
   def char_candidates_at(nth)
     case nth
       when 0 #一文字目
-#        @deck.poems.map{|poem|
-        @deck.poems100.map{|poem|
+        Deck.original_deck.poems.map{|poem|
           case nth+1 <= poem.kimari_ji.length
             when true; poem.kimari_ji[nth]
             else     ; poem.in_hiragana.kami[nth]
@@ -160,9 +157,7 @@ class CharSupplier
 
   def easy_candidates_at(nth)
     regexp = Regexp.new("^#{current_selected(nth)}")
-#    puts "regexp => #{regexp}"
-#    @deck.poems.select{|poem|
-    @deck.poems100.select{|poem|
+    Deck.original_deck.poems.select{|poem|
       poem.kimari_ji =~ regexp
     }.map{|poem|
       poem.kimari_ji[nth]

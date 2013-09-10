@@ -10,6 +10,22 @@ describe 'Deck' do
     end
   end
 
+  describe 'クラスメソッド original_deck' do
+    before do
+      @deck = Deck.original_deck
+    end
+
+    it 'should not be nil' do
+      @deck.should.not.be.nil
+    end
+
+    it '百枚のオリジナルデッキ' do
+      @deck.size.should == 100
+      @deck.poems.first.is_a?(Poem).should.be.true
+      @deck.poems.first.number.should == 1
+    end
+  end
+
   describe 'poems' do
     before do
       @poems = Deck.new.poems
@@ -98,9 +114,11 @@ describe 'Deck' do
       @deck.size.should == 10
     end
 
+=begin
     it 'オリジナルデッキ(poems100)のサイズには影響を与えない' do
       @deck.poems100.should.not.be.nil
       @deck.poems100.size.should == 100
     end
+=end
   end
 end

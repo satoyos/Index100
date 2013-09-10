@@ -1,10 +1,17 @@
 class Deck
-  PROPERTIES = [:poems, :counter, :poems100]
+#  PROPERTIES = [:poems, :counter, :poems100]
+  PROPERTIES = [:poems, :counter]
   PROPERTIES.each do |prop|
     attr_accessor prop
   end
 
   JSON_FILE = '100.json'
+
+  class << self
+    def original_deck
+      @original_deck ||= self.new
+    end
+  end
 
   def initialize
     read_poems
@@ -12,11 +19,10 @@ class Deck
   end
 
   def read_poems
-    @poems100=[]
+    @poems = []
     JSONParser.parse_from_file(JSON_FILE).each do |poem_hash|
-      @poems100 << Poem.new(poem_hash)
+      @poems << Poem.new(poem_hash)
     end
-    @poems = @poems100.dup
   end
 
   def next_poem
