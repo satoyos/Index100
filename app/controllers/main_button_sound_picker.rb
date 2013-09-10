@@ -106,7 +106,11 @@ class MainButtonSoundPicker < UIViewController
   end
 
   def play_current_sound
-    AudioPlayerFactory.players[current_selected_sound_id].play
+    AudioPlayerFactory.players[current_selected_sound_id].tap do |player|
+      player.stop
+      player.prepareToPlay
+      player.play
+    end
   end
 end
 

@@ -1,80 +1,80 @@
 [
     {
         "id": "on_jin_hiku01",
-        "path": "audio/button/On-jin/spo_ge_toranpu_hiku01",
+        "path": "audio/button/On-jin/spo_ge_toranpu_hiku01_s",
         "type": "mp3",
         "label": "トランプ1"
 
     },
     {
         "id": "on_jin_b01",
-        "path": "audio/button/On-jin/botan_b01",
+        "path": "audio/button/On-jin/botan_b01_s",
         "type": "mp3",
         "label": "ボタン1"
     },
     {
         "id": "on_jin_b02",
-        "path": "audio/button/On-jin/botan_b02",
+        "path": "audio/button/On-jin/botan_b02_s",
         "type": "mp3",
         "label": "ボタン2"
     },
     {
         "id": "on_jin_tsukamu01",
-        "path": "audio/button/On-jin/hito_ge_tsukamu01",
+        "path": "audio/button/On-jin/hito_ge_tsukamu01_s",
         "type": "mp3",
         "label": "つかむ"
     },
     {
         "id": "on_jin_dentaku_s02",
-        "path": "audio/button/On-jin/meka_ge_dentaku_s02",
+        "path": "audio/button/On-jin/meka_ge_dentaku_s02_s",
         "type": "mp3",
         "label": "電卓"
     },
     {
         "id": "on_jin_mouse_s02",
-        "path": "audio/button/On-jin/meka_ge_mouse_s02",
+        "path": "audio/button/On-jin/meka_ge_mouse_s02_s",
         "type": "mp3",
         "label": "クリック"
     },
     {
         "id": "on_jin_phone_botan01",
-        "path": "audio/button/On-jin/meka_ge_phone_botan01",
+        "path": "audio/button/On-jin/meka_ge_phone_botan01_s",
         "type": "mp3",
         "label": "電話ボタン"
     },
     {
         "id": "on_jin_suiteki01",
-        "path": "audio/button/On-jin/sei_ge_suiteki01",
+        "path": "audio/button/On-jin/sei_ge_suiteki01_s",
         "type": "mp3",
         "label": "水滴1"
     },
     {
         "id": "on_jin_suiteki02",
-        "path": "audio/button/On-jin/sei_ge_suiteki02",
+        "path": "audio/button/On-jin/sei_ge_suiteki02_s",
         "type": "mp3",
         "label": "水滴2"
     },
     {
         "id": "on_jin_suiteki03",
-        "path": "audio/button/On-jin/sei_ge_suiteki03",
+        "path": "audio/button/On-jin/sei_ge_suiteki03_s",
         "type": "mp3",
         "label": "水滴3"
     },
     {
         "id": "on_jin_ya02",
-        "path": "audio/button/On-jin/sen_ka_ya02",
+        "path": "audio/button/On-jin/sen_ka_ya02_s",
         "type": "mp3",
         "label": "矢が命中"
     },
     {
         "id": "on_jin_kotaiko02",
-        "path": "audio/button/On-jin/ta_ge_kotaiko02",
+        "path": "audio/button/On-jin/ta_ge_kotaiko02_s",
         "type": "mp3",
         "label": "小太鼓"
     },
     {
         "id": "on_jin_pi03",
-        "path": "audio/button/On-jin/ta_ta_pi03",
+        "path": "audio/button/On-jin/ta_ta_pi03_s",
         "type": "mp3",
         "label": "PoPi!"
     }
