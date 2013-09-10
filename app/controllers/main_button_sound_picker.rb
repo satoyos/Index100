@@ -1,5 +1,6 @@
 class MainButtonSoundPicker < UIViewController
 
+  PICKER_TITLE = '効果音'
   PICKER_VIEW_WIDTH = 180
   INITIAL_SOUND = :button5
   COMPONENT_ID = 0
@@ -32,9 +33,16 @@ class MainButtonSoundPicker < UIViewController
   end
 
   def viewDidLoad
+    set_title()
     set_button_sounds()
     set_picker_view()
     set_play_button()
+  end
+
+  :private
+
+  def set_title
+    self.title = PICKER_TITLE
   end
 
   def set_button_sounds
@@ -70,7 +78,6 @@ class MainButtonSoundPicker < UIViewController
       p_view.delegate = self
       p_view.dataSource = self
       p_view.showsSelectionIndicator = true
-      puts '- 設定されている音は[%s]です' % self.class.button_sound_id
       p_view.selectRow(@button_sounds.find_index{|sound|
                            sound.id == self.class.button_sound_id} || 0,
                        inComponent: COMPONENT_ID,
@@ -82,7 +89,6 @@ class MainButtonSoundPicker < UIViewController
 
   def viewWillDisappear(animated)
     MainButtonSoundPicker.button_sound_id = current_selected_sound_id()
-    puts "- 永続化データ[button_sound]の値を[#{MainButtonSoundPicker.button_sound_id}]に書き換えました。"
   end
 
   def current_selected_sound_id

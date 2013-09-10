@@ -1,5 +1,6 @@
 class PoemsNumberPicker < UIViewController
 
+  PICKER_TITLE = '使う枚数'
   PICKER_VIEW_WIDTH = 100
   INITIAL_POEMS_NUM = 100
   COMPONENT_ID = 0
@@ -20,6 +21,7 @@ class PoemsNumberPicker < UIViewController
   end
 
   def viewDidLoad
+    self.title = PICKER_TITLE
     @picker_view = UIPickerView.alloc.init
     @picker_view.tap do |p_view|
       p_view.delegate = self

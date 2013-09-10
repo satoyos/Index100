@@ -1,6 +1,6 @@
-describe 'MainButtonSoundPicker' do
+describe 'PoemsNumberPicker' do
   describe '初期化' do
-    tests MainButtonSoundPicker
+    tests PoemsNumberPicker
 
     it 'should not be nil' do
       controller.should.not.be.nil
