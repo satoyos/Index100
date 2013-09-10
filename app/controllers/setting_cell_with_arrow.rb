@@ -1,6 +1,6 @@
 class SettingCellWithArrow < UITableViewCell
   CELL_STYLE = UITableViewCellStyleValue1
-  CELL_ACCESSORY = UITableViewCellAccessoryDetailDisclosureButton
+  CELL_ACCESSORY = UITableViewCellAccessoryDisclosureIndicator
 
   def initWithText(text, detail: detail_text, reuseIdentifier: reuseIdentifier)
     initWithStyle(CELL_STYLE, reuseIdentifier: reuseIdentifier)
