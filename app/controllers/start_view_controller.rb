@@ -8,7 +8,8 @@ class StartViewController < UITableViewController
       {section_id: :settings,
        header_title: '設定',
        items: [
-           {id: :number_of_poems, title: '使う歌の数'},
+           {id: :poems_selected, title: '使う歌(工事中)'},
+           {id: :number_of_poems, title: 'テストする歌の数'},
            {id: :show_wrong_asap, title: '間違ったらすぐお知らせ',
             detail: '誤った文字を押した時点で通知します',
             no_action: true},
@@ -84,6 +85,10 @@ class StartViewController < UITableViewController
                                                     detail: detail_text(indexPath),
                                                     reuseIdentifier: @reuseIdentifier)
 
+          when :poems_selected
+            SettingCellWithArrow.alloc.initWithText(text_of(indexPath),
+                                                    detail: detail_text(indexPath),
+                                                    reuseIdentifier: @reuseIdentifier)
           else
             nil
         end
@@ -108,6 +113,7 @@ class StartViewController < UITableViewController
       when :number_of_poems ; "#{PoemsNumberPicker.poems_num}"
       when :show_wrong_asap ; item_hash(indexPath)[:detail]
       when :main_button_sound ; MainButtonSoundPicker.current_label_name
+      when :poems_selected  ; '100首'
       else ; '未設定'
     end
   end
@@ -166,6 +172,13 @@ class StartViewController < UITableViewController
     navigationController.pushViewController(
         MainButtonSoundPicker.alloc.init,
         animated: true)
+  end
+
+  def set_poems_selected
+    navigationController.pushViewController(
+        PoemPicker.alloc.init,
+        animated: true
+    )
   end
 =begin
   def set_how_to_select
