@@ -19,10 +19,8 @@ class Deck
   end
 
   def read_poems
-    @poems = []
-    JSONParser.parse_from_file(JSON_FILE).each do |poem_hash|
-      @poems << Poem.new(poem_hash)
-    end
+    @poems = JSONParser.parse_from_file(JSON_FILE).map{|poem_hash|
+      Poem.new(poem_hash)}
   end
 
   def next_poem
