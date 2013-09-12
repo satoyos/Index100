@@ -52,7 +52,9 @@ class PoemPicker < UITableViewController
   end
 
   def select_by_ngram
-    puts 'ここはこれから作ります。'
+    navigationController.pushViewController(
+        NGramPicker.alloc.init,
+        animated: true)
   end
 
   def viewWillAppear(animated)
@@ -91,15 +93,6 @@ class PoemPicker < UITableViewController
                            when true ; UITableViewCellAccessoryCheckmark
                            else ; UITableViewCellAccessoryNone
                          end
-=begin
-    if @selected[indexPath.row]
-      cell.accessoryType = UITableViewCellAccessoryCheckmark
-      cell.backgroundColor = UIColor.blueColor
-    else
-      cell.accessoryType = UITableViewCellAccessoryNone
-      cell.backgroundColor = UIColor.whiteColor
-    end
-=end
     cell
   end
 
