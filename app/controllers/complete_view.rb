@@ -42,11 +42,15 @@ class CompleteView < RMView
       b.setTitle(RETURN_BUTTON_TITLE, forState: UIControlStateNormal)
       b.sizeToFit
       b.frame = return_button_frame(b.frame.size)
-      b.addTarget(@controller,
+      b.addTarget(self,
                   action: 'back_to_the_beginning',
                   forControlEvents: UIControlEventTouchUpInside)
       self.addSubview(b)
     end
+  end
+
+  def back_to_the_beginning
+    @controller.navigationController.popViewControllerAnimated(true)
   end
 
   # @param [CGSize] button_size

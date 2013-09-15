@@ -1,6 +1,5 @@
 class ExamController < RMViewController
   include SettingWindowCalling
-#  include ExamSettingViewController
 
   MAIN_BUTTON_NUM = 4
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
@@ -14,11 +13,11 @@ class ExamController < RMViewController
   CALLBACK_AFTER_BUTTON_MOVED = 'check_if_right_button_pushed'
   CALLBACK_AFTER_EXCHANGE     = 'remove_prev_main_buttons'
 
-  attr_reader :game_view, :tatami_view
+  attr_reader :game_view
   attr_reader :challenge_button, :clear_button, :main_buttons
   attr_reader :supplier, :pushed_button
 
-  attr_accessor :full_screen, :current_challenge_string
+  attr_accessor :current_challenge_string
   attr_accessor :shuffle_with_size, :wrong_char_allowed
   attr_accessor :button_is_moved, :challenge_button_is_pushed
   attr_accessor :game_is_completed
@@ -33,7 +32,6 @@ class ExamController < RMViewController
     end
 
     self.hidesBottomBarWhenPushed = true
-    @full_screen = true
 
     self
   end
@@ -64,7 +62,6 @@ class ExamController < RMViewController
     create_volume_icon()
     set_clear_button()
     set_challenge_button()
-#    set_hidden_volume_view()
     set_main_buttons(@supplier.get_4strings)
     make_main_buttons_appear()
     init_challenge_status()
@@ -79,20 +76,6 @@ class ExamController < RMViewController
 
   def get_wrong_type
     @supplier.length_check(@current_challenge_string)
-  end
-
-  def switch_full_screen
-    @full_screen = !@full_screen
-
-    UIView.beginAnimations(nil, context: nil)
-    UIView.setAnimationDuration(0.3)
-    self.navigationController.navigationBar.alpha =
-        case @full_screen
-          when true ; 0.0
-          else      ; 1.0
-        end
-    UIApplication.sharedApplication.setStatusBarHidden(@full_screen, animated: true)
-    UIView.commitAnimations
   end
 
   def challenge_button_pushed
@@ -115,10 +98,6 @@ class ExamController < RMViewController
           duration: EXCHANGE_GAME_VIEW_DURATION,
           transition: GAME_VIEW_EXCHANGE_TRANSITION)
     end
-  end
-
-  def back_to_the_beginning
-    navigationController.popViewControllerAnimated(true)
   end
 
   :private
@@ -310,11 +289,5 @@ class ExamController < RMViewController
         end
     end
   end
-
-=begin
-  def self_size
-    self.view.frame.size
-  end
-=end
 
 end

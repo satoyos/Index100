@@ -2,8 +2,11 @@ class GameView < UIView
   FUDA_INITIAL_STRING = 'これから札に歌を設定します。'
   FUDA_HEIGHT_POWER = 0.95 # 札ビューの高さは、畳ビューの何倍にするか
 
-  VOLUME_ICON_MARGIN = 10
-  COUNTER_LABEL_MARGIN = VOLUME_ICON_MARGIN
+  TATAMI_JPG_FILE = 'tatami_moved.jpg'
+
+  GEAR_ICON_MARGIN = 8
+  COUNTER_LABEL_MARGIN = GEAR_ICON_MARGIN
+  COUNTER_FONT_SIZE = 22
 
   A_LABEL_COUNTER_LABEL = 'poem_counter_label'
   COUNTER_LABEL_FOR_TEST = 'xx/yy'
@@ -37,6 +40,7 @@ class GameView < UIView
                        when 'test' ; COUNTER_LABEL_FOR_TEST
                        else "#{poem_counter}/#{deck_size}"
                      end
+      c_label.font = c_label.font.fontWithSize(COUNTER_FONT_SIZE)
       c_label.sizeToFit
       c_label.frame = counter_label_frame(c_label.frame.size)
       self.addSubview(c_label)
@@ -44,8 +48,10 @@ class GameView < UIView
   end
 
   def create_tatami_view
-    @tatami_view = TatamiView.alloc.initWithFrame(tatami_view_frame,
-                                                  controller: @controller)
+#    @tatami_view = TatamiView.alloc.initWithFrame(tatami_view_frame)
+    @tatami_view =
+        UIImageView.alloc.initWithImage(UIImage.imageNamed(TATAMI_JPG_FILE))
+    @tatami_view.frame = tatami_view_frame
     @tatami_view.tap do |t_view|
       t_view.clipsToBounds= true
       t_view.userInteractionEnabled = true
@@ -69,8 +75,8 @@ class GameView < UIView
 
   def volume_icon_frame_with_size(v_size)
     [CGPointMake(tatami_size.width -
-                     v_size.width - VOLUME_ICON_MARGIN,
-                 VOLUME_ICON_MARGIN),
+                     v_size.width - GEAR_ICON_MARGIN,
+                 GEAR_ICON_MARGIN),
      v_size]
   end
 
