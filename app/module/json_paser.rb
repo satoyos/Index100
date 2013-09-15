@@ -1,7 +1,9 @@
 module JSONParser
 
+  module_function
+
   # read JSON file from path_str in /resources folder
-  def self.parse(json_str)
+  def parse(json_str)
     e = Pointer.new(:object)
     NSJSONSerialization.JSONObjectWithData(
         json_str.dataUsingEncoding(NSUTF8StringEncoding),
@@ -9,7 +11,7 @@ module JSONParser
         error: e)
   end
 
-  def self.parse_from_file(path_str)
+  def parse_from_file(path_str)
     path = NSBundle.mainBundle.resourcePath.stringByAppendingPathComponent path_str
     self.parse(File.read(path))
   end
