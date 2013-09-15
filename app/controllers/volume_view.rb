@@ -4,54 +4,54 @@ class VolumeView < UIView
   VOLUME_VIEW_ALPHA = 0.7
   VOLUME_VIEW_WIDTH_MARGIN = 10
 
-  SLIDER_X_MARGIN = 10
-  SLIDER_HEIGHT = 20
+  X_MARGIN = 10
+  Y_MARGIN = 10
+  SLIDER_HEIGHT = 30
+  PLAY_BUTTON_HEIGHT = 30
+  PLAY_BUTTON_WIDTH = PLAY_BUTTON_HEIGHT
+
+  PLAY_ICON_IMG_FILE = 'Restart@2x-reverse.png'
 
   def initWithFrame(frame)
     super
 
-    self.backgroundColor= VOLUME_VIEW_COLOR
-    self.alpha= VOLUME_VIEW_ALPHA
-
     self
   end
 
-# @param [GameView] game_view
-# @param [VolumeIcon] volume_icon
-  def initWithGameView(game_view, volume_icon: volume_icon)
-    @initial_frame = volume_view_initial_frame(game_view.frame.size.width,
-                                               volume_icon.frame.size.width)
-    self.initWithFrame(@initial_frame)
-  end
+  # @param [CGSize] super_view_size
+  def initWithSuperViewSize(super_view_size)
+    initWithFrame([CGPointZero,
+                   CGSizeMake(super_view_size.width, VOLUME_VIEW_HEIGHT)])
+    self.backgroundColor= VOLUME_VIEW_COLOR
+    self.alpha= VOLUME_VIEW_ALPHA
+    self
 
-  def make_appear
-    self.frame= [CGPointMake(self.frame.origin.x, 0), self.frame.size]
-  end
-
-  def make_disappear
-    self.frame= @initial_frame
-  end
-
-  def is_coming_out?
-    self.frame.origin.y == 0
   end
 
   def volume_slider_frame
-    [CGPointMake(SLIDER_X_MARGIN,
+    [CGPointMake(X_MARGIN * 2 + PLAY_BUTTON_WIDTH ,
                  (self.frame.size.height - SLIDER_HEIGHT)/2),
-     CGSizeMake(self.frame.size.width - 2 * SLIDER_X_MARGIN,
+     CGSizeMake(self.frame.size.width - 3 * X_MARGIN - PLAY_BUTTON_WIDTH,
                 SLIDER_HEIGHT)
     ]
   end
 
+
+  def play_button_frame
+    [CGPointMake(X_MARGIN,
+                 (self.frame.size.height - PLAY_BUTTON_HEIGHT)/2),
+     CGSizeMake(PLAY_BUTTON_HEIGHT, PLAY_BUTTON_HEIGHT)]
+  end
+
+  def play_button_image
+    ResizeUIImage.resizeImage(UIImage.imageNamed(PLAY_ICON_IMG_FILE),
+                              newSize: CGSizeMake(PLAY_BUTTON_WIDTH,
+                                                  PLAY_BUTTON_HEIGHT))
+  end
+
+
   :private
 
-  def volume_view_initial_frame(game_view_width, volume_icon_width)
-    [CGPointMake(volume_icon_width + VOLUME_VIEW_WIDTH_MARGIN,
-                 -1*VOLUME_VIEW_HEIGHT),
-     CGSizeMake(game_view_width - 2*(volume_icon_width+VOLUME_VIEW_WIDTH_MARGIN),
-                VOLUME_VIEW_HEIGHT)]
-  end
 
 
 end

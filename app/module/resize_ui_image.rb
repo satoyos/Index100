@@ -2,7 +2,9 @@
 # http://stackoverflow.com/questions/6141298/how-to-scale-down-a-uiimage-and-make-it-crispy-sharp-at-the-same-time-instead
 
 module ResizeUIImage
-  def self.resizeImage(image, newSize:newSize)
+  module_function
+
+  def resizeImage(image, newSize:newSize)
     newRect = CGRectIntegral(CGRectMake(0, 0, newSize.width, newSize.height))
     imageRef = image.CGImage
     UIGraphicsBeginImageContextWithOptions(newSize, false, 0)

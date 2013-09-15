@@ -1,4 +1,5 @@
 class ExamController < RMViewController
+  include SettingWindowCalling
 
   MAIN_BUTTON_NUM = 4
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
@@ -7,19 +8,16 @@ class ExamController < RMViewController
   A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
 
   GAME_VIEW_EXCHANGE_TRANSITION = UIViewAnimationTransitionFlipFromLeft
+  EXCHANGE_GAME_VIEW_DURATION = 0.5
 
   CALLBACK_AFTER_BUTTON_MOVED = 'check_if_right_button_pushed'
   CALLBACK_AFTER_EXCHANGE     = 'remove_prev_main_buttons'
 
-  INITIAL_VOLUME = 0.5
-  VOLUME_ANIMATE_DURATION = 0.3
-  EXCHANGE_GAME_VIEW_DURATION = 0.5
-
-  attr_reader :game_view, :tatami_view, :volume_view
+  attr_reader :game_view
   attr_reader :challenge_button, :clear_button, :main_buttons
   attr_reader :supplier, :pushed_button
 
-  attr_accessor :full_screen, :current_challenge_string
+  attr_accessor :current_challenge_string
   attr_accessor :shuffle_with_size, :wrong_char_allowed
   attr_accessor :button_is_moved, :challenge_button_is_pushed
   attr_accessor :game_is_completed
@@ -34,7 +32,6 @@ class ExamController < RMViewController
     end
 
     self.hidesBottomBarWhenPushed = true
-    @full_screen = true
 
     self
   end
@@ -47,6 +44,7 @@ class ExamController < RMViewController
   end
 
   def viewWillAppear(animated)
+    UIApplication.sharedApplication.setStatusBarHidden(true, animated: true)
     unless RUBYMOTION_ENV == 'test'
       navigationController.navigationBar.translucent = true
       navigationController.navigationBar.alpha = 0.0
@@ -58,13 +56,12 @@ class ExamController < RMViewController
   end
 
   def set_game_view_of_poem(poem)
-    @game_view = GameView.alloc.initWithFrame(game_view_frame,
+    @game_view = GameView.alloc.initWithFrame(self.view.bounds,
                                               withPoem: poem,
                                               controller: self)
     create_volume_icon()
     set_clear_button()
     set_challenge_button()
-    set_hidden_volume_view()
     set_main_buttons(@supplier.get_4strings)
     make_main_buttons_appear()
     init_challenge_status()
@@ -81,23 +78,8 @@ class ExamController < RMViewController
     @supplier.length_check(@current_challenge_string)
   end
 
-  def switch_full_screen
-    @full_screen = !@full_screen
-
-    UIView.beginAnimations(nil, context: nil)
-    UIView.setAnimationDuration(0.3)
-    self.navigationController.navigationBar.alpha =
-        case @full_screen
-          when true ; 0.0
-          else      ; 1.0
-        end
-    UIApplication.sharedApplication.setStatusBarHidden(@full_screen, animated: true)
-    UIView.commitAnimations
-  end
-
   def challenge_button_pushed
     self.challenge_button_is_pushed = true
-    sweep_volume_view if @volume_view.is_coming_out?
     @challenge_button.enabled = false
     make_main_buttons_disabled
     @game_view.display_result(get_result_type)
@@ -118,24 +100,16 @@ class ExamController < RMViewController
     end
   end
 
-  def back_to_the_beginning
-    navigationController.popViewControllerAnimated(true)
-  end
-
   :private
 
-  def game_view_frame
-    [CGPointZero, CGSizeMake(self_size.width, self_size.height)]
-  end
-
   def set_char_supplier
-    unless self.shuffle_with_size
-      @supplier = CharSupplier.new({deck: Deck.new})
-    else
+    if self.shuffle_with_size
       @supplier =
           CharSupplier.new({deck: Deck.new.shuffle_with_size(@shuffle_with_size),
                             sort_strings: true}
           )
+    else
+      @supplier = CharSupplier.new({deck: Deck.new})
     end
   end
 
@@ -176,11 +150,9 @@ class ExamController < RMViewController
   end
 
   def main_button_pushed(sender)
-    sweep_volume_view if @volume_view.is_coming_out?
     @current_challenge_string += sender.currentTitle
     @pushed_button = sender
     @main_buttons[pushed_button_index] = nil
-#    puts 'MainButtonSoundPicker.button_sound => ' + "#{MainButtonSoundPicker.button_sound} (#{MainButtonSoundPicker.button_sound.class})"
     AudioPlayerFactory.players[MainButtonSoundPicker.button_sound_id].play
     @game_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
   end
@@ -269,7 +241,6 @@ class ExamController < RMViewController
   end
 
   def clear_button_pushed
-    sweep_volume_view if @volume_view.is_coming_out?
     remove_buttons_from_super_view(@main_buttons)
     @game_view.clear_button_pushed
     remove_prev_main_buttons if @prev_main_button
@@ -319,74 +290,4 @@ class ExamController < RMViewController
     end
   end
 
-  def create_volume_icon
-    @volume_icon = VolumeIcon.alloc.init
-    @volume_icon.init_icon
-    @volume_icon.tap do |v_icon|
-      v_icon.frame = @game_view.volume_icon_frame_with_size(v_icon.frame.size)
-      v_icon.addTarget(self, action: :volume_icon_tapped, forControlEvents: UIControlEventTouchUpInside)
-      @game_view.addSubview(v_icon)
-    end
-  end
-
-  def volume_icon_tapped
-    show_or_hide_volume_view
-  end
-
-  def set_hidden_volume_view
-    @volume_view ||=
-        VolumeView.alloc.initWithGameView(@game_view,
-                                          volume_icon: @volume_icon)
-    @volume_view.tap do |v_view|
-      v_view.addSubview(volume_slider)
-      @game_view.addSubview(v_view)
-    end
-  end
-
-  def volume_slider
-    slider = UISlider.alloc.initWithFrame(@volume_view.volume_slider_frame)
-    slider.value= settings.volume || INITIAL_VOLUME
-    AudioPlayerFactory.set_volume(slider.value)
-    slider.addTarget(self, action: :slider_changed, forControlEvents: UIControlEventValueChanged)
-    @slider = slider
-  end
-
-  def slider_changed
-    AudioPlayerFactory.set_volume(@slider.value)
-    settings.volume = @slider.value
-  end
-
-  def self_size
-    self.view.frame.size
-  end
-
-  def show_or_hide_volume_view
-    case @volume_view.is_coming_out?
-      when true; sweep_volume_view
-      else     ; show_volume_view
-    end
-  end
-
-  def show_volume_view
-    AudioPlayerFactory.rewind_to_start_point
-    AudioPlayerFactory.players[:test].play
-    if RUBYMOTION_ENV == 'test'
-      @volume_view.make_appear
-    else
-      UIView.animateWithDuration(
-          VOLUME_ANIMATE_DURATION,
-          animations: lambda{@volume_view.make_appear})
-    end
-  end
-
-  def sweep_volume_view
-    AudioPlayerFactory.players[:test].stop
-    if RUBYMOTION_ENV == 'test'
-      @volume_view.make_disappear
-    else
-      UIView.animateWithDuration(
-          VOLUME_ANIMATE_DURATION,
-          animations: lambda{@volume_view.make_disappear})
-    end
-  end
 end

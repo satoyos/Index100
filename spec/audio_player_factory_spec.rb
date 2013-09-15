@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+
 describe 'AudioPlayerFactory' do
-  VALID_BASENAME   = 'audio/0000_正解です！'
+  VALID_BASENAME   = 'audio/voice/0000_正解です！'
   INVALID_BASENAME = 'audio/120'
   AUDIO_TYPE = 'm4a'
 

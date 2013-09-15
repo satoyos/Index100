@@ -29,6 +29,7 @@ class StartViewController < UITableViewController
 
     view.backgroundColor = UIColor.whiteColor
     self.title = '百首決まり字'
+    UIApplication.sharedApplication.setStatusBarHidden(false, animated: false)
     self.view.initWithFrame(self.view.bounds,
                             style: UITableViewStyleGrouped)
   end
@@ -36,6 +37,8 @@ class StartViewController < UITableViewController
   def viewWillAppear(animated)
     super
     unless RUBYMOTION_ENV == 'test'
+      navigationController.setNavigationBarHidden(true, animated: false)
+      navigationController.setNavigationBarHidden(false, animated: false)
       navigationController.navigationBar.translucent = false
       navigationController.navigationBar.alpha = 1.0
     end
