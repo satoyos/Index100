@@ -11,6 +11,10 @@ class Deck
     def original_deck
       @original_deck ||= self.new
     end
+
+    def original_poems
+      self.original_deck.poems
+    end
   end
 
   def initialize

@@ -1,8 +1,8 @@
 class PoemPicker < UITableViewController
+  include SelectedStatusHandler
   extend Forwardable
 
-  def_delegators :@status100, :select_all, :cancel_all, :select_in_number
-  def_delegators :@status100, :selected_num, :[]
+  def_delegators :@status100, :select_in_number, :[], :[]=
 
   FONT_SIZE = 16
   SELECTED_BG_COLOR = ColorFactory.str_to_color('#eebbcb') #撫子色
@@ -13,9 +13,9 @@ class PoemPicker < UITableViewController
     super
 
     @poems = Deck.original_deck.poems
-    @status100 = SelectedStatus100.new
+    @status100 = SelectedStatus100.new(loaded_selected_status)
     # ちゃんと初期状態を実装するまで、無選択状態で開始。
-    cancel_all_poems()
+#    cancel_all_poems()
     setToolbarItems(toolbar_items, animated: true)
 
   end
@@ -47,12 +47,12 @@ class PoemPicker < UITableViewController
   end
 
   def select_all_poems
-    self.select_all
+    @status100.select_all
     self.view.reloadData
   end
 
   def cancel_all_poems
-    self.cancel_all
+    @status100.cancel_all
     self.view.reloadData
   end
 
@@ -64,6 +64,7 @@ class PoemPicker < UITableViewController
 
   def viewWillAppear(animated)
     super
+    @status100 = SelectedStatus100.new(loaded_selected_status)
     unless RUBYMOTION_ENV == 'test'
       navigationController.setToolbarHidden(false, animated: true)
     end
@@ -71,6 +72,7 @@ class PoemPicker < UITableViewController
 
   def viewWillDisappear(animated)
     super
+    save_selected_status(@status100.status_array)
     unless RUBYMOTION_ENV == 'test'
       navigationController.setToolbarHidden(true, animated: true)
     end
@@ -114,7 +116,26 @@ class PoemPicker < UITableViewController
                              when true ; SELECTED_BG_COLOR
                              else ; UIColor.whiteColor
                            end
-    self.title = '選択中: %d首' % selected_num
+    self.title = '選択中: %d首' % @status100.selected_num
   end
 
+=begin
+  def save_selected_status(status_array)
+#    puts '- saving [selected_status]'
+#    puts "  selected_status => #{@status100.status_array}, number_of(true) => #{@status100.selected_num}"
+#    UIApplication.sharedApplication.delegate.settings.selected_status = @status100.status_array
+    UIApplication.sharedApplication.delegate.settings[:selected_status] = status_array
+  end
+
+  def loaded_selected_status
+#    puts '- loading [selected_status]'
+    status_array = UIApplication.sharedApplication.delegate.settings.selected_status
+    case status_array
+      when nil ; nil
+      else
+#        puts "  loaded_status_array => #{status_array}"
+        status_array.dup
+    end
+  end
+=end
 end

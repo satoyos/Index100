@@ -4,8 +4,21 @@ class SelectedStatus100
   SIZE = 100
   INITIAL_STATUS = false
 
-  def initialize
-    @status = (0..SIZE-1).to_a.map{|idx| INITIAL_STATUS}
+  def initialize(status_array)
+    @status = case status_array
+                when nil ; (0..SIZE-1).to_a.map{|idx| INITIAL_STATUS}
+                else
+                  if status_array.is_a?(Array) && status_array.size == 100
+                    status_array
+                  else
+                    puts "status_array => [#{status_array}]"
+                    (0..SIZE-1).to_a.map{|idx| INITIAL_STATUS}
+                  end
+              end
+  end
+
+  def status_array
+    @status
   end
 
   def_delegators :@status, :[], :[]=, :size, :each, :count
@@ -36,7 +49,7 @@ class SelectedStatus100
   end
 
   def selected_num
-    count(true)
+    @status.select{|stat| stat}.size
   end
 
   def select_in_numbers(collection)

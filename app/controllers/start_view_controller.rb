@@ -1,8 +1,11 @@
 # coding: utf-8
 
 class StartViewController < UITableViewController
+  include SelectedStatusHandler
 
   attr_reader :table, :wrong_asap_cell
+
+  TITLE = '百首決まり字'
 
   START_VIEW_SECTIONS = [
       {section_id: :settings,
@@ -28,21 +31,22 @@ class StartViewController < UITableViewController
     super
 
     view.backgroundColor = UIColor.whiteColor
-    self.title = '百首決まり字'
-    UIApplication.sharedApplication.setStatusBarHidden(false, animated: false)
+    self.title = TITLE
+#    UIApplication.sharedApplication.setStatusBarHidden(false, animated: false)
     self.view.initWithFrame(self.view.bounds,
                             style: UITableViewStyleGrouped)
   end
 
   def viewWillAppear(animated)
-    super
+#    super
     unless RUBYMOTION_ENV == 'test'
-      navigationController.setNavigationBarHidden(true, animated: false)
+#      navigationController.setNavigationBarHidden(true, animated: false)
       navigationController.setNavigationBarHidden(false, animated: false)
       navigationController.navigationBar.translucent = false
       navigationController.navigationBar.alpha = 1.0
     end
     self.view.reloadData
+    self.navigationItem.title = TITLE
   end
 
   :private
@@ -116,7 +120,7 @@ class StartViewController < UITableViewController
       when :number_of_poems ; "#{PoemsNumberPicker.poems_num}"
       when :show_wrong_asap ; item_hash(indexPath)[:detail]
       when :main_button_sound ; MainButtonSoundPicker.current_label_name
-      when :poems_selected  ; '100首'
+      when :poems_selected  ; "#{selected_poems_number}首"
       else ; '未設定'
     end
   end
@@ -151,7 +155,7 @@ class StartViewController < UITableViewController
   end
 
   def save_wrong_asap_flg
-    puts '- saving [wrong_asap]'
+#    puts '- saving [wrong_asap]'
     UIApplication.sharedApplication.delegate.settings.wrong_asap = @wrong_asap_cell.switch_on?
   end
 
@@ -183,11 +187,10 @@ class StartViewController < UITableViewController
         animated: true
     )
   end
-=begin
-  def set_how_to_select
-    puts '  → これから歌の選択方法を設定します！'
-  end
-=end
 
+  def selected_poems_number
+    status_array = loaded_selected_status || []
+    status_array.select{|stat| stat}.size
+  end
 
 end

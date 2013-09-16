@@ -2,7 +2,8 @@ class AppDelegate
   include RMSettable
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    rm_settable :volume, :poems_num, :wrong_asap, :main_button_sound
+    rm_settable :volume, :poems_num, :wrong_asap, :main_button_sound, selected_status: {type: :array}
+
     AudioPlayerFactory.prepare_embedded_players
 
     if RUBYMOTION_ENV == 'test'

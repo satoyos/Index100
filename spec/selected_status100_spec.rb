@@ -1,23 +1,44 @@
 describe 'SelectedState100' do
   INITIAL_STATUS = SelectedStatus100::INITIAL_STATUS
   describe '初期化' do
-    before do
-      @status100 = SelectedStatus100.new
+    describe 'Context: 選択状態配列を与えずに初期化' do
+      before do
+        @status100 = SelectedStatus100.new(nil)
+      end
+
+      it 'should not be nil' do
+        @status100.should.not.be.nil
+      end
+
+      it 'INITIAL_STATEで指定された選択状態で初期化されている' do
+        @status100[0].should == INITIAL_STATUS
+        @status100[15].should == INITIAL_STATUS
+      end
     end
 
-    it 'should not be nil' do
-      @status100.should.not.be.nil
-    end
+    describe 'Context: 選択状態配列を与えて初期化' do
+      before do
+        array = (1..100).to_a.map{false}
+        array[3]  = true
+        array[25] = true
+        @status100 = SelectedStatus100.new(array)
+      end
 
-    it 'INITIAL_STATEで指定された選択状態で初期化されている' do
-      @status100[0].should == INITIAL_STATUS
-      @status100[15].should == INITIAL_STATUS
+      it 'should not be nil' do
+        @status100.should.not.be.nil
+      end
+
+      it '正しく初期化されていることを確認' do
+        @status100[2].should.be.false
+        @status100[25].should.be.true
+      end
+
     end
   end
 
   describe 'Forwardableモジュールを使ってdelegateしたメソッドのテスト' do
     before do
-      @status100 = SelectedStatus100.new
+      @status100 = SelectedStatus100.new(nil)
     end
 
     it 'should support []=' do
@@ -33,7 +54,7 @@ describe 'SelectedState100' do
 
   describe 'of_number' do
     before do
-      @status100 = SelectedStatus100.new
+      @status100 = SelectedStatus100.new(nil)
       @status100[15] = !INITIAL_STATUS
     end
 
@@ -51,7 +72,7 @@ describe 'SelectedState100' do
 
   describe 'set_status:of_number:' do
     before do
-      @status100 = SelectedStatus100.new
+      @status100 = SelectedStatus100.new(nil)
       @status100.set_status(!INITIAL_STATUS, of_number: 15)
     end
 
@@ -62,7 +83,7 @@ describe 'SelectedState100' do
 
   describe 'cancel_all' do
     before do
-      @status100 = SelectedStatus100.new
+      @status100 = SelectedStatus100.new(nil)
       @status100[10] = true
     end
 
@@ -76,7 +97,7 @@ describe 'SelectedState100' do
 
   describe 'select_all' do
     before do
-      @status100 = SelectedStatus100.new.cancel_all
+      @status100 = SelectedStatus100.new(nil).cancel_all
 #      @status100.cancel_al
     end
 
@@ -90,7 +111,7 @@ describe 'SelectedState100' do
 
   describe 'select_in_number' do
     before do
-      @status100 = SelectedStatus100.new.cancel_all
+      @status100 = SelectedStatus100.new(nil).cancel_all
       @status100.select_in_number(10)
     end
 
@@ -101,7 +122,7 @@ describe 'SelectedState100' do
 
   describe 'cancel_in_number' do
     before do
-      @status100 = SelectedStatus100.new.select_all
+      @status100 = SelectedStatus100.new(nil).select_all
       @status100.cancel_in_number(3)
     end
 
@@ -113,7 +134,7 @@ describe 'SelectedState100' do
 
   describe 'selected_num' do
     before do
-      @status100 = SelectedStatus100.new.cancel_all
+      @status100 = SelectedStatus100.new(nil).cancel_all
       @status100[1] = true
       @status100[10] = true
     end
@@ -125,7 +146,7 @@ describe 'SelectedState100' do
 
   describe 'select_in_numbers' do
     before do
-      @status100 = SelectedStatus100.new.cancel_all
+      @status100 = SelectedStatus100.new(nil).cancel_all
       @status100.select_in_numbers(1..3)
     end
 
@@ -137,7 +158,7 @@ describe 'SelectedState100' do
 
   describe 'cancel_in_numbers' do
     before do
-      @status100 = SelectedStatus100.new.select_all
+      @status100 = SelectedStatus100.new(nil).select_all
       @status100.cancel_in_numbers([40, 50])
     end
 
@@ -149,7 +170,7 @@ describe 'SelectedState100' do
 
   describe 'reverse_in_number' do
     before do
-      @status100 = SelectedStatus100.new.select_all
+      @status100 = SelectedStatus100.new(nil).select_all
       @status100.reverse_in_index(4)
     end
 

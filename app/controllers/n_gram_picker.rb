@@ -57,6 +57,11 @@ class NGramPicker < UITableViewController
     cell
   end
 
+  def tableView(tableView, didSelectRowAtIndexPath:indexPath)
+    puts "- 選ばれた1文字目は[#{id_of(indexPath)}]です。"
+    tableView.deselectRowAtIndexPath(indexPath, animated: true)
+  end
+
   # @param [UIView] view
   def height_of(view)
     view.frame.size.height
@@ -68,6 +73,10 @@ class NGramPicker < UITableViewController
 
   def text_of(indexPath)
     item_hash(indexPath)[:title]
+  end
+
+  def id_of(indexPath)
+    item_hash(indexPath)[:id]
   end
 
 end

@@ -14,6 +14,10 @@ class ExamSettingViewController < RMViewController
     set_exit_button()
   end
 
+  def viewWillDisappear(animated)
+      self.presentingViewController.setNavigationBarHidden(true, animated: false)
+  end
+
   def set_volume_view
     @volume_view = VolumeView.alloc.initWithSuperViewSize(self.view.frame.size)
     self.view.addSubview(@volume_view)
