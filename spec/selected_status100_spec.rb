@@ -1,11 +1,161 @@
 describe 'SelectedState100' do
+  INITIAL_STATUS = SelectedStatus100::INITIAL_STATUS
   describe '初期化' do
     before do
-      @state100 = SelectedState100.new
+      @status100 = SelectedStatus100.new
     end
 
     it 'should not be nil' do
-      @state100.should.not.be.nil
+      @status100.should.not.be.nil
+    end
+
+    it 'INITIAL_STATEで指定された選択状態で初期化されている' do
+      @status100[0].should == INITIAL_STATUS
+      @status100[15].should == INITIAL_STATUS
     end
   end
+
+  describe 'Forwardableモジュールを使ってdelegateしたメソッドのテスト' do
+    before do
+      @status100 = SelectedStatus100.new
+    end
+
+    it 'should support []=' do
+      @status100[10].should == INITIAL_STATUS
+      @status100[10] = !INITIAL_STATUS
+      @status100[10].should == !INITIAL_STATUS
+    end
+
+    it 'should support size()' do
+      @status100.size.should == SelectedStatus100::SIZE
+    end
+  end
+
+  describe 'of_number' do
+    before do
+      @status100 = SelectedStatus100.new
+      @status100[15] = !INITIAL_STATUS
+    end
+
+    it '[]のindexよりも1多い数のindexでアクセスする' do
+      @status100.of_number(15).should == INITIAL_STATUS
+      @status100.of_number(16).should == !INITIAL_STATUS
+    end
+
+    it 'idxの値が異常値の場合は例外になる' do
+     should.raise{ @status100.of_number(-1)}
+     should.raise{ @status100.of_number(101)}
+    end
+
+  end
+
+  describe 'set_status:of_number:' do
+    before do
+      @status100 = SelectedStatus100.new
+      @status100.set_status(!INITIAL_STATUS, of_number: 15)
+    end
+
+    it '[]=のindexよりも1多い数のindexでアクセスする' do
+      @status100[14].should == !INITIAL_STATUS
+    end
+  end
+
+  describe 'cancel_all' do
+    before do
+      @status100 = SelectedStatus100.new
+      @status100[10] = true
+    end
+
+    it '選択状態は全てfalseになる' do
+      @status100.cancel_all
+      @status100.each do |st|
+        st.should.be.false
+      end
+    end
+  end
+
+  describe 'select_all' do
+    before do
+      @status100 = SelectedStatus100.new.cancel_all
+#      @status100.cancel_al
+    end
+
+    it '選択状態は全てtrueになる' do
+#      @status100.select_all
+      @status100.select_all.each do |st|
+        st.should.be.true
+      end
+    end
+  end
+
+  describe 'select_in_number' do
+    before do
+      @status100 = SelectedStatus100.new.cancel_all
+      @status100.select_in_number(10)
+    end
+
+    it '指定された番号の選択状態をtrueにする' do
+      @status100.of_number(10).should == true
+    end
+  end
+
+  describe 'cancel_in_number' do
+    before do
+      @status100 = SelectedStatus100.new.select_all
+      @status100.cancel_in_number(3)
+    end
+
+    it '指定された番号の選択状態をfalseにする' do
+      @status100.of_number(3).should == false
+    end
+  end
+
+
+  describe 'selected_num' do
+    before do
+      @status100 = SelectedStatus100.new.cancel_all
+      @status100[1] = true
+      @status100[10] = true
+    end
+
+    it 'trueが設定されている個数を返す' do
+      @status100.selected_num.should == 2
+    end
+  end
+
+  describe 'select_in_numbers' do
+    before do
+      @status100 = SelectedStatus100.new.cancel_all
+      @status100.select_in_numbers(1..3)
+    end
+
+    it '与えられたコレクションに格納されている番号の選択状態をtrueにする' do
+      @status100.selected_num.should == 3
+      @status100.of_number(2).should.be.true
+    end
+  end
+
+  describe 'cancel_in_numbers' do
+    before do
+      @status100 = SelectedStatus100.new.select_all
+      @status100.cancel_in_numbers([40, 50])
+    end
+
+    it '与えられたコレクションに格納されている番号の選択状態をtrueにする' do
+      @status100.selected_num.should == 98
+      @status100.of_number(40).should.be.false
+    end
+  end
+
+  describe 'reverse_in_number' do
+    before do
+      @status100 = SelectedStatus100.new.select_all
+      @status100.reverse_in_index(4)
+    end
+
+    it '指定された番号の選択状態を反転させる' do
+      @status100[4].should.be.false
+    end
+  end
+
 end

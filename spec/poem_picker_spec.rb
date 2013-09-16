@@ -13,8 +13,8 @@ describe 'PoemPicker' do
     end
 
     it 'has 100 selected_status' do
-      controller.selected.should.not.be.nil
-      controller.selected.size.should == 100
+      controller.status100.should.not.be.nil
+      controller.status100.size.should == 100
 #      controller.selected.first.is_a?(FalseClass).should.be.true
     end
 

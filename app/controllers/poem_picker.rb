@@ -1,14 +1,18 @@
 class PoemPicker < UITableViewController
+  extend Forwardable
+
+  def_delegators :@status100, :select_all, :cancel_all, :select_in_number, :selected_num, :[]
 
   FONT_SIZE = 16
   SELECTED_BG_COLOR = ColorFactory.str_to_color('#eebbcb') #撫子色
 
-  attr_reader :poems, :selected
+  attr_reader :poems, :status100
 
   def viewDidLoad
     super
 
     @poems = Deck.original_deck.poems
+    @status100 = SelectedStatus100.new
     # ちゃんと初期状態を実装するまで、無選択状態で開始。
     cancel_all_poems()
     setToolbarItems(toolbar_items, animated: true)
@@ -42,12 +46,12 @@ class PoemPicker < UITableViewController
   end
 
   def select_all_poems
-    @selected = (0..99).map{true}
+    self.select_all
     self.view.reloadData
   end
 
   def cancel_all_poems
-    @selected = (0..99).map{false}
+    self.cancel_all
     self.view.reloadData
   end
 
@@ -89,7 +93,7 @@ class PoemPicker < UITableViewController
       c.detailTextLabel.text = "　　 #{poem.poet}"
     end
 
-    cell.accessoryType = case @selected[indexPath.row]
+    cell.accessoryType = case @status100[indexPath.row]
                            when true ; UITableViewCellAccessoryCheckmark
                            else ; UITableViewCellAccessoryNone
                          end
@@ -100,17 +104,18 @@ class PoemPicker < UITableViewController
   # @param [UITableView] tableView
   def tableView(tableView, didSelectRowAtIndexPath: indexPath)
 #    puts "cell[#{indexPath.row}] is selected!"
-    @selected[indexPath.row] = !@selected[indexPath.row]
+#    @status100[indexPath.row] = !@status100[indexPath.row]
+    @status100.reverse_in_index(indexPath.row)
     tableView.deselectRowAtIndexPath(indexPath, animated: true)
     tableView.reloadData
   end
 
   def tableView(tableView, willDisplayCell: cell, forRowAtIndexPath: indexPath)
-    cell.backgroundColor = case @selected[indexPath.row]
+    cell.backgroundColor = case @status100[indexPath.row]
                              when true ; SELECTED_BG_COLOR
                              else ; UIColor.whiteColor
                            end
-    self.title = '選択中: %d首' % @selected.count(true)
+    self.title = '選択中: %d首' % selected_num
   end
 
 end
