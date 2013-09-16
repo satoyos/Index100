@@ -1,7 +1,8 @@
 class PoemPicker < UITableViewController
   extend Forwardable
 
-  def_delegators :@status100, :select_all, :cancel_all, :select_in_number, :selected_num, :[]
+  def_delegators :@status100, :select_all, :cancel_all, :select_in_number
+  def_delegators :@status100, :selected_num, :[]
 
   FONT_SIZE = 16
   SELECTED_BG_COLOR = ColorFactory.str_to_color('#eebbcb') #撫子色
@@ -103,8 +104,6 @@ class PoemPicker < UITableViewController
 
   # @param [UITableView] tableView
   def tableView(tableView, didSelectRowAtIndexPath: indexPath)
-#    puts "cell[#{indexPath.row}] is selected!"
-#    @status100[indexPath.row] = !@status100[indexPath.row]
     @status100.reverse_in_index(indexPath.row)
     tableView.deselectRowAtIndexPath(indexPath, animated: true)
     tableView.reloadData
