@@ -18,7 +18,7 @@ Motion::Project::App.setup do |app|
   app.icons = ['百首決まり字.png', '百首決まり字@2x.png']
   app.prerendered_icon = true
 
-  app.provisioning_profile = '/Users/yoshi/data/dev/Profile_for_iPhone5_Dev.mobileprovision'
+  app.provisioning_profile = '/Users/yoshi/data/dev/Provisioning_Profile_Dev_iPhone5s.mobileprovision'
 
   app.frameworks += ['QuartzCore']
   app.frameworks += ['AVFoundation', 'AudioToolbox']
