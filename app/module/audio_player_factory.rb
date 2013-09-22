@@ -46,7 +46,9 @@ module AudioPlayerFactory
 
     url = NSURL.fileURLWithPath(bundle_by_basename(basename, ofType: type))
     er = Pointer.new(:object)
-    AVAudioPlayer.alloc.initWithContentsOfURL(url, error: er)
+    player = AVAudioPlayer.alloc.initWithContentsOfURL(url, error: er)
+    player.prepareToPlay
+    player
   end
 
   :private

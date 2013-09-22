@@ -1,4 +1,6 @@
-class NGramPicker < UITableViewController
+class NGramPicker < RMViewController
+  include SelectedStatusHandler
+
   N_GRAM_SECTIONS = [
       {section_id: :one,
        header_title: '一枚札',
@@ -20,13 +22,23 @@ class NGramPicker < UITableViewController
 
   BC_HALF_IMG_FILE = 'blue_circle_half.png'
 
+  attr_reader :table_view
+
   def viewDidLoad
     super
 
     view.backgroundColor = UIColor.whiteColor
     self.title = '1文字目で選ぶ'
+    @status100 = SelectedStatus100.new(loaded_selected_status)
+    @table_view = UITableView.alloc.initWithFrame(self.view.bounds,
+                                                  style: UITableViewStyleGrouped)
+    @table_view.dataSource = self
+    @table_view.delegate = self
+    self.view.addSubview(@table_view)
+=begin
     self.view.initWithFrame(self.view.bounds,
                             style: UITableViewStyleGrouped)
+=end
   end
 
   def numberOfSectionsInTableView(tableView)

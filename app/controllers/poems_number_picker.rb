@@ -1,7 +1,7 @@
 class PoemsNumberPicker < UIViewController
 
   PICKER_TITLE = '使う枚数'
-  PICKER_VIEW_WIDTH = 200
+  PICKER_VIEW_WIDTH = 100
   INITIAL_POEMS_NUM = 100
   COMPONENT_ID = 0
   POEM_NUM_CANDIDATES = [

@@ -1,7 +1,6 @@
 # coding: utf-8
 
-# class StartViewController < UITableViewController
-class StartViewController < UIViewController
+class StartViewController < RMViewController
   include SelectedStatusHandler
 
   attr_reader :table, :wrong_asap_cell

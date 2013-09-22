@@ -1,4 +1,4 @@
-class PoemPicker < UITableViewController
+class PoemPicker < RMViewController
   include SelectedStatusHandler
   extend Forwardable
 
@@ -7,7 +7,7 @@ class PoemPicker < UITableViewController
   FONT_SIZE = 16
   SELECTED_BG_COLOR = ColorFactory.str_to_color('#eebbcb') #撫子色
 
-  attr_reader :poems, :status100
+  attr_reader :poems, :status100, :table_view
 
   def viewDidLoad
     super
@@ -15,6 +15,10 @@ class PoemPicker < UITableViewController
     @poems = Deck.original_deck.poems
     @status100 = SelectedStatus100.new(loaded_selected_status)
     setToolbarItems(toolbar_items, animated: true)
+    @table_view = UITableView.alloc.initWithFrame(self.view.bounds)
+    @table_view.dataSource = self
+    @table_view.delegate = self
+    self.view.addSubview(@table_view)
 
   end
 
@@ -46,12 +50,12 @@ class PoemPicker < UITableViewController
 
   def select_all_poems
     @status100.select_all
-    self.view.reloadData
+    @table_view.reloadData
   end
 
   def cancel_all_poems
     @status100.cancel_all
-    self.view.reloadData
+    @table_view.reloadData
   end
 
   def select_by_ngram
@@ -117,23 +121,4 @@ class PoemPicker < UITableViewController
     self.title = '選択中: %d首' % @status100.selected_num
   end
 
-=begin
-  def save_selected_status(status_array)
-#    puts '- saving [selected_status]'
-#    puts "  selected_status => #{@status100.status_array}, number_of(true) => #{@status100.selected_num}"
-#    UIApplication.sharedApplication.delegate.settings.selected_status = @status100.status_array
-    UIApplication.sharedApplication.delegate.settings[:selected_status] = status_array
-  end
-
-  def loaded_selected_status
-#    puts '- loading [selected_status]'
-    status_array = UIApplication.sharedApplication.delegate.settings.selected_status
-    case status_array
-      when nil ; nil
-      else
-#        puts "  loaded_status_array => #{status_array}"
-        status_array.dup
-    end
-  end
-=end
 end

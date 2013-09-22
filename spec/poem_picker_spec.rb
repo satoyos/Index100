@@ -19,8 +19,8 @@ describe 'PoemPicker' do
     end
 
     it 'has a tableView' do
-      controller.tableView.should.not.be.nil
-      controller.tableView.is_a?(UITableView).should.be.true
+      controller.table_view.should.not.be.nil
+      controller.table_view.is_a?(UITableView).should.be.true
     end
   end
 
@@ -28,8 +28,7 @@ describe 'PoemPicker' do
     tests PoemPicker
 
     it 'テーブルの要素数を返す' do
-      controller.tableView(controller.tableView,
-                           numberOfRowsInSection: 0).should == 100
+      controller.tableView(nil, numberOfRowsInSection: 0).should == 100
     end
   end
 end
