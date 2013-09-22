@@ -21,11 +21,13 @@ describe 'AudioPlayerFactory' do
 
     behaves_like 'creator of playable AVAudioPlayer'
   end
+
   describe 'create reader by invalid file path' do
     it 'should raise RuntimeError' do
-      should.raise(RuntimeError){AudioPlayerFactory.create_player_by_path(INVALID_BASENAME, ofType: AUDIO_TYPE)}
+      should.raise{AudioPlayerFactory.create_player_by_path(INVALID_BASENAME, ofType: AUDIO_TYPE)}
     end
   end
+
   describe 'クラスで用意されたplayerへのアクセス' do
     before do
       AudioPlayerFactory.prepare_embedded_players

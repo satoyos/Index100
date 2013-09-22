@@ -20,7 +20,7 @@ describe 'ButtonSound' do
 
   describe 'クラスメソッドによるデータ準備' do
     before do
-      @sounds = ButtonSound.create_sounds
+      @sounds = ButtonSound.sounds
     end
 
     it 'should not be nil' do

@@ -8,10 +8,8 @@ class ButtonSound
   end
 
   class << self
-    attr_reader :sounds
-
-    def create_sounds
-      @sounds = JSONParser.parse_from_file(JSON_FILE).map{|sounds_hash|
+    def sounds
+      @sounds ||= JSONParser.parse_from_file(JSON_FILE).map{|sounds_hash|
         ButtonSound.new(sounds_hash)}
     end
   end
