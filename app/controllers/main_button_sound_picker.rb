@@ -12,7 +12,7 @@ class MainButtonSoundPicker < UIViewController
     def button_sound_id
       saved_data = UIApplication.sharedApplication.delegate.settings.main_button_sound
       case saved_data
-        when nil ; INITIAL_SOUND
+        when nil, false ; ButtonSound.sounds.first.id
         else ; saved_data.to_sym
       end
     end
@@ -34,9 +34,14 @@ class MainButtonSoundPicker < UIViewController
 
   def viewDidLoad
     set_title()
+    set_own_view()
     set_button_sounds()
     set_picker_view()
     set_play_button()
+  end
+
+  def set_own_view
+    self.view.backgroundColor = UIColor.whiteColor
   end
 
   :private

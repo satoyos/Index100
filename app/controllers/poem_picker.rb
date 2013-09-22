@@ -14,8 +14,6 @@ class PoemPicker < UITableViewController
 
     @poems = Deck.original_deck.poems
     @status100 = SelectedStatus100.new(loaded_selected_status)
-    # ちゃんと初期状態を実装するまで、無選択状態で開始。
-#    cancel_all_poems()
     setToolbarItems(toolbar_items, animated: true)
 
   end

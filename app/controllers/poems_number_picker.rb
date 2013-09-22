@@ -1,7 +1,7 @@
 class PoemsNumberPicker < UIViewController
 
   PICKER_TITLE = '使う枚数'
-  PICKER_VIEW_WIDTH = 100
+  PICKER_VIEW_WIDTH = 200
   INITIAL_POEMS_NUM = 100
   COMPONENT_ID = 0
   POEM_NUM_CANDIDATES = [
@@ -33,6 +33,7 @@ class PoemsNumberPicker < UIViewController
                        animated: false)
       self.view.addSubview(p_view)
     end
+    self.view.backgroundColor = UIColor.whiteColor
   end
 
   def viewWillDisappear(animated)
@@ -53,9 +54,11 @@ class PoemsNumberPicker < UIViewController
     "#{POEM_NUM_CANDIDATES[row]}"
   end
 
+=begin
   def pickerView(pickerView, widthForComponent: component)
     PICKER_VIEW_WIDTH
   end
+=end
 
 end
 

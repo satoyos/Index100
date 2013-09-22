@@ -1,6 +1,7 @@
 # coding: utf-8
 
-class StartViewController < UITableViewController
+# class StartViewController < UITableViewController
+class StartViewController < UIViewController
   include SelectedStatusHandler
 
   attr_reader :table, :wrong_asap_cell
@@ -32,20 +33,25 @@ class StartViewController < UITableViewController
 
     view.backgroundColor = UIColor.whiteColor
     self.title = TITLE
-#    UIApplication.sharedApplication.setStatusBarHidden(false, animated: false)
+=begin
     self.view.initWithFrame(self.view.bounds,
                             style: UITableViewStyleGrouped)
+=end
+    @table_view = UITableView.alloc.initWithFrame(self.view.bounds,
+                                                  style: UITableViewStyleGrouped)
+    @table_view.dataSource = self
+    @table_view.delegate = self
+    self.view.addSubview(@table_view)
   end
 
   def viewWillAppear(animated)
-#    super
     unless RUBYMOTION_ENV == 'test'
-#      navigationController.setNavigationBarHidden(true, animated: false)
-      navigationController.setNavigationBarHidden(false, animated: false)
+       navigationController.setNavigationBarHidden(false, animated: false)
       navigationController.navigationBar.translucent = false
       navigationController.navigationBar.alpha = 1.0
     end
-    self.view.reloadData
+#    self.view.reloadData
+    @table_view.reloadData
     self.navigationItem.title = TITLE
   end
 

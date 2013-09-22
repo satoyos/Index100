@@ -44,11 +44,16 @@ class ExamController < RMViewController
   end
 
   def viewWillAppear(animated)
-    UIApplication.sharedApplication.setStatusBarHidden(true, animated: true)
     unless RUBYMOTION_ENV == 'test'
-      navigationController.navigationBar.translucent = true
-      navigationController.navigationBar.alpha = 0.0
+      if self.navigationController
+        self.navigationController.navigationBar.translucent = true
+        self.navigationController.navigationBar.alpha = 0.0
+      end
     end
+  end
+
+  def prefersStatusBarHidden
+    true
   end
 
   def viewWillDisappear(animated)

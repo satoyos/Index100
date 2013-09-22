@@ -9,6 +9,7 @@ class ExamSettingViewController < RMViewController
 
   def viewDidLoad
     super
+    set_own_view()
     set_volume_view()
     set_back_button()
     set_exit_button()
@@ -16,6 +17,14 @@ class ExamSettingViewController < RMViewController
 
   def viewWillDisappear(animated)
       self.presentingViewController.setNavigationBarHidden(true, animated: false)
+  end
+
+  def prefersStatusBarHidden
+    true
+  end
+
+  def set_own_view
+    self.view.backgroundColor = UIColor.whiteColor
   end
 
   def set_volume_view
