@@ -156,9 +156,13 @@ class FudaView < UIImageView
   end
   
   def label_origin_zero
+=begin
     CGPoint.new(@green_offset, @green_offset + @font_size * 2 / 10)
     #                              この補正は…^^^^^^^^^^^^^^^^^^^^^
     # 和風フォントで上下方向のセンタリングがうまく機能しないため、仕方なく行っている。
+=end
+    # 上記のバグはXcode5 SDKで修正されたようなので、補正は外す。
+    CGPoint.new(@green_offset, @green_offset)
   end
 
 end
