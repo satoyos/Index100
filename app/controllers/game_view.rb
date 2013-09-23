@@ -40,7 +40,6 @@ class GameView < UIView
                        when 'test' ; COUNTER_LABEL_FOR_TEST
                        else "#{poem_counter}/#{deck_size}"
                      end
-      c_label.font = c_label.font.fontWithSize(COUNTER_FONT_SIZE)
       c_label.sizeToFit
       c_label.frame = counter_label_frame(c_label.frame.size)
       self.addSubview(c_label)

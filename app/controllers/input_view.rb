@@ -1,5 +1,6 @@
 class InputView < UIView
   BG_COLOR = UIColor.darkGrayColor # InputViewの背景色(backgroundColor)
+#  BG_COLOR = ColorFactory.str_to_color('#eaedf7') #白菫色
   MAIN_BUTTON_SIZE  = CGSizeMake(60, 60)
   SUB_BUTTON_SIZE   = CGSizeMake(40, 40)
   CLEAR_BUTTON_HEIGHT = 40
@@ -137,7 +138,7 @@ class InputView < UIView
   def set_stable_button(button, title: text, bg_color: bg_color)
     button.setTitle(text, forState: UIControlStateNormal)
     button.setTitleColor(UIColor.whiteColor, forState: UIControlStateNormal)
-    button.setBackgroundColor(bg_color, forState: UIControlStateNormal)
+    button.backgroundColor = bg_color
   end
 
   def clear_button_frame

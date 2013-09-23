@@ -3,6 +3,7 @@ class ExamController < RMViewController
 
   MAIN_BUTTON_NUM = 4
   MAIN_BUTTON_TYPE = UIButtonTypeRoundedRect
+  MAIN_BUTTON_COLOR = UIColor.whiteColor.colorWithAlphaComponent(0.8)
 
   A_LABEL_CLEAR_BUTTON     = 'clear_button'
   A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
@@ -121,14 +122,15 @@ class ExamController < RMViewController
   def set_main_buttons(strings)
     @main_buttons = ButtonSlot.new(MAIN_BUTTON_NUM)
     (0..MAIN_BUTTON_NUM-1).each do |idx|
-      button = create_a_main_button_at(idx, title: strings[idx])
+      create_a_main_button_at(idx, title: strings[idx]) if strings[idx]
     end
     @game_view.draw_main_buttons(@main_buttons)
   end
 
   def create_a_main_button_at(idx, title: title)
-    button = UIButton.buttonWithType(MAIN_BUTTON_TYPE)
+    button = InputViewButton.create_button
     button.tap do |b|
+      b.backgroundColor = MAIN_BUTTON_COLOR
       if title
         b.setTitle(title, forState: UIControlStateNormal) if title
         b.accessibilityLabel = title if title
@@ -228,7 +230,8 @@ class ExamController < RMViewController
   end
 
   def set_clear_button
-    @clear_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+#    @clear_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+    @clear_button = InputViewButton.create_button
     @clear_button.addTarget(self,
                             action: 'clear_button_pushed',
                             forControlEvents: UIControlEventTouchUpInside)
@@ -237,7 +240,8 @@ class ExamController < RMViewController
   end
 
   def set_challenge_button
-    @challenge_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+#    @challenge_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+    @challenge_button = InputViewButton.create_button
     @challenge_button.addTarget(self,
                             action: 'challenge_button_pushed',
                             forControlEvents: UIControlEventTouchUpInside)
@@ -274,10 +278,6 @@ class ExamController < RMViewController
           duration: EXCHANGE_GAME_VIEW_DURATION,
           transition: GAME_VIEW_EXCHANGE_TRANSITION)
     end
-  end
-
-  def draw_game_view
-    self.view.addSubview(@game_view)
   end
 
   def draw_sub_view(sub_view)

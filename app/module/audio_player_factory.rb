@@ -42,7 +42,8 @@ module AudioPlayerFactory
   def create_player_by_path(basename, ofType: type)
     audio_session = AVAudioSession.sharedInstance
     audio_session.setActive(true, error: nil)
-    audio_session.setCategory(AVAudioSessionCategoryPlayAndRecord, error: nil)
+    audio_session.setCategory(AVAudioSessionCategoryPlayback, error: nil)
+#    puts "audio_sessionのボリューム => #{audio_session.outputVolume}"
 
     url = NSURL.fileURLWithPath(bundle_by_basename(basename, ofType: type))
     er = Pointer.new(:object)
