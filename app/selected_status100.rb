@@ -4,15 +4,21 @@ class SelectedStatus100
   SIZE = 100
   INITIAL_STATUS = false
 
-  def initialize(status_array)
-    @status = case status_array
-                when nil ; (0..SIZE-1).to_a.map{|idx| INITIAL_STATUS}
+  class << self
+    def one_side_array_of(bool)
+      (0..SIZE-1).to_a.map{|idx| bool}
+    end
+  end
+
+  def initialize(init_item)
+    @status = case init_item
+                when nil ; self.class.one_side_array_of(INITIAL_STATUS)
+                when true, false ; self.class.one_side_array_of(init_item)
                 else
-                  if status_array.is_a?(Array) && status_array.size == 100
-                    status_array
+                  if init_item.is_a?(Array) && init_item.size == SIZE
+                    init_item
                   else
-                    puts "status_array => [#{status_array}]"
-                    (0..SIZE-1).to_a.map{|idx| INITIAL_STATUS}
+                    raise 'Invalid init_item in initialize'
                   end
               end
   end
@@ -21,7 +27,7 @@ class SelectedStatus100
     @status
   end
 
-  def_delegators :@status, :[], :[]=, :size, :each, :count
+  def_delegators :@status, :[], :[]=, :size, :each, :count, :inject
 
   def of_number(idx)
     raise "invalid index [#{idx}]" if idx < 1 || idx > SIZE
@@ -39,12 +45,12 @@ class SelectedStatus100
   end
 
   def cancel_all
-    (1..SIZE).each{|idx| self.cancel_in_number(idx)}
+    @status = self.class.one_side_array_of(false)
     self
   end
 
   def select_all
-    (1..SIZE).each{|idx| self.select_in_number(idx)}
+    @status = self.class.one_side_array_of(true)
     self
   end
 
@@ -70,6 +76,5 @@ class SelectedStatus100
     raise "invalid index [#{idx}]" if idx < 1 || idx > SIZE
     self[idx-1] = value
   end
-
 
 end

@@ -34,6 +34,19 @@ describe 'SelectedState100' do
       end
 
     end
+
+    describe 'Context: Booleanで初期化' do
+      it 'falseで初期化したら、全てfalseの配列で初期化した場合と同じになる。' do
+        status100 = SelectedStatus100.new(false)
+        status100.size.should == SelectedStatus100::SIZE
+        status100.inject(false){|bool, status| bool || status}.should.be.false
+      end
+      it 'trueで初期化したら、全てtrueの配列で初期化した場合と同じになる。' do
+        status100 = SelectedStatus100.new(true)
+        status100.inject(true){|bool, status| bool && status}.should.be.true
+      end
+
+    end
   end
 
   describe 'Forwardableモジュールを使ってdelegateしたメソッドのテスト' do
@@ -89,23 +102,19 @@ describe 'SelectedState100' do
 
     it '選択状態は全てfalseになる' do
       @status100.cancel_all
-      @status100.each do |st|
-        st.should.be.false
-      end
+      @status100.inject(false){|bool, status| bool || status}.should.be.false
     end
   end
 
   describe 'select_all' do
     before do
       @status100 = SelectedStatus100.new(nil).cancel_all
-#      @status100.cancel_al
     end
 
     it '選択状態は全てtrueになる' do
-#      @status100.select_all
-      @status100.select_all.each do |st|
-        st.should.be.true
-      end
+      @status100.select_all.inject(true){|bool, status|
+        bool && status
+      }.should.be.true
     end
   end
 
