@@ -4,7 +4,7 @@ class PoemPicker < RMViewController
 
   def_delegators :@status100, :select_in_number, :[], :[]=
 
-  TITLE = '使う歌'
+  TITLE = '覚えた歌を選ぶ'
   FONT_SIZE = 16
   DETAIL_FONT_SIZE = 11
   SELECTED_BG_COLOR = ColorFactory.str_to_color('#eebbcb') #撫子色
