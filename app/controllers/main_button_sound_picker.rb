@@ -1,6 +1,6 @@
 class MainButtonSoundPicker < UIViewController
 
-  PICKER_TITLE = '効果音'
+  PICKER_TITLE = '字を選んだ時の音'
   PROMPT = StartViewController::PROMPT
   PICKER_VIEW_WIDTH = 180
   INITIAL_SOUND = :button5

@@ -70,7 +70,7 @@ class NGramPicker < RMViewController
   end
 
   def tableView(tableView, didSelectRowAtIndexPath:indexPath)
-    puts "- 選ばれた1文字目は[#{id_of(indexPath)}]です。"
+#    puts "- 選ばれた1文字目は[#{id_of(indexPath)}]です。"
     case selected_status_of_char(id_of(indexPath))
       when :full ; release_poems_of_char(id_of(indexPath))
       else       ; select_all_poems_of_char(id_of(indexPath))

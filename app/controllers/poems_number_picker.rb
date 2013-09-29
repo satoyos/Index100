@@ -3,13 +3,14 @@ class PoemsNumberPicker < UIViewController
   PICKER_TITLE = '使う枚数'
   PROMPT = StartViewController::PROMPT
   PICKER_VIEW_WIDTH = 100
-  INITIAL_POEMS_NUM = 100
+  INITIAL_POEMS_NUM = 0
   COMPONENT_ID = 0
-  POEM_NUM_CANDIDATES = [
+  POEM_NUM_CANDIDATES = [0,
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
       15, 20, 25, 30, 35, 40, 45, 50,
       60, 70, 80, 90, 100
   ]
+  ALL_LABEL = '全て'
 
   class << self
     def poems_num
@@ -53,14 +54,15 @@ class PoemsNumberPicker < UIViewController
   end
 
   def pickerView(pickerView, titleForRow: row, forComponent: component)
-    "#{POEM_NUM_CANDIDATES[row]}"
+    case POEM_NUM_CANDIDATES[row]
+      when 0 ; ALL_LABEL
+      else   ; "#{POEM_NUM_CANDIDATES[row]}"
+    end
   end
 
-=begin
   def pickerView(pickerView, widthForComponent: component)
     PICKER_VIEW_WIDTH
   end
-=end
 
 end
 

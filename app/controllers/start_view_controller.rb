@@ -12,8 +12,8 @@ class StartViewController < RMViewController
       {section_id: :settings,
        header_title: '設定',
        items: [
-           {id: :poems_selected, title: '使う歌(工事中)'},
-           {id: :number_of_poems, title: 'テストする歌の数'},
+           {id: :poems_selected, title: '決まり字を覚えた歌'},
+           {id: :number_of_poems, title: 'そのうち何枚テストする？'},
            {id: :show_wrong_asap, title: '間違ったらすぐお知らせ',
             detail: '誤った文字を押した時点で通知します',
             no_action: true},
@@ -39,6 +39,7 @@ class StartViewController < RMViewController
                                                   style: UITableViewStyleGrouped)
     @table_view.dataSource = self
     @table_view.delegate = self
+    self.navigationItem.title = TITLE
     self.view.addSubview(@table_view)
   end
 
@@ -50,7 +51,6 @@ class StartViewController < RMViewController
     end
 #    self.view.reloadData
     @table_view.reloadData
-    self.navigationItem.title = TITLE
   end
 
   :private
@@ -115,16 +115,20 @@ class StartViewController < RMViewController
                     when :games    ; "#{item_hash(indexPath)[:id]}"
                     else ; nil
                   end
-    puts "- 呼び出すメソッド => [#{method_name}]"
+#    puts "- 呼び出すメソッド => [#{method_name}]"
     self.send("#{method_name}")
   end
 
   def detail_text(indexPath)
     case item_hash(indexPath)[:id]
-      when :number_of_poems ; "#{PoemsNumberPicker.poems_num}"
       when :show_wrong_asap ; item_hash(indexPath)[:detail]
       when :main_button_sound ; MainButtonSoundPicker.current_label_name
       when :poems_selected  ; "#{selected_poems_number}首"
+      when :number_of_poems
+        case PoemsNumberPicker.poems_num
+          when 0 ; PoemsNumberPicker::ALL_LABEL
+          else   ; "#{PoemsNumberPicker.poems_num}首"
+        end
       else ; '未設定'
     end
   end
@@ -147,9 +151,9 @@ class StartViewController < RMViewController
   end
 
   def start_test
-    if PoemsNumberPicker.poems_num > selected_poems_number
-      msg = "使える歌の数(#{selected_poems_number})よりも、"
-      msg += "テストする歌の数(#{PoemsNumberPicker.poems_num})の方が大きくなっています。"
+    if poems_num_to_test > selected_poems_number
+      msg = "覚えた歌の数(#{selected_poems_number}首)よりも、"
+      msg += "テストする歌の数(#{poems_num_to_test}首)の方が大きくなっています。"
 
       alert_view = UIAlertView.alloc.init
       alert_view.title ='歌の数を変えましょう'
@@ -158,11 +162,12 @@ class StartViewController < RMViewController
       alert_view.show
       return
     end
+    selected_poems_deck = Deck.create_from_bool100(loaded_selected_status)
     UIApplication.sharedApplication.setStatusBarHidden(true, animated: true)
     navigationController.pushViewController(
         ExamController.alloc.initWithHash(
           {
-            deck: Deck.new.shuffle_with_size(PoemsNumberPicker.poems_num),
+            deck: selected_poems_deck.shuffle_with_size(poems_num_to_test),
             wrong_char_allowed: !@wrong_asap_cell.switch_on?,
           }),
         animated: true)
@@ -205,6 +210,13 @@ class StartViewController < RMViewController
   def selected_poems_number
     status_array = loaded_selected_status || []
     status_array.select{|stat| stat}.size
+  end
+
+  def poems_num_to_test
+    case PoemsNumberPicker.poems_num
+      when 0 ; selected_poems_number
+      else   ; PoemsNumberPicker.poems_num
+    end
   end
 
 end

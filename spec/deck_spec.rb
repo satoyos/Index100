@@ -126,4 +126,23 @@ describe 'Deck' do
       @deck.next_poem.should.be.nil
     end
   end
+
+  describe 'create_from_bool100:' do
+    before do
+      bool100 = SelectedStatus100.one_side_array_of(false)
+      bool100[0] = true
+      bool100[99] = true
+      @deck = Deck.create_from_bool100(bool100)
+    end
+
+    it 'should not be nil' do
+      @deck.should.not.be.nil
+    end
+
+    it '要素100のtrue/false配列で、trueを設定した歌だけが選択されている' do
+      @deck.size.should == 2
+    end
+  end
+
+
 end

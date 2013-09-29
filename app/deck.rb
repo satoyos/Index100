@@ -15,6 +15,11 @@ class Deck
     def original_poems
       self.original_deck.poems
     end
+
+    def create_from_bool100(bool100)
+      self.new.select_from_bool100(bool100)
+    end
+
   end
 
   def initialize
@@ -46,5 +51,19 @@ class Deck
     @poems = @poems.shuffle[0..new_size-1]
     self
   end
+
+  :protected
+
+  def select_from_bool100(bool100)
+    raise 'use array[100] for select_from_bool100:' unless bool100.size == 100
+    raise "number of poems in deck => #{@poems.size}" unless @poems.size == 100
+    poems = []
+    @poems.each_with_index do |poem, idx|
+      poems << poem if bool100[idx]
+    end
+    @poems = poems
+    self
+  end
+
 
 end
