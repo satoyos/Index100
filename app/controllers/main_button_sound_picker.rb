@@ -1,6 +1,7 @@
 class MainButtonSoundPicker < UIViewController
 
   PICKER_TITLE = '効果音'
+  PROMPT = StartViewController::PROMPT
   PICKER_VIEW_WIDTH = 180
   INITIAL_SOUND = :button5
   COMPONENT_ID = 0
@@ -48,6 +49,7 @@ class MainButtonSoundPicker < UIViewController
 
   def set_title
     self.title = PICKER_TITLE
+    self.navigationItem.prompt = PROMPT
   end
 
   def set_button_sounds

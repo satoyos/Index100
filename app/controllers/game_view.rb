@@ -25,6 +25,7 @@ class GameView < UIView
     create_counter_label()
     @fuda_view.rewrite_string(@poem.in_hiragana.shimo)
 
+#    puts "** poem_counter = #{@controller.supplier.poem_counter} in GameView.initWithFrame"
     create_input_view()
 
     self

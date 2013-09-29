@@ -19,7 +19,7 @@ class CharSupplier
     @counter = 0
     @supplying_strings = nil
     @mode = init_hash[:mode]
-    @sort_strings = init_hash[:sort_strings]
+#    @sort_strings = init_hash[:sort_strings]
 
     # まずは、難易度はeasyモードのみ用意。
     @difficulty = :easy
@@ -83,8 +83,8 @@ class CharSupplier
     end
   end
 
-  def on_the_correct_line?(partial_challenge_str)
-    regexp = Regexp.new("^#{partial_challenge_str}")
+  def on_the_correct_line?(partial_str)
+    regexp = Regexp.new("^#{partial_str}")
     line_string = @current_poem.kimari_ji +
         @current_poem.in_hiragana.kami[@current_poem.kimari_ji.length..5]
     (regexp =~ line_string) == 0 # 0文字目からマッチする、という意味
@@ -113,6 +113,11 @@ class CharSupplier
       return [@current_poem.in_hiragana.kami[count], nil, nil, nil]
     end
     shuffled_candidates = shuffled_candidates_at(count)
+    shuffled_candidates[0..NUM_TO_SUPPLY-1].sort.fill(
+        nil,
+        shuffled_candidates.length..NUM_TO_SUPPLY-1
+    )
+=begin
     if @sort_strings
       shuffled_candidates[0..NUM_TO_SUPPLY-1].sort.fill(
           nil,
@@ -126,6 +131,7 @@ class CharSupplier
       )
 
     end
+=end
   end
 
   #count番目(1文字目はcount=0)の候補となる文字群を、正解文字を先頭にして返す。

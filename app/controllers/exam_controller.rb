@@ -19,7 +19,8 @@ class ExamController < RMViewController
   attr_reader :supplier, :pushed_button
 
   attr_accessor :current_challenge_string
-  attr_accessor :shuffle_with_size, :wrong_char_allowed
+#  attr_accessor :shuffle_with_size
+  attr_accessor :wrong_char_allowed
   attr_accessor :button_is_moved, :challenge_button_is_pushed
   attr_accessor :game_is_completed
 
@@ -62,9 +63,7 @@ class ExamController < RMViewController
   end
 
   def set_game_view_of_poem(poem)
-    @game_view = GameView.alloc.initWithFrame(self.view.bounds,
-                                              withPoem: poem,
-                                              controller: self)
+    create_game_view(poem)
     create_volume_icon()
     set_clear_button()
     set_challenge_button()
@@ -72,6 +71,13 @@ class ExamController < RMViewController
     make_main_buttons_appear()
     init_challenge_status()
   end
+
+  def create_game_view(poem)
+    @game_view = GameView.alloc.initWithFrame(self.view.bounds,
+                                              withPoem: poem,
+                                              controller: self)
+  end
+
 
   def get_result_type
     case @supplier.test_challenge_string(@current_challenge_string)
@@ -108,7 +114,12 @@ class ExamController < RMViewController
 
   :private
 
+  def deck=(deck)
+    @deck = deck
+  end
+
   def set_char_supplier
+=begin
     if self.shuffle_with_size
       @supplier =
           CharSupplier.new({deck: Deck.new.shuffle_with_size(@shuffle_with_size),
@@ -117,6 +128,9 @@ class ExamController < RMViewController
     else
       @supplier = CharSupplier.new({deck: Deck.new})
     end
+=end
+    @deck ||= Deck.new
+    @supplier = CharSupplier.new({deck: @deck})
   end
 
   def set_main_buttons(strings)

@@ -5,7 +5,8 @@ class StartViewController < RMViewController
 
   attr_reader :table, :wrong_asap_cell
 
-  TITLE = '百首決まり字'
+  TITLE = 'トップ'
+  PROMPT = '百首決まり字'
 
   START_VIEW_SECTIONS = [
       {section_id: :settings,
@@ -31,11 +32,9 @@ class StartViewController < RMViewController
     super
 
     view.backgroundColor = UIColor.whiteColor
+
     self.title = TITLE
-=begin
-    self.view.initWithFrame(self.view.bounds,
-                            style: UITableViewStyleGrouped)
-=end
+    self.navigationItem.prompt = PROMPT
     @table_view = UITableView.alloc.initWithFrame(self.view.bounds,
                                                   style: UITableViewStyleGrouped)
     @table_view.dataSource = self
@@ -148,14 +147,24 @@ class StartViewController < RMViewController
   end
 
   def start_test
+    if PoemsNumberPicker.poems_num > selected_poems_number
+      msg = "使える歌の数(#{selected_poems_number})よりも、"
+      msg += "テストする歌の数(#{PoemsNumberPicker.poems_num})の方が大きくなっています。"
+
+      alert_view = UIAlertView.alloc.init
+      alert_view.title ='歌の数を変えましょう'
+      alert_view.message = msg
+      alert_view.addButtonWithTitle('戻る')
+      alert_view.show
+      return
+    end
     UIApplication.sharedApplication.setStatusBarHidden(true, animated: true)
-#    save_wrong_asap_flg()
     navigationController.pushViewController(
-    ExamController.alloc.initWithHash(
-        {
-          shuffle_with_size: PoemsNumberPicker.poems_num,
-          wrong_char_allowed: !@wrong_asap_cell.switch_on?,
-        }),
+        ExamController.alloc.initWithHash(
+          {
+            deck: Deck.new.shuffle_with_size(PoemsNumberPicker.poems_num),
+            wrong_char_allowed: !@wrong_asap_cell.switch_on?,
+          }),
         animated: true)
   end
 
@@ -180,7 +189,7 @@ class StartViewController < RMViewController
   end
 
   def set_main_button_sound
-    puts '  → これからメインボタンを押したときのサウンドを設定します！'
+#    puts '  → これからメインボタンを押したときのサウンドを設定します！'
     navigationController.pushViewController(
         MainButtonSoundPicker.alloc.init,
         animated: true)

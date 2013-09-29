@@ -28,6 +28,7 @@ class Deck
   end
 
   def next_poem
+#    puts '++ coming into [next_poem]'
     if @counter == @poems.size
       return nil
     end

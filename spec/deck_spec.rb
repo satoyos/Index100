@@ -91,9 +91,8 @@ describe 'Deck' do
     end
 
     it 'next_poemを呼ぶと、counterの値が一つ増えなければならない' do
-      prev_counter = @deck.counter
       @deck.next_poem
-      @deck.counter.should == prev_counter + 1
+      @deck.counter.should == 1
     end
 
     it 'next_poemによってPoemを取得し尽くした場合、next_poemはnilを返す' do
@@ -114,11 +113,17 @@ describe 'Deck' do
       @deck.size.should == 10
     end
 
-=begin
-    it 'オリジナルデッキ(poems100)のサイズには影響を与えない' do
-      @deck.poems100.should.not.be.nil
-      @deck.poems100.size.should == 100
+    it '10回歌データを供給できる' do
+      10.times do
+        @deck.next_poem.should.not.be.nil
+      end
     end
-=end
+
+    it '11回めの歌を供給しようとすると、nilを返す' do
+      10.times do
+        @deck.next_poem
+      end
+      @deck.next_poem.should.be.nil
+    end
   end
 end

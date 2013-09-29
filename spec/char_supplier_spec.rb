@@ -40,6 +40,10 @@ describe 'CharSupplier' do
       @supplier.deck_size.should == 100
     end
 
+    it 'デッキのカウンターの値は1' do
+      @supplier.deck.counter.should == 1
+    end
+
     it 'has an answer' do
       @supplier.answer.should.not.be.nil
       @supplier.answer.is_a?(String).should.be.true

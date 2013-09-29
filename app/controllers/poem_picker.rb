@@ -4,7 +4,9 @@ class PoemPicker < RMViewController
 
   def_delegators :@status100, :select_in_number, :[], :[]=
 
+  TITLE = '使う歌'
   FONT_SIZE = 16
+  DETAIL_FONT_SIZE = 11
   SELECTED_BG_COLOR = ColorFactory.str_to_color('#eebbcb') #撫子色
 
   attr_reader :poems, :status100, :table_view
@@ -15,10 +17,26 @@ class PoemPicker < RMViewController
     @poems = Deck.original_deck.poems
     @status100 = SelectedStatus100.new(loaded_selected_status)
     setToolbarItems(toolbar_items, animated: true)
-    @table_view = UITableView.alloc.initWithFrame(self.view.bounds)
+
+    init_table_view_frame()
+
+    self.title = TITLE
+    self.view.backgroundColor = UIColor.whiteColor
+    self.view.addSubview(@table_view)
+
+  end
+
+  def init_table_view_frame
+    @table_view = UITableView.alloc.initWithFrame(self.view.frame)
     @table_view.dataSource = self
     @table_view.delegate = self
-    self.view.addSubview(@table_view)
+
+    unless RUBYMOTION_ENV == 'test'
+      frame = @table_view.frame
+      frame.size.height -= navigationController.navigationBar.frame.size.height
+      frame.size.height -= navigationController.toolbar.frame.size.height
+      @table_view.frame = frame
+    end
 
   end
 
@@ -50,11 +68,13 @@ class PoemPicker < RMViewController
 
   def select_all_poems
     @status100.select_all
+    save_selected_status(@status100.status_array)
     @table_view.reloadData
   end
 
   def cancel_all_poems
     @status100.cancel_all
+    save_selected_status(@status100.status_array)
     @table_view.reloadData
   end
 
@@ -70,11 +90,12 @@ class PoemPicker < RMViewController
     unless RUBYMOTION_ENV == 'test'
       navigationController.setToolbarHidden(false, animated: true)
     end
+    @table_view.reloadData
   end
 
   def viewWillDisappear(animated)
     super
-    save_selected_status(@status100.status_array)
+#    save_selected_status(@status100.status_array)
     unless RUBYMOTION_ENV == 'test'
       navigationController.setToolbarHidden(true, animated: true)
     end
@@ -94,8 +115,13 @@ class PoemPicker < RMViewController
     poem = @poems[indexPath.row]
     cell.tap do |c|
       c.textLabel.text = '%3d. %s %s %s' % [poem.number, poem.liner[0], poem.liner[1], poem.liner[2]]
-      c.textLabel.font = UIFont.systemFontOfSize(FONT_SIZE)
+#      c.textLabel.font = UIFont.systemFontOfSize(FONT_SIZE)
+      c.textLabel.font = FontFactory.create_font_with_type(:japaneseW6,
+                                                           size: FONT_SIZE)
       c.detailTextLabel.text = "　　 #{poem.poet}"
+      c.detailTextLabel.font =
+          FontFactory.create_font_with_type(:japanese,
+                                            size: DETAIL_FONT_SIZE)
     end
 
     cell.accessoryType = case @status100[indexPath.row]
@@ -109,6 +135,7 @@ class PoemPicker < RMViewController
   # @param [UITableView] tableView
   def tableView(tableView, didSelectRowAtIndexPath: indexPath)
     @status100.reverse_in_index(indexPath.row)
+    save_selected_status(@status100.status_array)
     tableView.deselectRowAtIndexPath(indexPath, animated: true)
     tableView.reloadData
   end
@@ -118,7 +145,8 @@ class PoemPicker < RMViewController
                              when true ; SELECTED_BG_COLOR
                              else ; UIColor.whiteColor
                            end
-    self.title = '選択中: %d首' % @status100.selected_num
+#    self.title = '選択中: %d首' % @status100.selected_num
+    self.navigationItem.prompt = '選択中: %d首' % @status100.selected_num
   end
 
 end

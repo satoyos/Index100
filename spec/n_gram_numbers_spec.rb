@@ -13,7 +13,9 @@ describe 'NGramNumbers' do
     end
 
     it 'has a list of numbers' do
-      @numbers.list.size.should == NGramNumbers::FIRST_CHARS.keys.size
+      # リストの大きさは、1文字目になりうる文字数に、
+      #   「一枚札」をまとめたリスト分の1を足した数になる。
+      @numbers.list.size.should == NGramNumbers::FIRST_CHARS.keys.size + 1
       @numbers.list[:a].is_a?(Array).should.be.true
     end
 
@@ -31,6 +33,7 @@ describe 'NGramNumbers' do
     it 'リストを全部足したら、1〜100までの番号が揃った配列になる' do
       array = []
       @list.each do |key, value_array|
+        next if key == :just_one  #「一枚札」全体を表すKeyはスキップ。
         array += value_array
       end
       array.sort.should == (1..100).to_a
@@ -43,6 +46,9 @@ describe 'NGramNumbers' do
     end
     it '「む」で始まる歌は1首だけ' do
       NGramNumbers.of(:mu).should == [87]
+    end
+    it 'indexes_ofは、歌番号ではなく、0起点のIndexデータを返す' do
+      NGramNumbers.indexes_of(:ha).sort.should == [1, 8, 66, 95]
     end
   end
 
