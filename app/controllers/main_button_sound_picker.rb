@@ -11,7 +11,8 @@ class MainButtonSoundPicker < UIViewController
 
   class << self
     def button_sound_id
-      saved_data = UIApplication.sharedApplication.delegate.settings.main_button_sound
+#      saved_data = UIApplication.sharedApplication.delegate.settings.main_button_sound
+       saved_data = NSUserDefaults[:main_button_sound]
       case saved_data
         when nil, false ; ButtonSound.sounds.first.id
         else ; saved_data.to_sym
@@ -19,7 +20,8 @@ class MainButtonSoundPicker < UIViewController
     end
 
     def button_sound_id=(sound_id)
-      UIApplication.sharedApplication.delegate.settings.main_button_sound = sound_id
+#      UIApplication.sharedApplication.delegate.settings.main_button_sound = sound_id
+      NSUserDefaults[:main_button_sound] = sound_id
     end
 
     def label_name(sound_id)

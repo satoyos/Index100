@@ -1,4 +1,4 @@
-class PoemPicker < RMViewController
+class PoemPicker < UIViewController
   include SelectedStatusHandler
   extend Forwardable
 

@@ -1,4 +1,4 @@
-class NGramPicker < RMViewController
+class NGramPicker < UIViewController
   include SelectedStatusHandler
   include NGramSections
 

@@ -7,6 +7,7 @@ require 'motion-localization'
 require 'sugarcube'
 require 'sugarcube-color'
 require 'sugarcube-uikit'
+require 'sugarcube-nsuserdefaults'
 require 'bundler/setup'
 Bundler.require :default
 
