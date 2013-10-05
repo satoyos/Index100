@@ -54,7 +54,6 @@ describe 'FudaView' do
     end
   end
 
-  #%ToDo: 次は札の歌を入れ替えるメソッドを作っていこう！
   describe 'rewrite_string' do
     ORG_SHIMO_STR = FudaView::STRING_NOT_SET_MESSAGE
     NEW_SHIMO_STR = 'わかみよにふるなかめせしまに'
