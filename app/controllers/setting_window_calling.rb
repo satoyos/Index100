@@ -1,11 +1,11 @@
 module SettingWindowCalling
   def create_gear_icon
-    @volume_icon = GearButton.alloc.init
-    @volume_icon.init_icon
-    @volume_icon.tap do |v_icon|
-      v_icon.frame = @game_view.volume_icon_frame_with_size(v_icon.frame.size)
-      v_icon.addTarget(self, action: :gear_icon_tapped, forControlEvents: UIControlEventTouchUpInside)
-      @game_view.addSubview(v_icon)
+    @gear_icon = GearButton.alloc.init
+    @gear_icon.init_icon
+    @gear_icon.tap do |g_icon|
+      g_icon.frame = @game_view.volume_icon_frame_with_size(g_icon.frame.size)
+      g_icon.addTarget(self, action: :gear_icon_tapped, forControlEvents: UIControlEventTouchUpInside)
+      @game_view.addSubview(g_icon)
     end
   end
 
