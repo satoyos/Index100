@@ -289,29 +289,6 @@ describe 'CharSupplier' do
   end
 
   describe 'get_4strings' do
-    describe 'Context: TEST_MODE1' do
-      before do
-        @supplier = CharSupplier.new({deck: Deck.new,
-                                      mode: CharSupplier::TEST_MODE1})
-      end
-
-      it 'return 4 strings determined by called order' do
-        first = @supplier.get_4strings
-        first.should.not.be.nil
-        first.is_a?(Array).should.be.true
-        first[2].should == 'あ'
-        second = @supplier.get_4strings
-        second[0].should == 'ら'
-        third = @supplier.get_4strings
-        forth = @supplier.get_4strings
-        fifth = @supplier.get_4strings
-        sixth = @supplier.get_4strings
-        sixth[2].should == 'み'
-        @supplier.get_4strings.should.be.nil
-        @supplier.counter.should == 6
-      end
-    end
-
     describe 'Context: シャッフルしていない本番デッキから文字群を取得' do
       before do
         @supplier = CharSupplier.new({deck: Deck.new})
@@ -381,10 +358,9 @@ describe 'CharSupplier' do
   end
 
   describe 'current_right_index' do
-    describe 'Context: TEST_MODE1' do
+    describe 'Context: 通常の百首デッキ(シャッフル無し、絞り込み無し)' do
       before do
-        @supplier = CharSupplier.new({deck: Deck.new,
-                                      mode: CharSupplier::TEST_MODE1})
+        @supplier = CharSupplier.new({deck: Deck.new})
       end
 
       it 'まだ文字列を供給していない場合には、nilを返す' do
@@ -413,7 +389,7 @@ describe 'CharSupplier' do
         end
       end
 
-      it 'テスト実装では正解は「あらし」固定なので、4回供給した後はnilを返す' do
+      it '1首目の正解は「あきの」固定なので、4回供給した後はnilを返す' do
         strings1 = @supplier.get_4strings #1回目
         strings2 = @supplier.get_4strings #2回目
         strings3 = @supplier.get_4strings #3回目

@@ -1,5 +1,5 @@
 class CharSupplier
-  PROPERTIES = [:deck, :current_poem, :counter, :difficulty, :mode,
+  PROPERTIES = [:deck, :current_poem, :counter, :difficulty,
                 :supplying_strings]
   PROPERTIES.each do |prop|
     attr_reader prop
@@ -11,27 +11,20 @@ class CharSupplier
   DIFFICULTIES = [:easy, :normal]
   LENGTH_TYPES = [:short, :just, :long]
 
-  TEST_MODE1 = :test_mode1
-
   def initialize(init_hash)
     @deck = init_hash[:deck]
     @current_poem = @deck.next_poem
     @counter = 0
     @supplying_strings = nil
     @mode = init_hash[:mode]
-#    @sort_strings = init_hash[:sort_strings]
 
     # まずは、難易度はeasyモードのみ用意。
     @difficulty = :easy
 
-    ## テスト実装
   end
 
   def answer
-    case @mode
-      when TEST_MODE1; TEST_ANSWER
-      else           ; @current_poem.kimari_ji
-    end
+    @current_poem.kimari_ji
   end
 
   def draw_next_poem
@@ -41,28 +34,11 @@ class CharSupplier
     end
   end
 
-  TEST_ARRAY = [
-      ['A1', 'A2', 'あ', 'A4'],
-      ['ら', 'B2', 'B3', nil],
-      ['C1', 'C2', 'C3', 'し'],
-      ['D1', 'D2', 'ふ', 'D4'],
-      ['E1', 'く', 'E3', 'E4'],
-      ['F1', 'F2', 'み', 'F4']
-  ]
-
-  TEST_ANSWER = 'あらし'
-
-
-
   def get_4strings
     return nil if @counter == COUNTER_MAX
-#    strings = TEST_ARRAY[@counter]
-    strings = case @mode
-                when TEST_MODE1; TEST_ARRAY[@counter]
-                else           ; make_4strings_at(@counter)
-              end
+    @supplying_strings = make_4strings_at(@counter)
     @counter += 1
-    @supplying_strings = strings
+    @supplying_strings
   end
   
   def clear
@@ -101,11 +77,7 @@ class CharSupplier
     if @counter == 0 || @counter > answer.length
       return nil
     end
-    case @mode
-      when TEST_MODE1; TEST_ARRAY[@counter-1].find_index(TEST_ANSWER[@counter-1])
-      else           ; @supplying_strings.find_index(self.answer[@counter-1])
-    end
-
+    @supplying_strings.find_index(self.answer[@counter-1])
   end
 
   def make_4strings_at(count)
@@ -117,21 +89,6 @@ class CharSupplier
         nil,
         shuffled_candidates.length..NUM_TO_SUPPLY-1
     )
-=begin
-    if @sort_strings
-      shuffled_candidates[0..NUM_TO_SUPPLY-1].sort.fill(
-          nil,
-          shuffled_candidates.length..NUM_TO_SUPPLY-1
-      )
-    else
-      # 先頭からNUM_TO_SUPPLY個を取得し、シャッフルして戻り値とする。
-      shuffled_candidates[0..NUM_TO_SUPPLY-1].shuffle.fill(
-          nil,
-          shuffled_candidates.length..NUM_TO_SUPPLY-1
-      )
-
-    end
-=end
   end
 
   #count番目(1文字目はcount=0)の候補となる文字群を、正解文字を先頭にして返す。
