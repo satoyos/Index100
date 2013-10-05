@@ -1,6 +1,5 @@
 class CharSupplier
-  PROPERTIES = [:deck, :current_poem, :counter, :difficulty,
-                :supplying_strings]
+  PROPERTIES = [:deck, :current_poem, :counter, :supplying_strings]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
@@ -8,18 +7,11 @@ class CharSupplier
   NUM_TO_SUPPLY = 4
   COUNTER_MAX   = 6
 
-  DIFFICULTIES = [:easy, :normal]
-  LENGTH_TYPES = [:short, :just, :long]
-
   def initialize(init_hash)
     @deck = init_hash[:deck]
     @current_poem = @deck.next_poem
     @counter = 0
     @supplying_strings = nil
-    @mode = init_hash[:mode]
-
-    # まずは、難易度はeasyモードのみ用意。
-    @difficulty = :easy
 
   end
 

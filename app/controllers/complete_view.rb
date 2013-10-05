@@ -1,4 +1,4 @@
-class CompleteView < RMView
+class CompleteView < UIView
 
   COMPLETE_MSG = 'お疲れ様でした！'
   COMPLETE_MSG_TOP_MARGIN = 100

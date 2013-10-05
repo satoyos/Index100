@@ -49,10 +49,6 @@ describe 'CharSupplier' do
       @supplier.answer.is_a?(String).should.be.true
     end
 
-    it '難易度が設定されていて、予め定められているもののいずれかである' do
-      @supplier.difficulty.should.not.be.nil
-      CharSupplier::DIFFICULTIES.include?(@supplier.difficulty).should.be.true
-    end
   end
 
   describe 'draw_next_poem' do
