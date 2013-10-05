@@ -4,6 +4,9 @@ require 'motion/project/template/ios'
 # require 'bubble-wrap'
 require 'guard/motion'
 require 'motion-localization'
+require 'sugarcube'
+require 'sugarcube-color'
+require 'sugarcube-uikit'
 require 'bundler/setup'
 Bundler.require :default
 

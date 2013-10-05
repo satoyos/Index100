@@ -13,6 +13,7 @@ describe 'MainButtonSoundPicker' do
 
   describe 'クラスメソッド: button_sound_id' do
     before do
+      AudioPlayerFactory.prepare_embedded_players
       @button_sound_id = MainButtonSoundPicker.button_sound_id
     end
     it 'should not be nil' do
@@ -20,6 +21,7 @@ describe 'MainButtonSoundPicker' do
     end
 
     it '戻り値に対応するAudioPlayerがある' do
+      puts "@button_sound_id => [#{@button_sound_id}]"
       AudioPlayerFactory.players[@button_sound_id].should.not.be.nil
     end
   end

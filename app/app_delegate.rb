@@ -1,7 +1,7 @@
 class AppDelegate
   include RMSettable
 
-  BAR_TINT_COLOR = ColorFactory::str_to_color('#cee4ae') #夏虫色
+  BAR_TINT_COLOR = '#cee4ae'.uicolor #夏虫色
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     rm_settable :volume, :poems_num, :wrong_asap, :main_button_sound, selected_status: {type: :array}

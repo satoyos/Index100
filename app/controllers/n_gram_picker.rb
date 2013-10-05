@@ -2,10 +2,9 @@ class NGramPicker < RMViewController
   include SelectedStatusHandler
   include NGramSections
 
-
-  BC_FULL_IMG_FILE = 'blue_circle_full.png'
-  BC_HALF_IMG_FILE = 'blue_circle_half.png'
-  BC_NONE_IMG_FILE = 'blue_circle_empty.png'
+  BC_FULL_IMG = 'blue_circle_full.png'.uiimage
+  BC_HALF_IMG = 'blue_circle_half.png'.uiimage
+  BC_NONE_IMG = 'blue_circle_empty.png'.uiimage
 
   TITLE = '1字目で選ぶ'
 
@@ -31,8 +30,6 @@ class NGramPicker < RMViewController
       frame = @table_view.frame
       frame.size.height -= navigationController.navigationBar.frame.size.height
       @table_view.frame = frame
-#      puts "@table_view.frameの高さ => #{@table_view.frame.size.height}"
-#      puts "toolabar.frameの高さ    => #{navigationController.toolbar.frame.size.height}"
     end
 
   end
@@ -132,13 +129,13 @@ class NGramPicker < RMViewController
   end
 
   def ui_image_for_status(status_symbol, of_height: height)
-    image_name = case status_symbol
-                   when :full    ; BC_FULL_IMG_FILE
-                   when :partial ; BC_HALF_IMG_FILE
-                   when :none    ; BC_NONE_IMG_FILE
-                   else ; raise "Invalid status #{status_symbol}"
-                 end
-    ResizeUIImage.resizeImage(UIImage.imageNamed(image_name),
+    image = case status_symbol
+              when :full    ; BC_FULL_IMG
+              when :partial ; BC_HALF_IMG
+              when :none    ; BC_NONE_IMG
+              else ; raise "Invalid status #{status_symbol}"
+            end
+    ResizeUIImage.resizeImage(image,
                               newSize: CGSizeMake(height, height))
   end
 

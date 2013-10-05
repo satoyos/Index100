@@ -1,19 +1,18 @@
 class InputView < UIView
   BG_COLOR = UIColor.darkGrayColor # InputViewの背景色(backgroundColor)
-#  BG_COLOR = ColorFactory.str_to_color('#eaedf7') #白菫色
   MAIN_BUTTON_SIZE  = CGSizeMake(60, 60)
   SUB_BUTTON_SIZE   = CGSizeMake(40, 40)
   CLEAR_BUTTON_HEIGHT = 40
   CLEAR_BUTTON_TITLE = 'やり直し'
-  CLEAR_BUTTON_COLOR = ColorFactory.str_to_color('#007bbb') #紺碧
+  CLEAR_BUTTON_COLOR = '#007bbb'.uicolor #紺碧
   CHALLENGE_BUTTON_HEIGHT = CLEAR_BUTTON_HEIGHT
   CHALLENGE_BUTTON_TITLE = 'これで決まり！'
-  CHALLENGE_BUTTON_COLOR = ColorFactory.str_to_color('#e95295') #ツツジ色
+  CHALLENGE_BUTTON_COLOR = '#e95295'.uicolor #ツツジ色
   SUB_BUTTON_NUM  = 6
   MOVE_SELECTED_DURATION = 0.1
   EXCHANGE_MAIN_BUTTONS_DURATION = 0.15
 
-  SELECTED_BUTTON_TITLE_COLOR = ColorFactory.str_to_color('#c85179') #中紅
+  SELECTED_BUTTON_TITLE_COLOR = '#c85179'.uicolor #中紅
 
   PROPERTIES_READER = [:main_4frames,
                 :sub_buttons, :sub_6frames, :result_view, :controller]

@@ -7,7 +7,7 @@ class FudaView < UIImageView
   OFFSET_DIVIDED_BY_POWER = 2     # これに@fuda_powerをかけたものが@green_offsetの値となる。
 
   # サイズ以外の定数の設定
-  INSIDE_COLOR = ColorFactory.str_to_color('#FFF7E5')
+  INSIDE_COLOR = '#FFF7E5'.uicolor
   FONT_NAME_HASH = {
       hiraminN:   'HiraMinProN-W3',
       timesroman: 'TimesNewRomanPS-ItalicMT',
@@ -18,10 +18,7 @@ class FudaView < UIImageView
   ACC_LABEL_OF_INSIDE_VIEW = 'inside_view'
   STR_FOR_FUDA_LABEL_ACC = 'FudaChar%02d'
 
-  PROPERTIES = [:labels15]
-  PROPERTIES.each do |prop|
-    attr_reader prop
-  end
+  attr_reader :labels15
 
   # 札Viewのサイズ(frame.size)を決め、上に載るオブジェクトを積み上げる。
   # 札Viewの位置(frame.origin)にはCGPointZeroを設定する

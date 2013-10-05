@@ -1,6 +1,7 @@
 class VolumeView < UIView
   VOLUME_VIEW_HEIGHT = 60
-  VOLUME_VIEW_COLOR = ColorFactory.str_to_color('#68be8d')
+#  VOLUME_VIEW_COLOR = ColorFactory.rb..str_to_color('#68be8d')
+  VOLUME_VIEW_COLOR = '#68be8d'.uicolor
   VOLUME_VIEW_ALPHA = 0.7
   VOLUME_VIEW_WIDTH_MARGIN = 10
 
@@ -44,14 +45,10 @@ class VolumeView < UIView
   end
 
   def play_button_image
-    ResizeUIImage.resizeImage(UIImage.imageNamed(PLAY_ICON_IMG_FILE),
+    ResizeUIImage.resizeImage(PLAY_ICON_IMG_FILE.uiimage,
                               newSize: CGSizeMake(PLAY_BUTTON_WIDTH,
                                                   PLAY_BUTTON_HEIGHT))
   end
-
-
-  :private
-
 
 
 end

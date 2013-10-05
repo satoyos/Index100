@@ -7,7 +7,7 @@ class PoemPicker < RMViewController
   TITLE = '覚えた歌を選ぶ'
   FONT_SIZE = 16
   DETAIL_FONT_SIZE = 11
-  SELECTED_BG_COLOR = ColorFactory.str_to_color('#eebbcb') #撫子色
+  SELECTED_BG_COLOR = '#eebbcb'.uicolor #撫子色
 
   attr_reader :poems, :status100, :table_view
 

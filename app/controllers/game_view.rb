@@ -2,7 +2,7 @@ class GameView < UIView
   FUDA_INITIAL_STRING = 'これから札に歌を設定します。'
   FUDA_HEIGHT_POWER = 0.95 # 札ビューの高さは、畳ビューの何倍にするか
 
-  TATAMI_JPG_FILE = 'tatami_moved.jpg'
+  TATAMI_IMG = 'tatami_moved.jpg'.uiimage
 
   GEAR_ICON_MARGIN = 8
   COUNTER_LABEL_MARGIN = GEAR_ICON_MARGIN
@@ -25,7 +25,6 @@ class GameView < UIView
     create_counter_label()
     @fuda_view.rewrite_string(@poem.in_hiragana.shimo)
 
-#    puts "** poem_counter = #{@controller.supplier.poem_counter} in GameView.initWithFrame"
     create_input_view()
 
     self
@@ -48,9 +47,8 @@ class GameView < UIView
   end
 
   def create_tatami_view
-#    @tatami_view = TatamiView.alloc.initWithFrame(tatami_view_frame)
     @tatami_view =
-        UIImageView.alloc.initWithImage(UIImage.imageNamed(TATAMI_JPG_FILE))
+        UIImageView.alloc.initWithImage(TATAMI_IMG)
     @tatami_view.frame = tatami_view_frame
     @tatami_view.tap do |t_view|
       t_view.clipsToBounds= true

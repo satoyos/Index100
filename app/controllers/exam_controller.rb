@@ -64,7 +64,7 @@ class ExamController < RMViewController
 
   def set_game_view_of_poem(poem)
     create_game_view(poem)
-    create_volume_icon()
+    create_gear_icon()
     set_clear_button()
     set_challenge_button()
     set_main_buttons(@supplier.get_4strings)
