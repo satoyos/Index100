@@ -35,12 +35,8 @@ describe 'ChallengeResultView' do
   end
 
   describe 'サポートしていない引数値で初期化' do
-    before do
-      @view = ChallengeResultView.alloc.initWithResult(:xxxYYY)
-    end
-
-    it '正常に初期化されない' do
-      @view.should.be.nil
+    it 'should raise ERROR' do
+      lambda{ChallengeResultView.alloc.initWithResult(:xxxYYY)}.should.raise
     end
   end
 

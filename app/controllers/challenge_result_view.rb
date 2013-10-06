@@ -14,8 +14,11 @@ class ChallengeResultView < UIView
 
   def initWithResult(sym)
     unless RESULT_TEXT.keys.include?(sym)
+=begin
       puts "xxx ChallengeResultViewの初期化に使われたシンボル[#{sym}]は、サポートしていません。"
       return
+=end
+      raise "invalid symbol [#{sym}] to initialize #{self}"
     end
     initWithFrame([CGPointMake(0, 0), RESULT_VIEW_SIZE])
     self.alpha = RESULT_VIEW_ALPHA

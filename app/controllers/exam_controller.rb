@@ -19,7 +19,6 @@ class ExamController < UIViewController
   attr_reader :supplier, :pushed_button
 
   attr_accessor :current_challenge_string
-#  attr_accessor :shuffle_with_size
   attr_accessor :wrong_char_allowed
   attr_accessor :button_is_moved, :challenge_button_is_pushed
   attr_accessor :game_is_completed
@@ -119,16 +118,6 @@ class ExamController < UIViewController
   end
 
   def set_char_supplier
-=begin
-    if self.shuffle_with_size
-      @supplier =
-          CharSupplier.new({deck: Deck.new.shuffle_with_size(@shuffle_with_size),
-                            sort_strings: true}
-          )
-    else
-      @supplier = CharSupplier.new({deck: Deck.new})
-    end
-=end
     @deck ||= Deck.new
     @supplier = CharSupplier.new({deck: @deck})
   end
@@ -244,7 +233,6 @@ class ExamController < UIViewController
   end
 
   def set_clear_button
-#    @clear_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
     @clear_button = InputViewButton.create_button
     @clear_button.addTarget(self,
                             action: 'clear_button_pushed',
@@ -254,7 +242,6 @@ class ExamController < UIViewController
   end
 
   def set_challenge_button
-#    @challenge_button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
     @challenge_button = InputViewButton.create_button
     @challenge_button.addTarget(self,
                             action: 'challenge_button_pushed',
