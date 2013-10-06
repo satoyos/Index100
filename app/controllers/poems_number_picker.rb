@@ -14,11 +14,11 @@ class PoemsNumberPicker < UIViewController
 
   class << self
     def poems_num
-      UIApplication.sharedApplication.delegate.settings.poems_num || INITIAL_POEMS_NUM
+      NSUserDefaults[:poems_num] || INITIAL_POEMS_NUM
     end
 
     def poems_num=(num)
-      UIApplication.sharedApplication.delegate.settings.poems_num = num
+      NSUserDefaults[:poems_num] = num
     end
   end
 

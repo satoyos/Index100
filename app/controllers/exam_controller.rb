@@ -1,4 +1,4 @@
-class ExamController < RMViewController
+class ExamController < UIViewController
   include SettingWindowCalling
 
   MAIN_BUTTON_NUM = 4

@@ -33,7 +33,4 @@ Motion::Project::App.setup do |app|
       :products => %w{Reveal},
       :headers_dir => 'Headers'
   )
-
-  app.files_dependencies  'app/app_delegate.rb' => 'app/lib/rm_settings/rmsettable.rb',
-                          'app/lib/rm_settings/rmsettable.rb' => 'app/lib/rm_settings/rmsettings.rb'
 end

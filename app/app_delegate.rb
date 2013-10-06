@@ -1,10 +1,8 @@
 class AppDelegate
-  include RMSettable
 
   BAR_TINT_COLOR = '#cee4ae'.uicolor #夏虫色
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    rm_settable :volume, :poems_num, :wrong_asap
 
     AudioPlayerFactory.prepare_embedded_players
 

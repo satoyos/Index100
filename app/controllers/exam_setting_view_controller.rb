@@ -1,4 +1,4 @@
-class ExamSettingViewController < RMViewController
+class ExamSettingViewController < UIViewController
   INITIAL_VOLUME = 0.5
   BUTTON_MARGIN = 20
   BUTTON_HEIGHT = 40
@@ -36,7 +36,8 @@ class ExamSettingViewController < RMViewController
 
   def set_volume_slider
     slider = UISlider.alloc.initWithFrame(@volume_view.volume_slider_frame)
-    slider.value= settings.volume || INITIAL_VOLUME
+    slider.value= NSUserDefaults[:volume] || INITIAL_VOLUME
+
     AudioPlayerFactory.set_volume(slider.value)
     slider.addTarget(self, action: :slider_changed, forControlEvents: UIControlEventValueChanged)
     @volume_view.addSubview(slider)
@@ -95,12 +96,11 @@ class ExamSettingViewController < RMViewController
 
   def slider_changed
     AudioPlayerFactory.set_volume(@slider.value)
-    settings.volume = @slider.value
+    NSUserDefaults[:volume] = @slider.value
   end
 
   def exit_button_tapped
     stop_player()
-#    puts "presentingViewController => #{self.presentingViewController}"
     self.dismissModalViewControllerAnimated(true)
     self.presentingViewController.popViewControllerAnimated(false)
   end

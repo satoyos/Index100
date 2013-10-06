@@ -21,7 +21,7 @@ describe 'MainButtonSoundPicker' do
     end
 
     it '戻り値に対応するAudioPlayerがある' do
-      puts "@button_sound_id => [#{@button_sound_id}]"
+#      puts "@button_sound_id => [#{@button_sound_id}]"
       AudioPlayerFactory.players[@button_sound_id].should.not.be.nil
     end
   end

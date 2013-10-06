@@ -1,6 +1,6 @@
 # coding: utf-8
 
-class StartViewController < RMViewController
+class StartViewController < UIViewController
   include SelectedStatusHandler
 
   attr_reader :table, :wrong_asap_cell
@@ -175,11 +175,13 @@ class StartViewController < RMViewController
 
   def save_wrong_asap_flg
 #    puts '- saving [wrong_asap]'
-    UIApplication.sharedApplication.delegate.settings.wrong_asap = @wrong_asap_cell.switch_on?
+#    UIApplication.sharedApplication.delegate.settings.wrong_asap = @wrong_asap_cell.switch_on?
+    NSUserDefaults[:wrong_asap] =  @wrong_asap_cell.switch_on?
   end
 
   def initial_wrong_asap
-    saved_flg = UIApplication.sharedApplication.delegate.settings.wrong_asap
+#    saved_flg = UIApplication.sharedApplication.delegate.settings.wrong_asap
+    saved_flg = NSUserDefaults[:wrong_asap]
     case saved_flg
       when nil; false
       else    ; saved_flg
