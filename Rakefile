@@ -8,6 +8,7 @@ require 'sugarcube'
 require 'sugarcube-color'
 require 'sugarcube-uikit'
 require 'sugarcube-nsuserdefaults'
+require 'motion-testflight'
 require 'bundler/setup'
 Bundler.require :default
 
@@ -22,15 +23,26 @@ Motion::Project::App.setup do |app|
   app.icons = ['百首決まり字.png', '百首決まり字@2x.png']
   app.prerendered_icon = true
 
-  app.provisioning_profile = '/Users/yoshi/data/dev/Provisioning_Profile_Dev_iPhone5s.mobileprovision'
+  app.provisioning_profile = '/Users/yoshi/data/dev/Provisioning_for_100series_Tester.mobileprovision'
 
   app.frameworks += ['QuartzCore']
   app.frameworks += ['AVFoundation', 'AudioToolbox']
 
-  app.vendor_project(
-      'vendor/Reveal.framework',
-      :static,
-      :products => %w{Reveal},
-      :headers_dir => 'Headers'
-  )
+  app.development do
+    app.testflight do
+      app.testflight.sdk = 'vendor/TestFlightSDK2.0.2'
+      app.testflight.api_token = '1fa759189453676c7e99c623b61c1657_OTEzMzU4MjAxMy0wMy0wNSAwODowMToyNS44NTMxNjg'
+      app.testflight.team_token = '6396149579b3bcb7410be09ba868f8b7_MjgxOTEwMjAxMy0xMC0wNiAwNTowMDo0MS42MzA2OTQ'
+      app.testflight.app_token = '696d14ae-140b-403f-8434-6109aaf6d745'
+      app.testflight.notify = true # default is false
+      app.testflight.identify_testers = true # default is false
+    end
+    app.vendor_project(
+        'vendor/Reveal.framework',
+        :static,
+        :products => %w{Reveal},
+        :headers_dir => 'Headers'
+    )
+  end
+
 end
