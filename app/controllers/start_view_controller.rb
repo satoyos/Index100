@@ -151,7 +151,10 @@ class StartViewController < UIViewController
   end
 
   def start_test
-    if poems_num_to_test > selected_poems_number
+    if selected_poems_number == 0
+      alert_no_poem_selected()
+      return
+    elsif poems_num_to_test > selected_poems_number
       msg = "覚えた歌の数(#{selected_poems_number}首)よりも、"
       msg += "テストする歌の数(#{poems_num_to_test}首)の方が大きくなっています。"
 
@@ -171,6 +174,15 @@ class StartViewController < UIViewController
             wrong_char_allowed: !@wrong_asap_cell.switch_on?,
           }),
         animated: true)
+  end
+
+  def alert_no_poem_selected
+    msg = '「決まり字を覚えた歌」で、テストに使う歌を選んでください。'
+    alert_view = UIAlertView.alloc.init
+    alert_view.title ='歌を選びましょう'
+    alert_view.message = msg
+    alert_view.addButtonWithTitle('戻る')
+    alert_view.show
   end
 
   def save_wrong_asap_flg
