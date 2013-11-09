@@ -16,7 +16,7 @@ Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
   app.name = 'Index100'
 
-  app.version = '1.01'
+  app.version = '1.02'
 
   app.codesign_certificate = 'iPhone Developer: Yoshifumi Sato'
 
@@ -25,10 +25,15 @@ Motion::Project::App.setup do |app|
   app.icons = ['百首決まり字.png', '百首決まり字@2x.png']
   app.prerendered_icon = true
 
-  app.provisioning_profile = '/Users/yoshi/data/dev/Provisioning_for_100series_Tester.mobileprovision'
+  app.provisioning_profile = '/Users/yoshi/data/dev/Provisioning_for_100series_Tester_with_iPad_Air.mobileprovision'
 
   app.frameworks += ['QuartzCore']
   app.frameworks += ['AVFoundation', 'AudioToolbox']
+
+  app.info_plist['CFBundleURLTypes'] = [
+      { 'CFBundleURLName' => 'com.satoyos.Index_100',
+        'CFBundleURLSchemes' => ['index100'] }
+  ]
 
   app.development do
     app.testflight do
