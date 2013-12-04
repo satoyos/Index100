@@ -20,6 +20,8 @@ class GameView < UIView
     super.initWithFrame(frame)
     @poem = poem
     @controller = controller
+    # 以下の弱参照を使うと、メインボタンのexchangeが起こらなくなった。
+#    @controller = WeakRef.new(controller) # 循環参照を避けるため、弱参照を使う。
     create_tatami_view()
     create_fuda_view()
     create_counter_label()

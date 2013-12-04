@@ -30,6 +30,8 @@ class InputView < UIView
 
     self.backgroundColor = BG_COLOR
     @controller = controller
+# 以下の弱参照を使うと、メインボタンのexchangeが起こらなくなった。
+#    @controller = WeakRef.new(controller) # 循環参照を避けるため、弱参照を使う。
     create_main_4frames()
     create_sub_6frames()
     setup_sub_button_slot()

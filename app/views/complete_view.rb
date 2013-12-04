@@ -9,10 +9,10 @@ class CompleteView < UIView
   def initWithFrame(frame, controller: controller)
     super.initWithFrame(frame)
 
-    @controller = controller
+    @controller = WeakRef.new(controller) # 循環参照を避けるため、弱参照を使う。
     self.backgroundColor = UIColor.whiteColor
-    set_complete_msg_label()
-    set_return_button()
+    set_complete_msg_label
+    set_return_button
     self
   end
 
