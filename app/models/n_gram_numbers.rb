@@ -34,7 +34,7 @@ class NGramNumbers
 
   def initialize
     @poems = Deck.original_poems
-    @list = list_of_first_chars()
+    @list = list_of_first_chars
   end
 
   :private
@@ -44,7 +44,7 @@ class NGramNumbers
     FIRST_CHARS.each do |key, value|
       list[key] = @poems.select{|poem| poem.kimari_ji[0] == value}.map{|poem| poem.number}
     end
-    list[:just_one] = ICHI_MAI_FUDA.inject([]){|result, sym| result += list[sym]}
+    list[:just_one] = ICHI_MAI_FUDA.inject([]){|result, sym| result + list[sym]}
     list
   end
 end
