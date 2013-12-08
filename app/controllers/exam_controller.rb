@@ -9,6 +9,8 @@ class ExamController < UIViewController
   A_LABEL_CHALLENGE_BUTTON = 'challenge_button'
 
   GAME_VIEW_EXCHANGE_TRANSITION = UIViewAnimationTransitionFlipFromLeft
+  MOVE_SELECTED_DURATION = 0.1
+  EXCHANGE_MAIN_BUTTONS_DURATION = 0.15
   EXCHANGE_GAME_VIEW_DURATION = 0.5
 
   CALLBACK_AFTER_BUTTON_MOVED = 'check_if_right_button_pushed'
@@ -103,7 +105,8 @@ class ExamController < UIViewController
     if RUBYMOTION_ENV == 'test'
       draw_sub_view(@game_view)
     else
-      @game_view.view_animation_def(
+#      @game_view.view_animation_def(
+      view_animation_def(
           'draw_sub_view',
           arg: @game_view,
           duration: EXCHANGE_GAME_VIEW_DURATION,
@@ -164,8 +167,49 @@ class ExamController < UIViewController
     @pushed_button = sender
     @main_buttons[pushed_button_index] = nil
     AudioPlayerFactory.players[MainButtonSoundPicker.button_sound_id].play
-    @game_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
+#    @game_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
+    if RUBYMOTION_ENV == 'test'
+      @game_view.move_selected_button(@pushed_button)
+      self.send(CALLBACK_AFTER_BUTTON_MOVED)
+    else
+      i_view_animation_def('move_selected_button',
+                           arg: @pushed_button,
+                           duration: MOVE_SELECTED_DURATION)
+    end
   end
+
+  def view_animation_def(method_name, arg: arg, duration: duration, transition: transition)
+    UIView.beginAnimations(method_name, context: nil)
+    UIView.setAnimationDelegate(self)
+    UIView.setAnimationDuration(duration)
+    if transition
+      UIView.setAnimationTransition(transition,
+                                    forView: self.view,
+                                    cache: true)
+
+    end
+    if arg
+      self.send("#{method_name}", arg)
+    else
+      self.send("#{method_name}")
+    end
+    UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
+    UIView.commitAnimations
+  end
+
+  def i_view_animation_def(method_name, arg: arg, duration: duration)
+    UIView.beginAnimations(method_name, context: nil)
+    UIView.setAnimationDelegate(self)
+    UIView.setAnimationDuration(duration)
+    if arg
+      @game_view.send("#{method_name}", arg)
+    else
+      @game_view.send("#{method_name}")
+    end
+    UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
+    UIView.commitAnimations
+  end
+
 
   def check_if_right_button_pushed
     self.button_is_moved = true
@@ -183,8 +227,13 @@ class ExamController < UIViewController
       make_main_buttons_appear()
       remove_prev_main_buttons()
     else
+      i_view_animation_def('make_main_buttons_appear',
+                           arg: @main_buttons,
+                           duration: EXCHANGE_MAIN_BUTTONS_DURATION)
+=begin
       @game_view.main_buttons_appearing_motion(@main_buttons,
                                                callback: CALLBACK_AFTER_EXCHANGE)
+=end
     end
   end
 
@@ -267,13 +316,17 @@ class ExamController < UIViewController
 
   def game_is_finished
     self.game_is_completed = true
-    comp_view = CompleteView.alloc.initWithFrame(self.view.frame,
-                                                 controller: self)
+    comp_view =
+        CompleteView.alloc.initWithFrame(self.view.frame,
+                                         controller: self)
+    # 自分自身を引数で渡しているが、                     ↑↑↑
+    # 相手からは弱参照で参照しているため、循環参照は避けている。
     @game_view.removeFromSuperview
     if RUBYMOTION_ENV == 'test'
       draw_sub_view(comp_view)
     else
-      @game_view.view_animation_def(
+#      @game_view.view_animation_def(
+      view_animation_def(
           'draw_sub_view',
           arg: comp_view,
           duration: EXCHANGE_GAME_VIEW_DURATION,

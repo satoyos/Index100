@@ -101,11 +101,6 @@ class GameView < UIView
                                    callback: callback_name)
   end
 
-  def main_buttons_appearing_motion(main_buttons, callback: callback_name)
-    @input_view.main_buttons_appearing_motion(main_buttons,
-                                              callback: callback_name)
-  end
-
   def clear_button_pushed
     @input_view.clear_button_pushed
   end
@@ -114,30 +109,18 @@ class GameView < UIView
     @input_view.display_result_view(result_type)
   end
 
-  def view_animation_def(method_name, arg: arg, duration: duration, transition: transition)
-    UIView.beginAnimations(method_name, context: nil)
-    UIView.setAnimationDelegate(@controller)
-    UIView.setAnimationDuration(duration)
-    if transition
-      UIView.setAnimationTransition(transition,
-                                    forView: @controller.view,
-                                    cache: true)
+  def move_selected_button(pushed_button)
+    @input_view.move_selected_button(pushed_button)
+  end
 
-    end
-    if arg
-      @controller.send("#{method_name}", arg)
-    else
-      @controller.send("#{method_name}")
-    end
-    UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
-    UIView.commitAnimations
+  def make_main_button_appear(buttons)
+    @input_view.make_main_buttons_appear(buttons)
   end
 
   :private
 
   def create_input_view
-    @input_view = InputView.alloc.initWithFrame(input_view_frame,
-                                                controller: @controller)
+    @input_view = InputView.alloc.initWithFrame(input_view_frame)
     self.addSubview(@input_view)
   end
 

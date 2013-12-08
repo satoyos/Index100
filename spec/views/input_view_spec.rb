@@ -2,7 +2,8 @@ describe 'InputView' do
   TEST_INPUT_VIEW_FRAME = CGRectMake(0, 300, 320, 240)
   before do
     @input_view =
-        InputView.alloc.initWithFrame(TEST_INPUT_VIEW_FRAME, controller: nil)
+#        InputView.alloc.initWithFrame(TEST_INPUT_VIEW_FRAME, controller: nil)
+        InputView.alloc.initWithFrame(TEST_INPUT_VIEW_FRAME)
   end
 
   it 'should not be nil' do
@@ -58,15 +59,20 @@ describe 'InputView' do
   describe 'move_selected_button' do
     before do
       @button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+=begin
       @input_view.pushed_button = @button
       @input_view.move_selected_button
+=end
+      @input_view.move_selected_button(@button)
     end
 
+=begin
     it '@pushed_button is set' do
       @input_view.pushed_button.should.not.be.nil
       @input_view.pushed_button.is_a?(UIButton).should.be.true
       @input_view.pushed_button.should == @button
     end
+=end
 
     it '押されたボタンは、サブボタン用スロットに入る' do
       @input_view.sub_buttons.size.should == 1
@@ -83,8 +89,11 @@ describe 'InputView' do
   describe 'clear_button_pushed' do
     before do
       @button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+=begin
       @input_view.pushed_button = @button
       @input_view.move_selected_button
+=end
+      @input_view.move_selected_button(@button)
     end
 
     it 'この時点では、サブボタン用スロットに入っているボタンは1個' do

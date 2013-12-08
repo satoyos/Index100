@@ -9,8 +9,6 @@ class InputView < UIView
   CHALLENGE_BUTTON_TITLE = 'これで決まり！'
   CHALLENGE_BUTTON_COLOR = '#e95295'.uicolor #ツツジ色
   SUB_BUTTON_NUM  = 6
-  MOVE_SELECTED_DURATION = 0.1
-  EXCHANGE_MAIN_BUTTONS_DURATION = 0.15
 
   SELECTED_BUTTON_TITLE_COLOR = '#c85179'.uicolor #中紅
 
@@ -20,36 +18,16 @@ class InputView < UIView
     attr_reader prop
   end
 
-  PROPERTIES_ACCESSOR = [:pushed_button]
-  PROPERTIES_ACCESSOR.each do |prop|
-    attr_accessor prop
-  end
 
-  def initWithFrame(frame, controller: controller)
-    super.initWithFrame(frame)
+  def initWithFrame(frame)
+    super
 
     self.backgroundColor = BG_COLOR
-    @controller = controller
-# 以下の弱参照を使うと、メインボタンのexchangeが起こらなくなった。
-#    @controller = WeakRef.new(controller) # 循環参照を避けるため、弱参照を使う。
     create_main_4frames()
     create_sub_6frames()
     setup_sub_button_slot()
 
     self
-  end
-
-  def main_button_pushed(sender, callback: cb_method_name)
-    return unless sender.is_a?(UIButton)
-    @pushed_button = sender
-    if RUBYMOTION_ENV == 'test'
-      move_selected_button
-      @controller.send("#{cb_method_name}")
-    else
-      i_view_animation_def('move_selected_button',
-                           arg: nil,
-                           duration: MOVE_SELECTED_DURATION)
-    end
   end
 
   def clear_button_pushed
@@ -71,13 +49,6 @@ class InputView < UIView
   def ratio_of_sub_to_main
     SUB_BUTTON_SIZE.width / MAIN_BUTTON_SIZE.width
   end
-
-  def main_buttons_appearing_motion(buttons, callback: method_name)
-    i_view_animation_def('make_main_buttons_appear',
-                         arg: buttons,
-                         duration: EXCHANGE_MAIN_BUTTONS_DURATION)
-  end
-
 
   :private
 
@@ -164,21 +135,9 @@ class InputView < UIView
                 frame.origin.y + frame.size.height / 2)
   end
 
-  def i_view_animation_def(method_name, arg: arg, duration: duration)
-    UIView.beginAnimations(method_name, context: nil)
-    UIView.setAnimationDelegate(@controller)
-    UIView.setAnimationDuration(duration)
-    if arg
-      self.send("#{method_name}", arg)
-    else
-      self.send("#{method_name}")
-    end
-    UIView.setAnimationDidStopSelector('i_view_animation_has_finished:')
-    UIView.commitAnimations
-  end
 
-  def move_selected_button
-    @pushed_button.tap do |button|
+  def move_selected_button(pushed_button)
+    pushed_button.tap do |button|
       button.frame = @sub_6frames[selected_num]
 #      button.titleLabel.font = UIFont.systemFontOfSize(SUB_BUTTON_SIZE.height/2)
       button.titleLabel.font =
@@ -186,7 +145,7 @@ class InputView < UIView
       button.enabled = false
       @sub_buttons << button
     end
-    change_color_of_button(@pushed_button)
+    change_color_of_button(pushed_button)
   end
 
   def selected_num
