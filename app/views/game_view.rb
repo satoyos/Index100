@@ -11,17 +11,15 @@ class GameView < UIView
   A_LABEL_COUNTER_LABEL = 'poem_counter_label'
   COUNTER_LABEL_FOR_TEST = 'xx/yy'
 
-  PROPERTIES = [:poem, :tatami_view, :fuda_view, :input_view, :controller]
+  PROPERTIES = [:poem, :tatami_view, :fuda_view, :input_view]
   PROPERTIES.each do |prop|
     attr_reader prop
   end
 
-  def initWithFrame(frame, withPoem: poem, controller: controller)
+  def initWithFrame(frame, withPoem: poem, supplier: supplier)
     super.initWithFrame(frame)
     @poem = poem
-    @controller = controller
-    # 以下の弱参照を使うと、メインボタンのexchangeが起こらなくなった。
-#    @controller = WeakRef.new(controller) # 循環参照を避けるため、弱参照を使う。
+    @supplier = supplier
     create_tatami_view()
     create_fuda_view()
     create_counter_label()
@@ -34,7 +32,6 @@ class GameView < UIView
 
   def create_counter_label
     counter_label = UILabel.alloc.initWithFrame(CGRectZero)
-    # @param [UILabel] c_label
     counter_label.tap do |c_label|
       c_label.backgroundColor = UIColor.clearColor
       c_label.textColor = UIColor.whiteColor
@@ -96,11 +93,6 @@ class GameView < UIView
     @input_view.make_main_buttons_appear(main_buttons)
   end
 
-  def main_button_pushed(main_button, callback: callback_name)
-    @input_view.main_button_pushed(main_button,
-                                   callback: callback_name)
-  end
-
   def clear_button_pushed
     @input_view.clear_button_pushed
   end
@@ -150,10 +142,10 @@ class GameView < UIView
   end
 
   def deck_size
-    @controller.supplier.deck_size
+    @supplier.deck_size
   end
 
   def poem_counter
-    @controller.supplier.poem_counter
+    @supplier.poem_counter
   end
 end

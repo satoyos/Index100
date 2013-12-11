@@ -24,7 +24,7 @@ EOF
           GameView.alloc.initWithFrame([CGPointZero,
                                         CGSizeMake(320, 480)],
                                        withPoem: Poem.new(JSONParser.parse(POEM_INIT_JSON)),
-                                       controller: nil)
+                                       supplier: @supplier)
     end
 
     it 'should not be nil' do

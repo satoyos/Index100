@@ -76,7 +76,7 @@ class ExamController < UIViewController
   def create_game_view(poem)
     @game_view = GameView.alloc.initWithFrame(self.view.bounds,
                                               withPoem: poem,
-                                              controller: self)
+                                              supplier: @supplier)
   end
 
 
@@ -105,7 +105,6 @@ class ExamController < UIViewController
     if RUBYMOTION_ENV == 'test'
       draw_sub_view(@game_view)
     else
-#      @game_view.view_animation_def(
       view_animation_def(
           'draw_sub_view',
           arg: @game_view,
@@ -167,7 +166,6 @@ class ExamController < UIViewController
     @pushed_button = sender
     @main_buttons[pushed_button_index] = nil
     AudioPlayerFactory.players[MainButtonSoundPicker.button_sound_id].play
-#    @game_view.main_button_pushed(sender, callback: CALLBACK_AFTER_BUTTON_MOVED)
     if RUBYMOTION_ENV == 'test'
       @game_view.move_selected_button(@pushed_button)
       self.send(CALLBACK_AFTER_BUTTON_MOVED)
@@ -230,10 +228,6 @@ class ExamController < UIViewController
       i_view_animation_def('make_main_buttons_appear',
                            arg: @main_buttons,
                            duration: EXCHANGE_MAIN_BUTTONS_DURATION)
-=begin
-      @game_view.main_buttons_appearing_motion(@main_buttons,
-                                               callback: CALLBACK_AFTER_EXCHANGE)
-=end
     end
   end
 
@@ -325,7 +319,6 @@ class ExamController < UIViewController
     if RUBYMOTION_ENV == 'test'
       draw_sub_view(comp_view)
     else
-#      @game_view.view_animation_def(
       view_animation_def(
           'draw_sub_view',
           arg: comp_view,

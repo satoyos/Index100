@@ -82,7 +82,6 @@ class InputView < UIView
   def set_main_buttons(main_buttons)
     main_buttons.each_with_index do |button, idx|
       button.setFrame(hidden_main_frame_at(idx))
-#      button.titleLabel.font = UIFont.systemFontOfSize(MAIN_BUTTON_SIZE.height/2)
       button.titleLabel.font =
           FontFactory.create_font_with_type(:japaneseW6,
                                             size: MAIN_BUTTON_SIZE.height/2)
@@ -139,7 +138,6 @@ class InputView < UIView
   def move_selected_button(pushed_button)
     pushed_button.tap do |button|
       button.frame = @sub_6frames[selected_num]
-#      button.titleLabel.font = UIFont.systemFontOfSize(SUB_BUTTON_SIZE.height/2)
       button.titleLabel.font =
           button.titleLabel.font.fontWithSize(SUB_BUTTON_SIZE.height/1.5)
       button.enabled = false
