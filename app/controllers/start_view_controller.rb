@@ -41,6 +41,7 @@ class StartViewController < UIViewController
     @table_view.delegate = self
     self.navigationItem.title = TITLE
     self.view.addSubview(@table_view)
+    @sections = START_VIEW_SECTIONS.to_object # SugarCube-Anonymous
   end
 
   def viewWillAppear(animated)
@@ -57,15 +58,15 @@ class StartViewController < UIViewController
 
 
   def numberOfSectionsInTableView(tableView)
-    START_VIEW_SECTIONS.size
+    @sections.size
   end
 
   def tableView(tableView, titleForHeaderInSection: section)
-    START_VIEW_SECTIONS[section][:header_title]
+    @sections[section].header_title
   end
 
   def tableView(tableView, numberOfRowsInSection: section)
-    START_VIEW_SECTIONS[section][:items].size
+    @sections[section].items.size
   end
 
   def tableView(tableView, cellForRowAtIndexPath: indexPath)
@@ -134,11 +135,11 @@ class StartViewController < UIViewController
   end
 
   def id_of_section(indexPath)
-    START_VIEW_SECTIONS[indexPath.section][:section_id]
+    @sections[indexPath.section].section_id
   end
 
   def item_hash(indexPath)
-    START_VIEW_SECTIONS[indexPath.section][:items][indexPath.row]
+    @sections[indexPath.section].items[indexPath.row]
   end
 
   def id_of_item(indexPath)
