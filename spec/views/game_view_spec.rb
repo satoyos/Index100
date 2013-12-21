@@ -24,7 +24,7 @@ EOF
           GameView.alloc.initWithFrame([CGPointZero,
                                         CGSizeMake(320, 480)],
                                        withPoem: Poem.new(JSONParser.parse(POEM_INIT_JSON)),
-                                       supplier: @supplier)
+                                       supplier: CharSupplier.new(deck: Deck.new))
     end
 
     it 'should not be nil' do
@@ -54,7 +54,7 @@ EOF
     it 'カウンターラベルがある' do
       c_label = @game_view.subviews.find{|view| view.is_a?(UILabel)}
       c_label.should.not.be.nil
-      c_label.text.should == GameView::COUNTER_LABEL_FOR_TEST
+      c_label.text.should == '1/100'
       c_label.textColor.should == UIColor.whiteColor
     end
 

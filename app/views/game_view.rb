@@ -35,10 +35,7 @@ class GameView < UIView
     counter_label.tap do |c_label|
       c_label.backgroundColor = UIColor.clearColor
       c_label.textColor = UIColor.whiteColor
-      c_label.text = case RUBYMOTION_ENV
-                       when 'test' ; COUNTER_LABEL_FOR_TEST
-                       else "#{poem_counter}/#{deck_size}"
-                     end
+      c_label.text = "#{poem_counter}/#{deck_size}"
       c_label.sizeToFit
       c_label.frame = counter_label_frame(c_label.frame.size)
       self.addSubview(c_label)
