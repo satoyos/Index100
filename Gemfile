@@ -6,6 +6,7 @@ gem 'sugarcube', :require => [
     'sugarcube-color'
 ]
 gem 'motion-testflight'
+gem 'motion-calabash'
 
 group :development do
   gem 'guard-motion'
