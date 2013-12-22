@@ -77,29 +77,34 @@ class StartViewController < UIViewController
     case id_of_section(indexPath)
       when :games
         GameStartCell.alloc.initWithText(text_of(indexPath),
+                                         acc_label: "#{id_of_item(indexPath)}",
                                          reuseIdentifier: @reuseIdentifier)
       when :settings
         case id_of_item(indexPath)
           when :number_of_poems
             SettingCellWithArrow.alloc.initWithText(text_of(indexPath),
                                                     detail: detail_text(indexPath),
+                                                    acc_label: "#{id_of_item(indexPath)}",
                                                     reuseIdentifier: @reuseIdentifier)
           when :show_wrong_asap
             @wrong_asap_cell =
                 SettingCellWithSwitch.alloc.initWithText(text_of(indexPath),
                                                          detail: detail_text(indexPath),
                                                          on_status: initial_wrong_asap,
+                                                         acc_label: "#{id_of_item(indexPath)}",
                                                          reuseIdentifier: @reuseIdentifier)
             @wrong_asap_cell.set_callback(self, method: 'save_wrong_asap_flg')
             @wrong_asap_cell
           when :main_button_sound
             SettingCellWithArrow.alloc.initWithText(text_of(indexPath),
                                                     detail: detail_text(indexPath),
+                                                    acc_label: "#{id_of_item(indexPath)}",
                                                     reuseIdentifier: @reuseIdentifier)
 
           when :poems_selected
             SettingCellWithArrow.alloc.initWithText(text_of(indexPath),
                                                     detail: detail_text(indexPath),
+                                                    acc_label: "#{id_of_item(indexPath)}",
                                                     reuseIdentifier: @reuseIdentifier)
           else
             nil

@@ -6,11 +6,12 @@ class SettingCellWithSwitch < UITableViewCell
   SWITCH_MARGIN = 30
 
 
-  def initWithText(text, detail: detail_text, on_status: on_status, reuseIdentifier: reuseIdentifier)
+  def initWithText(text, detail: detail_text, on_status: on_status, acc_label: acc_label, reuseIdentifier: reuseIdentifier)
     initWithStyle(CELL_STYLE, reuseIdentifier: reuseIdentifier)
     textLabel.text = text
     detailTextLabel.text = detail_text if detailTextLabel
     self.selectionStyle = UITableViewCellSelectionStyleNone
+    self.accessibilityLabel = acc_label
     @switch_view = self.switch_view
     @switch_view.on = on_status
     self.contentView.addSubview(@switch_view)
