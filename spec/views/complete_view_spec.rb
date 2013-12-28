@@ -7,6 +7,13 @@ describe 'CompleteView' do
     it 'should not be nil' do
       @c_view.should.not.be.nil
     end
+    it 'accessibilityLabelが設定されている' do
+      @c_view.accessibilityLabel.should == CompleteView::A_LABEL_COMPLETE_VIEW
+      @c_view.msg_label.accessibilityLabel.should ==
+          CompleteView::A_LABEL_MESSAGE_LABEL
+      @c_view.return_button.accessibilityLabel.should ==
+          CompleteView::A_LABEL_RETURN_BUTTON
+    end
   end
 
 

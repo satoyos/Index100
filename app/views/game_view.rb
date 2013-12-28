@@ -1,4 +1,6 @@
 class GameView < UIView
+  A_LABEL_GAME_VIEW = 'game_view'
+
   FUDA_INITIAL_STRING = 'これから札に歌を設定します。'
   FUDA_HEIGHT_POWER = 0.95 # 札ビューの高さは、畳ビューの何倍にするか
 
@@ -20,6 +22,7 @@ class GameView < UIView
     super.initWithFrame(frame)
     @poem = poem
     @supplier = supplier
+    self.accessibilityLabel = A_LABEL_GAME_VIEW
     create_tatami_view()
     create_fuda_view()
     create_counter_label()

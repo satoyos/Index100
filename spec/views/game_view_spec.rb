@@ -58,5 +58,9 @@ EOF
       c_label.textColor.should == UIColor.whiteColor
     end
 
+    it 'accessibilityLabelが設定されている' do
+      @game_view.accessibilityLabel.should == GameView::A_LABEL_GAME_VIEW
+    end
+
   end
 end
