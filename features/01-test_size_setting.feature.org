@@ -1,0 +1,18 @@
+Feature: テストする札の枚数の設定
+  ピッカーを使ってテストする枚数を選択することができる
+
+
+  Scenario: スタート画面のテスト枚数セルをタップすると現れるピッカーで、テスト枚数を指定できる。
+    Given I am on the StartScreen
+    Then I wait to see a navigation bar titled "トップ"
+    Then I touch "number_of_poems"
+    Then I should see "使う枚数"
+    Then I select 2
+    Then I go back
+    Then I wait to see "2首"
+    Then I touch "number_of_poems"
+    Then I select 4
+    Then I go back
+    Then I wait to see "4首"
+
+

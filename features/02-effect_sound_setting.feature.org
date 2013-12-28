@@ -1,0 +1,17 @@
+Feature: 決まり字の入力ボタンを押したときの効果音の設定
+  ピッカーを使って効果音を選ぶことができる
+
+  Scenario: スタート画面の効果音セルをタップすると現れるピッカーで、効果音を指定できる。
+    Given I am on the StartScreen
+    Then I wait to see a navigation bar titled "トップ"
+    Then I touch "main_button_sound"
+    Then I should see "字を選んだ時の音"
+    Then I select 2
+    Then I go back
+    Then I wait to see "ボタン2"
+    Then I touch "main_button_sound"
+    Then I select 0
+    Then I go back
+    Then I wait to see "トランプ1"
+
+
