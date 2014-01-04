@@ -44,15 +44,6 @@ Motion::Project::App.setup do |app|
       app.testflight.notify = true # default is false
       app.testflight.identify_testers = true # default is false
     end
-    # Travis CIに上げるため、Revealを外す。
-=begin
-    app.vendor_project(
-        'vendor/Reveal.framework',
-        :static,
-        :products => %w{Reveal},
-        :headers_dir => 'Headers'
-    )
-=end
   end
 
 end
