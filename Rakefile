@@ -35,6 +35,10 @@ Motion::Project::App.setup do |app|
         'CFBundleURLSchemes' => ['index100'] }
   ]
 
+  app.vendor_project('vendor/UIView+shake', :static,
+#                     :target => 'OAuth2Client',
+                     :headers_dir => 'vendor/UIView+shake')
+
   app.development do
     app.testflight do
       app.testflight.sdk = 'vendor/TestFlightSDK2.0.2'

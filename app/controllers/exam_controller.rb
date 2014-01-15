@@ -98,7 +98,11 @@ class ExamController < UIViewController
     @game_view.display_result(get_result_type)
     AudioPlayerFactory.players[audio_type].play
 
-    return if get_result_type == :wrong
+    if get_result_type == :wrong
+      @game_view.shakeWithCount(15, interval: 0.05)
+#      AudioServicesPlayAlertSound(KSystemSoundID_Vibrate)
+      return
+    end
     return game_is_finished unless @supplier.draw_next_poem
     @game_view.removeFromSuperview
     set_game_view_of_poem(@supplier.current_poem)
