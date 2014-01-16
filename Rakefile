@@ -22,7 +22,8 @@ Motion::Project::App.setup do |app|
 
   app.identifier = 'com.satoyos.Index_100'
 
-  app.icons = ['百首決まり字.png', '百首決まり字@2x.png']
+#  app.icons = ['百首決まり字.png', '百首決まり字@2x.png']
+  app.icons = ['index100.png', 'index100@2x.png']
   app.prerendered_icon = true
 
   app.provisioning_profile = '/Users/yoshi/data/dev/Provisioning_for_100series_Tester_with_iPad_Air.mobileprovision'
@@ -35,9 +36,8 @@ Motion::Project::App.setup do |app|
         'CFBundleURLSchemes' => ['index100'] }
   ]
 
-  app.vendor_project('vendor/UIView+shake', :static,
-#                     :target => 'OAuth2Client',
-                     :headers_dir => 'vendor/UIView+shake')
+  app.vendor_project('app/lib/UIView+shake', :static,
+                     :headers_dir => 'app/lib/UIView+shake')
 
   app.development do
     app.testflight do

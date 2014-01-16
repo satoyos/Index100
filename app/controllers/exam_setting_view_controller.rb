@@ -3,8 +3,8 @@ class ExamSettingViewController < UIViewController
   BUTTON_MARGIN = 20
   BUTTON_HEIGHT = 40
 
-  BACK_BUTTON_TITLE = 'ゲームに戻る'
-  EXIT_BUTTON_TITLE = 'ゲーム終了'
+  BACK_BUTTON_TITLE = 'テストに戻る'
+  EXIT_BUTTON_TITLE = 'テスト終了'
 
 
   def viewDidLoad

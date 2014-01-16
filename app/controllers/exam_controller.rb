@@ -99,7 +99,7 @@ class ExamController < UIViewController
     AudioPlayerFactory.players[audio_type].play
 
     if get_result_type == :wrong
-      @game_view.shakeWithCount(15, interval: 0.05)
+      @game_view.shakeWithCount(15, interval: 0.04)
 #      AudioServicesPlayAlertSound(KSystemSoundID_Vibrate)
       return
     end
