@@ -16,13 +16,12 @@ Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
   app.name = 'Index100'
 
-  app.version = '1.02'
+  app.version = '1.03'
 
   app.codesign_certificate = 'iPhone Developer: Yoshifumi Sato'
 
   app.identifier = 'com.satoyos.Index_100'
 
-#  app.icons = ['百首決まり字.png', '百首決まり字@2x.png']
   app.icons = ['index100.png', 'index100@2x.png']
   app.prerendered_icon = true
 
