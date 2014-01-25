@@ -13,6 +13,7 @@ class InputViewButton < UIButton
       end
       button.setTitleColor(TEXT_COLOR,   forState: UIControlStateNormal)
       button.setTitleColor(TAPPED_COLOR, forState: UIControlStateHighlighted)
+      button.showsTouchWhenHighlighted = true
       button
     end
   end
