@@ -25,7 +25,8 @@ Motion::Project::App.setup do |app|
   app.icons = ['index100.png', 'index100@2x.png']
   app.prerendered_icon = true
 
-  app.provisioning_profile = '/Users/yoshi/data/dev/Provisioning_for_100series_Tester_with_iPad_Air.mobileprovision'
+  app.provisioning_profile =
+      '/Users/yoshi/data/dev/Provisionings/Provisioning_for_100series_Tester_140429.mobileprovision'
 
   app.frameworks += ['QuartzCore']
   app.frameworks += ['AVFoundation', 'AudioToolbox']
