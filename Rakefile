@@ -26,7 +26,7 @@ Motion::Project::App.setup do |app|
   app.prerendered_icon = true
 
   app.provisioning_profile =
-      '/Users/yoshi/data/dev/Provisionings/Provisioning_for_100series_Tester_140429.mobileprovision'
+      '/Users/yoshi/data/dev/Provisionings/Provisioning_for_100series_Tester_2014-09-21.mobileprovision'
 
   app.frameworks += ['QuartzCore']
   app.frameworks += ['AVFoundation', 'AudioToolbox']
@@ -41,7 +41,7 @@ Motion::Project::App.setup do |app|
 
   app.development do
     app.testflight do
-      app.testflight.sdk = 'vendor/TestFlightSDK2.0.2'
+      # app.testflight.sdk = 'vendor/TestFlightSDK2.0.2'
       app.testflight.api_token = '1fa759189453676c7e99c623b61c1657_OTEzMzU4MjAxMy0wMy0wNSAwODowMToyNS44NTMxNjg'
       app.testflight.team_token = '6396149579b3bcb7410be09ba868f8b7_MjgxOTEwMjAxMy0xMC0wNiAwNTowMDo0MS42MzA2OTQ'
       app.testflight.app_token = '696d14ae-140b-403f-8434-6109aaf6d745'
